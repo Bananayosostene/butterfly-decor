@@ -1,7 +1,7 @@
 // Replace these with your actual contact information
 export const CONTACT_INFO = {
   whatsappPhone: "+250788724867", // Update with your WhatsApp number
-  instagramUrl: "https://instagram.com", // Update with your Instagram profile
+  instagramUrl: "https://www.instagram.com/sostene_____/",
   email: "info@butterflyltd.com",
   phone: "+1 (234) 567-8900",
 };

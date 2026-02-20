@@ -3,7 +3,7 @@ import Link from "next/link";
 export function Footer() {
   const whatsappUrl =
     "https://wa.me/+250788724867?text=Hello%20Butterfly%20Ltd";
-  const instagramUrl = "https://instagram.com";
+  const instagramUrl = "https://www.instagram.com/sostene_____/";
 
   return (
     <footer className="bg-muted border-t border-border mt-16">

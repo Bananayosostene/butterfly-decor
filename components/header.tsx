@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { ColorPicker } from "./color-picker";
 import { ThemeToggle } from "./theme-toggle";
+import Image from "next/image";
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -19,10 +20,23 @@ export function Header() {
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="text-xl font-serif font-bold text-primary">
-            Butterfly Events Ltd
-          </Link>
+          <div className="flex items-center gap-2 h-16">
+            <Image
+              src="/butterfly_logo.png"
+              alt="Butterfly Ltd logo"
+              width={40}
+              height={40}
+              className="object-contain"
+              priority
+            />
+
+            <Link
+              href="/"
+              className="text-xl font-serif font-bold text-primary"
+            >
+              Butterfly Decoration
+            </Link>
+          </div>
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex gap-8 items-center">
