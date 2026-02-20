@@ -89,7 +89,7 @@ export function MagicCursor() {
     <>
       <div
         ref={dotRef}
-        className="fixed pointer-events-none z-[9999] w-2 h-2 rounded-full transition-transform duration-75"
+        className="hidden sm:block fixed pointer-events-none z-[9999] w-2 h-2 rounded-full transition-transform duration-75"
         style={{
           backgroundColor: "var(--primary)",
           boxShadow: "0 0 12px 4px oklch(from var(--primary) l c h / 0.5)",
@@ -98,7 +98,7 @@ export function MagicCursor() {
 
       <div
         ref={ringRef}
-        className="fixed pointer-events-none z-[9998] w-6 h-6 rounded-full transition-all duration-150"
+        className="hidden sm:block fixed pointer-events-none z-[9998] w-6 h-6 rounded-full transition-all duration-150"
         style={{
           border: "1px solid oklch(from var(--primary) l c h / 0.6)",
         }}

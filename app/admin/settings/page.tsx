@@ -1,23 +1,26 @@
-import { redirect } from "next/navigation"
-import { cookies } from "next/headers"
-import Link from "next/link"
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import Link from "next/link";
 
 export default async function AdminSettingsPage() {
-  const cookieStore = await cookies()
-  const sessionToken = cookieStore.get("admin_session")?.value
+  const cookieStore = await cookies();
+  const sessionToken = cookieStore.get("admin_session")?.value;
 
   if (!sessionToken) {
-    redirect("/admin/login")
+    redirect("/admin/login");
   }
 
   return (
     <div className="min-h-screen bg-background">
       <header className="bg-card border-b border-border">
         <div className="max-w-4xl mx-auto px-6 py-4">
-          <Link href="/admin" className="text-muted-foreground hover:text-foreground mb-2 inline-block">
+          <Link
+            href="/admin"
+            className="text-muted-foreground hover:text-foreground mb-2 inline-block"
+          >
             ← Back to Dashboard
           </Link>
-          <h1 className="text-2xl font-serif font-bold text-foreground">Settings</h1>
+          <h1 className="text-2xl   font-bold text-foreground">Settings</h1>
         </div>
       </header>
 
@@ -25,9 +28,12 @@ export default async function AdminSettingsPage() {
         <div className="bg-card border border-border rounded-lg p-8 space-y-8">
           {/* Admin Account */}
           <div>
-            <h2 className="text-xl font-semibold text-foreground mb-4">Admin Account</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-4">
+              Admin Account
+            </h2>
             <p className="text-muted-foreground mb-4">
-              Manage your admin account settings. For security, password changes should be done through the database.
+              Manage your admin account settings. For security, password changes
+              should be done through the database.
             </p>
             <div className="space-y-3 text-sm">
               <p className="text-muted-foreground">
@@ -41,19 +47,24 @@ export default async function AdminSettingsPage() {
 
           {/* WhatsApp Contact */}
           <div className="border-t border-border pt-8">
-            <h2 className="text-xl font-semibold text-foreground mb-4">WhatsApp Integration</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-4">
+              WhatsApp Integration
+            </h2>
             <p className="text-muted-foreground mb-4">
-              Booking confirmations are sent via WhatsApp. Make sure your WhatsApp number is configured in the
-              application.
+              Booking confirmations are sent via WhatsApp. Make sure your
+              WhatsApp number is configured in the application.
             </p>
             <p className="text-sm text-muted-foreground">
-              Update the phone number in the booking-related pages and components to receive notifications.
+              Update the phone number in the booking-related pages and
+              components to receive notifications.
             </p>
           </div>
 
           {/* Security Info */}
           <div className="border-t border-border pt-8">
-            <h2 className="text-xl font-semibold text-foreground mb-4">Security</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-4">
+              Security
+            </h2>
             <ul className="space-y-2 text-sm text-muted-foreground list-disc list-inside">
               <li>Sessions are stored in secure HTTP-only cookies</li>
               <li>Passwords are hashed using SHA-256</li>
@@ -66,10 +77,10 @@ export default async function AdminSettingsPage() {
           <div className="border-t border-border pt-8">
             <form
               action={async () => {
-                "use server"
-                const cookies_store = await cookies()
-                cookies_store.delete("admin_session")
-                redirect("/admin/login")
+                "use server";
+                const cookies_store = await cookies();
+                cookies_store.delete("admin_session");
+                redirect("/admin/login");
               }}
             >
               <button
@@ -83,5 +94,5 @@ export default async function AdminSettingsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

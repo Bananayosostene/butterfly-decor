@@ -1,32 +1,41 @@
-import { redirect } from "next/navigation"
-import { cookies } from "next/headers"
-import { prisma } from "@/lib/db"
-import Link from "next/link"
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { prisma } from "@/lib/db";
+import Link from "next/link";
 
-export default async function EditPortfolioPage({ params }: { params: { id: string } }) {
-  const cookieStore = await cookies()
-  const sessionToken = cookieStore.get("admin_session")?.value
+export default async function EditPortfolioPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const cookieStore = await cookies();
+  const sessionToken = cookieStore.get("admin_session")?.value;
 
   if (!sessionToken) {
-    redirect("/admin/login")
+    redirect("/admin/login");
   }
 
   const image = await prisma.portfolioImage.findUnique({
     where: { id: params.id },
-  })
+  });
 
   if (!image) {
-    redirect("/admin/portfolio")
+    redirect("/admin/portfolio");
   }
 
   return (
     <div className="min-h-screen bg-background">
       <header className="bg-card border-b border-border">
         <div className="max-w-4xl mx-auto px-6 py-4">
-          <Link href="/admin/portfolio" className="text-muted-foreground hover:text-foreground mb-2 inline-block">
+          <Link
+            href="/admin/portfolio"
+            className="text-muted-foreground hover:text-foreground mb-2 inline-block"
+          >
             ← Back to Portfolio
           </Link>
-          <h1 className="text-2xl font-serif font-bold text-foreground">Portfolio Image Details</h1>
+          <h1 className="text-2xl   font-bold text-foreground">
+            Portfolio Image Details
+          </h1>
         </div>
       </header>
 
@@ -45,31 +54,39 @@ export default async function EditPortfolioPage({ params }: { params: { id: stri
           <div className="space-y-6">
             <div className="bg-card border border-border rounded-lg p-6">
               <p className="text-sm text-muted-foreground mb-1">Title</p>
-              <p className="text-lg font-semibold text-foreground">{image.title}</p>
+              <p className="text-lg font-semibold text-foreground">
+                {image.title}
+              </p>
             </div>
 
             <div className="bg-card border border-border rounded-lg p-6">
               <p className="text-sm text-muted-foreground mb-1">Category</p>
-              <p className="text-lg font-semibold text-foreground">{image.category}</p>
+              <p className="text-lg font-semibold text-foreground">
+                {image.category}
+              </p>
             </div>
 
             <div className="bg-card border border-border rounded-lg p-6">
               <p className="text-sm text-muted-foreground mb-1">Image URL</p>
-              <p className="text-sm font-mono text-foreground break-all">{image.imageUrl}</p>
+              <p className="text-sm font-mono text-foreground break-all">
+                {image.imageUrl}
+              </p>
             </div>
 
             <div className="bg-card border border-border rounded-lg p-6">
               <p className="text-sm text-muted-foreground mb-1">Uploaded</p>
-              <p className="text-sm text-foreground">{new Date(image.createdAt).toLocaleString()}</p>
+              <p className="text-sm text-foreground">
+                {new Date(image.createdAt).toLocaleString()}
+              </p>
             </div>
 
             <form
               action={async () => {
-                "use server"
+                "use server";
                 await prisma.portfolioImage.delete({
                   where: { id: params.id },
-                })
-                redirect("/admin/portfolio")
+                });
+                redirect("/admin/portfolio");
               }}
             >
               <button
@@ -83,5 +100,5 @@ export default async function EditPortfolioPage({ params }: { params: { id: stri
         </div>
       </div>
     </div>
-  )
+  );
 }

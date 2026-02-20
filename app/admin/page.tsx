@@ -40,7 +40,7 @@ export default async function AdminDashboard() {
       {/* Admin Header */}
       <header className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-serif font-bold text-foreground">
+          <h1 className="text-2xl   font-bold text-foreground">
             Butterfly Events Ltd Admin
           </h1>
           <form
@@ -128,7 +128,7 @@ export default async function AdminDashboard() {
 
         {/* Upcoming Events */}
         <div>
-          <h2 className="text-2xl font-serif font-bold text-foreground mb-6">
+          <h2 className="text-2xl   font-bold text-foreground mb-6">
             Upcoming Events
           </h2>
           {upcomingEvents.length === 0 ? (
