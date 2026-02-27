@@ -97,7 +97,6 @@ export function Header() {
               </svg>
             </button>
             <ThemeToggle />
-            <ColorPicker />
           </div>
         </div>
 
