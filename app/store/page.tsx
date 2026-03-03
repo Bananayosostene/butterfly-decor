@@ -19,35 +19,101 @@ export default function WeddingDetailsPage() {
 
   // Save to localStorage whenever selection changes
   useEffect(() => {
-    localStorage.setItem("butterfly-selected-items", JSON.stringify(selectedItems));
+    localStorage.setItem(
+      "butterfly-selected-items",
+      JSON.stringify(selectedItems),
+    );
     // Dispatch event to notify header
-    window.dispatchEvent(new CustomEvent("selectedItemsChange", { detail: selectedItems.length }));
+    window.dispatchEvent(
+      new CustomEvent("selectedItemsChange", { detail: selectedItems.length }),
+    );
   }, [selectedItems]);
 
   const allItems = [
-    { id: "classic", name: "Classic Elegance", image: "/weeding.png?key=obcjv", category: "Decoration" },
-    { id: "modern", name: "Modern Chic", image: "/weeding.png?key=obcjv", category: "Decoration" },
-    { id: "rustic", name: "Rustic Romance", image: "/weeding.png?key=obcjv", category: "Decoration" },
-    { id: "garden", name: "Garden Paradise", image: "/weeding.png?key=obcjv", category: "Decoration" },
-    { id: "groom-suit", name: "Groom Suits", image: "/suits.jpg?key=obcjv", category: "Clothing" },
-    { id: "bride-dress", name: "Bride Dresses", image: "/suits.jpg?key=obcjv", category: "Clothing" },
-    { id: "bridesmaid", name: "Bridesmaid Dresses", image: "/suits.jpg?key=obcjv", category: "Clothing" },
-    { id: "groomsmen", name: "Groomsmen Suits", image: "/suits.jpg?key=obcjv", category: "Clothing" },
-    { id: "fairy", name: "Fairy Lights", image: "/lighting.jpg?key=obcjv", category: "Lighting" },
-    { id: "chandelier", name: "Chandeliers", image: "/lighting.jpg?key=obcjv", category: "Lighting" },
-    { id: "uplighting", name: "Uplighting", image: "/lighting.jpg?key=obcjv", category: "Lighting" },
-    { id: "led", name: "LED Effects", image: "/lighting.jpg?key=obcjv", category: "Lighting" },
+    {
+      id: "classic",
+      name: "Classic Elegance",
+      image: "/wedding.png?key=obcjv",
+      category: "Decoration",
+    },
+    {
+      id: "modern",
+      name: "Modern Chic",
+      image: "/wedding.png?key=obcjv",
+      category: "Decoration",
+    },
+    {
+      id: "rustic",
+      name: "Rustic Romance",
+      image: "/wedding.png?key=obcjv",
+      category: "Decoration",
+    },
+    {
+      id: "garden",
+      name: "Garden Paradise",
+      image: "/wedding.png?key=obcjv",
+      category: "Decoration",
+    },
+    {
+      id: "groom-suit",
+      name: "Groom Suits",
+      image: "/suits.jpg?key=obcjv",
+      category: "Clothing",
+    },
+    {
+      id: "bride-dress",
+      name: "Bride Dresses",
+      image: "/suits.jpg?key=obcjv",
+      category: "Clothing",
+    },
+    {
+      id: "bridesmaid",
+      name: "Bridesmaid Dresses",
+      image: "/suits.jpg?key=obcjv",
+      category: "Clothing",
+    },
+    {
+      id: "groomsmen",
+      name: "Groomsmen Suits",
+      image: "/suits.jpg?key=obcjv",
+      category: "Clothing",
+    },
+    {
+      id: "fairy",
+      name: "Fairy Lights",
+      image: "/lighting.jpg?key=obcjv",
+      category: "Lighting",
+    },
+    {
+      id: "chandelier",
+      name: "Chandeliers",
+      image: "/lighting.jpg?key=obcjv",
+      category: "Lighting",
+    },
+    {
+      id: "uplighting",
+      name: "Uplighting",
+      image: "/lighting.jpg?key=obcjv",
+      category: "Lighting",
+    },
+    {
+      id: "led",
+      name: "LED Effects",
+      image: "/lighting.jpg?key=obcjv",
+      category: "Lighting",
+    },
   ];
 
   const categories = ["All", "Decoration", "Clothing", "Lighting"];
 
-  const filteredItems = activeFilter === "All" 
-    ? allItems 
-    : allItems.filter(item => item.category === activeFilter);
+  const filteredItems =
+    activeFilter === "All"
+      ? allItems
+      : allItems.filter((item) => item.category === activeFilter);
 
   const toggleSelection = (id: string) => {
-    setSelectedItems(prev =>
-      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    setSelectedItems((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
     );
   };
 
@@ -56,15 +122,15 @@ export default function WeddingDetailsPage() {
       <Header />
       <main className="min-h-screen bg-background relative">
         {/* Hero Section */}
-        <section className="relative h-[30vh] overflow-hidden">
+        <section className="relative h-[12vh] sm:h-[18vh] md:h-[22vh] lg:h-[30vh] overflow-hidden">
           <img
-            src="/weeding.png?key=obcjv"
+            src="/wedding.png?key=obcjv"
             alt="Wedding Decoration"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-linear-to-t from-black/70 to-transparent flex items-end">
             <div className="max-w-7xl mx-auto px-4 pb-12 w-full">
-              <h1 className="text-5xl font-playball text-white mb-4">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-playball text-white mb-4">
                 Wedding Decoration and Dress Rental
               </h1>
             </div>

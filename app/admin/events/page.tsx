@@ -37,7 +37,7 @@ export default async function PortfolioManagementPage() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="mb-8">
           <Link
-            href="/admin/portfolio/upload"
+            href="/admin/events/upload"
             className="inline-block px-6 py-3 bg-accent text-accent-foreground rounded-lg font-semibold hover:opacity-90 transition-smooth"
           >
             + Upload Image
@@ -68,7 +68,7 @@ export default async function PortfolioManagementPage() {
                     {image.category}
                   </p>
                   <Link
-                    href={`/admin/portfolio/${image.id}`}
+                    href={`/admin/events/${image.id}`}
                     className="text-accent hover:opacity-80 text-sm font-medium transition-smooth"
                   >
                     Edit / Delete

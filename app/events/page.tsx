@@ -22,7 +22,7 @@ export default function PortfolioPage() {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const response = await fetch("/api/portfolio")
+        const response = await fetch("/api/events")
         const data = await response.json()
         setImages(data)
       } catch (error) {

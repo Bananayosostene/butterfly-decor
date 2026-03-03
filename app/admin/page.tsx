@@ -89,7 +89,7 @@ export default async function AdminDashboard() {
         {/* Navigation */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           <Link
-            href="/admin/bookings"
+            href="/admin/requests"
             className="p-6 bg-card border border-border rounded-lg hover:shadow-lg transition-smooth"
           >
             <div className="text-3xl mb-2">📋</div>
@@ -102,7 +102,7 @@ export default async function AdminDashboard() {
           </Link>
 
           <Link
-            href="/admin/portfolio"
+            href="/admin/events"
             className="p-6 bg-card border border-border rounded-lg hover:shadow-lg transition-smooth"
           >
             <div className="text-3xl mb-2">🖼️</div>
@@ -138,7 +138,7 @@ export default async function AdminDashboard() {
               {upcomingEvents.map((event) => (
                 <Link
                   key={event.id}
-                  href={`/admin/bookings/${event.id}`}
+                  href={`/admin/requests/${event.id}`}
                   className="p-4 bg-card border border-border rounded-lg hover:shadow-lg transition-smooth"
                 >
                   <div className="flex justify-between items-start">

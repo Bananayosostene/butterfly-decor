@@ -87,7 +87,7 @@ export default async function BookingsPage() {
                     </td>
                     <td className="px-4 py-3">
                       <Link
-                        href={`/admin/bookings/${booking.id}`}
+                        href={`/admin/requests/${booking.id}`}
                         className="text-accent hover:opacity-80 font-medium transition-smooth"
                       >
                         View

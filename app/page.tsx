@@ -15,30 +15,50 @@ export default function Home() {
     {
       id: "wedding",
       title: "Wedding Decoration",
-      features: ["Venue styling", "Floral arrangements", "Lighting design", "Custom themes"],
-      image: "test.jpeg?key=obcjv",
+      features: [
+        "Venue styling",
+        "Floral arrangements",
+        "Lighting design",
+        "Custom themes",
+      ],
+      image: "wedding.png?key=obcjv",
       link: "/store",
     },
     {
       id: "birthday",
       title: "Birthday Decoration",
-      features: ["Balloon arrangements", "Theme decoration", "Table styling", "Photo backdrops"],
+      features: [
+        "Balloon arrangements",
+        "Theme decoration",
+        "Table styling",
+        "Photo backdrops",
+      ],
       image: "birthdays.png?key=yamyd",
-      link: "/book?service=Birthday Decoration",
+      link: "/request?service=Birthday Decoration",
     },
     {
       id: "church",
       title: "Church Events",
-      features: ["Altar decoration", "Aisle styling", "Entrance design", "Traditional elements"],
-      image: "church.png?key=5qs2p",
-      link: "/book?service=Church Events",
+      features: [
+        "Altar decoration",
+        "Aisle styling",
+        "Entrance design",
+        "Traditional elements",
+      ],
+      image: "birthdays.png?key=5qs2p",
+      link: "/request?service=Church Events",
     },
     {
       id: "memorial",
       title: "Memorial Decoration",
-      features: ["Flower arrangements", "Candle lighting", "Photo displays", "Respectful design"],
+      features: [
+        "Flower arrangements",
+        "Candle lighting",
+        "Photo displays",
+        "Respectful design",
+      ],
       image: "/memorial.png?key=kb2y6",
-      link: "/book?service=Memorial Decoration",
+      link: "/request?service=Memorial Decoration",
     },
   ];
 
@@ -89,7 +109,7 @@ export default function Home() {
                     {/* Centered Title Badge at Top */}
                     <div className="absolute -top-2 left-1/2 -translate-x-1/2 z-10">
                       <div className="bg-primary/20 backdrop-blur-sm px-6 py-2 rounded-b-3xl shadow-lg">
-                        <h3 className="text-base font-playball text-center text-foreground  whitespace-nowrap">
+                        <h3 className="text-base font-playball text-center text-black  whitespace-nowrap">
                           {service.title}
                         </h3>
                       </div>

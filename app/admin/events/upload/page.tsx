@@ -12,10 +12,47 @@ export default function UploadPortfolioPage() {
     category: "Weddings",
     imageUrl: "",
   });
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
   const categories = ["Weddings", "Birthdays", "Church", "Memorial"];
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setPreview(URL.createObjectURL(selectedFile));
+    }
+  };
+
+  const handleUploadToCloudinary = async () => {
+    if (!file) return;
+
+    setUploading(true);
+    setError("");
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error("Upload failed");
+
+      const data = await response.json();
+      setFormData((prev) => ({ ...prev, imageUrl: data.url }));
+    } catch (err) {
+      setError("Failed to upload image to Cloudinary");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +60,7 @@ export default function UploadPortfolioPage() {
     setError("");
 
     try {
-      const response = await fetch("/api/portfolio", {
+      const response = await fetch("/api/events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -31,7 +68,7 @@ export default function UploadPortfolioPage() {
 
       if (!response.ok) throw new Error("Failed to upload");
 
-      router.push("/admin/portfolio");
+      router.push("/admin/events");
     } catch (err) {
       setError("Failed to upload portfolio image");
     } finally {
@@ -51,7 +88,7 @@ export default function UploadPortfolioPage() {
       <header className="bg-card border-b border-border">
         <div className="max-w-2xl mx-auto px-6 py-4">
           <Link
-            href="/admin/portfolio"
+            href="/admin/events"
             className="text-muted-foreground hover:text-foreground mb-2 inline-block"
           >
             ← Back to Portfolio
@@ -107,25 +144,45 @@ export default function UploadPortfolioPage() {
 
           <div>
             <label className="block text-sm font-semibold text-foreground mb-2">
-              Image URL
+              Select Image
             </label>
             <input
-              type="url"
-              name="imageUrl"
-              value={formData.imageUrl}
-              onChange={handleChange}
-              required
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
               className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent bg-background text-foreground"
-              placeholder="https://example.com/image.jpg"
             />
+            {preview && (
+              <div className="mt-4">
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="w-full h-64 object-cover rounded-lg"
+                />
+                <button
+                  type="button"
+                  onClick={handleUploadToCloudinary}
+                  disabled={uploading || !!formData.imageUrl}
+                  className="mt-2 w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 transition-smooth disabled:opacity-50"
+                >
+                  {uploading ? "Uploading to Cloudinary..." : formData.imageUrl ? "✓ Uploaded" : "Upload to Cloudinary"}
+                </button>
+              </div>
+            )}
           </div>
+
+          {formData.imageUrl && (
+            <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
+              ✓ Image uploaded successfully to Cloudinary
+            </div>
+          )}
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !formData.imageUrl}
             className="w-full px-6 py-3 bg-accent text-accent-foreground rounded-lg font-semibold hover:opacity-90 transition-smooth disabled:opacity-50"
           >
-            {loading ? "Uploading..." : "Upload Image"}
+            {loading ? "Saving..." : "Save to Portfolio"}
           </button>
         </form>
       </div>

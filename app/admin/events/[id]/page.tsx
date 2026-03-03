@@ -20,7 +20,7 @@ export default async function EditPortfolioPage({
   });
 
   if (!image) {
-    redirect("/admin/portfolio");
+    redirect("/admin/events");
   }
 
   return (
@@ -28,10 +28,10 @@ export default async function EditPortfolioPage({
       <header className="bg-card border-b border-border">
         <div className="max-w-4xl mx-auto px-6 py-4">
           <Link
-            href="/admin/portfolio"
+            href="/admin/events"
             className="text-muted-foreground hover:text-foreground mb-2 inline-block"
           >
-            ← Back to Portfolio
+            ← Back to Events
           </Link>
           <h1 className="text-2xl   font-bold text-foreground">
             Portfolio Image Details
@@ -86,7 +86,7 @@ export default async function EditPortfolioPage({
                 await prisma.portfolioImage.delete({
                   where: { id: params.id },
                 });
-                redirect("/admin/portfolio");
+                redirect("/admin/events");
               }}
             >
               <button

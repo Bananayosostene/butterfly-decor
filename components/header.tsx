@@ -41,7 +41,7 @@ export function Header() {
   );
 
   const navLinks = [
-    { href: "/portfolio", label: "Events We Created" },
+    { href: "/events", label: "Events We Created" },
   ];
 
   return (
@@ -86,7 +86,7 @@ export function Header() {
               </Link>
             ))}
             <Link
-              href="/book"
+              href="/request"
               className="px-4 py-1 bg-primary text-accent-foreground rounded-full hover:opacity-90 transition-smooth text-sm font-medium"
             >
               {selectedCount > 0 ? `Request (${selectedCount}) Item${selectedCount !== 1 ? 's' : ''}` : 'Request Service'}
@@ -141,7 +141,7 @@ export function Header() {
             ))}
           </div>
           <Link
-            href="/book"
+            href="/request"
             className="px-3 py-1 bg-accent text-accent-foreground rounded-lg font-medium"
           >
             {selectedCount > 0 ? `Request (${selectedCount})` : 'Request Service'}
