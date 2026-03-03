@@ -11,15 +11,13 @@ export default function BookingPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const serviceParam = searchParams.get("service");
+  const selectionsParam = searchParams.get("selections");
 
   const [formData, setFormData] = useState({
-    fullName: "",
     phone: "",
     eventType: serviceParam || "Wedding Decoration",
     eventDate: "",
-    eventLocation: "",
-    preferredColors: "",
-    notes: "",
+    selectedItems: selectionsParam || "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -59,7 +57,8 @@ export default function BookingPage() {
       }
 
       // Redirect to WhatsApp with auto-filled message
-      const whatsappMessage = `Hello Butterfly Events Ltd, I need decoration for a ${formData.eventType} on ${formData.eventDate} at ${formData.eventLocation}.`;
+      const selectedItemsText = formData.selectedItems ? `\nSelected: ${formData.selectedItems.split(',').join(', ')}` : '';
+      const whatsappMessage = `Hello Butterfly Events Ltd, I need ${formData.eventType} on ${formData.eventDate}.${selectedItemsText}`;
       const whatsappUrl = `https://wa.me/+250788724867?text=${encodeURIComponent(
         whatsappMessage,
       )}`;
@@ -67,13 +66,10 @@ export default function BookingPage() {
 
       // Reset form
       setFormData({
-        fullName: "",
         phone: "",
         eventType: "Wedding Decoration",
         eventDate: "",
-        eventLocation: "",
-        preferredColors: "",
-        notes: "",
+        selectedItems: "",
       });
     } catch (err) {
       setError("Failed to submit booking. Please try again.");
@@ -89,11 +85,11 @@ export default function BookingPage() {
       <main className="min-h-screen bg-background py-12 px-4">
         <div className="max-w-2xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-4xl   font-bold text-foreground mb-4">
-              Book Your Event
+            <h1 className="text-4xl font-bold text-foreground mb-4">
+              Request Quote
             </h1>
             <p className="text-lg text-muted-foreground">
-              Fill in your event details and we{"'"}ll get back to you shortly.
+              Fill in your details and we'll contact you shortly.
             </p>
           </div>
 
@@ -107,21 +103,15 @@ export default function BookingPage() {
               </div>
             )}
 
-            {/* Full Name */}
-            <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">
-                Full Name
-              </label>
-              <input
-                type="text"
-                name="fullName"
-                value={formData.fullName}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent bg-background text-foreground"
-                placeholder="John Doe"
-              />
-            </div>
+            {/* Selected Items Display */}
+            {formData.selectedItems && (
+              <div className="p-4 bg-accent/10 border border-accent/20 rounded-lg">
+                <p className="text-sm font-semibold text-foreground mb-2">Your Selections:</p>
+                <p className="text-sm text-muted-foreground">
+                  {formData.selectedItems.split(',').join(', ')}
+                </p>
+              </div>
+            )}
 
             {/* Phone */}
             <div>
@@ -135,7 +125,7 @@ export default function BookingPage() {
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent bg-background text-foreground"
-                placeholder="+1 234 567 8900"
+                placeholder="+250 788 724 867"
               />
             </div>
 
@@ -174,59 +164,13 @@ export default function BookingPage() {
               />
             </div>
 
-            {/* Event Location */}
-            <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">
-                Event Location
-              </label>
-              <input
-                type="text"
-                name="eventLocation"
-                value={formData.eventLocation}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent bg-background text-foreground"
-                placeholder="e.g., Grand Hotel, Downtown"
-              />
-            </div>
-
-            {/* Preferred Colors */}
-            <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">
-                Preferred Colors (Optional)
-              </label>
-              <input
-                type="text"
-                name="preferredColors"
-                value={formData.preferredColors}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent bg-background text-foreground"
-                placeholder="e.g., Gold, Blush, Ivory"
-              />
-            </div>
-
-            {/* Notes */}
-            <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">
-                Additional Notes (Optional)
-              </label>
-              <textarea
-                name="notes"
-                value={formData.notes}
-                onChange={handleChange}
-                rows={4}
-                className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent bg-background text-foreground resize-none"
-                placeholder="Tell us more about your vision..."
-              />
-            </div>
-
             {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
               className="w-full px-6 py-4 bg-accent text-accent-foreground rounded-lg font-semibold hover:opacity-90 transition-smooth disabled:opacity-50"
             >
-              {loading ? "Submitting..." : "Submit Booking & Message WhatsApp"}
+              {loading ? "Submitting..." : "Submit Request & Contact via WhatsApp"}
             </button>
           </form>
         </div>

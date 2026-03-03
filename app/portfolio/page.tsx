@@ -50,7 +50,7 @@ export default function PortfolioPage() {
             <div className="flex flex-col md:flex-row items-center md:justify-center gap-6 md:gap-12">
               {/* Title */}
               <div className="text-center md:text-start">
-                <h1 className="text-4xl md:text-2xl font-bold text-foreground mb-4">
+                <h1 className="text-4xl font-playball md:text-2xl font-bold text-foreground mb-4">
                   Events we Created
                 </h1>
                 <p className="text-xs text-muted-foreground">
@@ -75,7 +75,9 @@ export default function PortfolioPage() {
                     height={38}
                     className="rounded-full"
                   />
-                  <span className="text-xs text-muted-foreground">Instagram</span>
+                  <span className="text-xs text-muted-foreground">
+                    Instagram
+                  </span>
                 </a>
 
                 {/* TikTok */}

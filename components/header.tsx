@@ -6,10 +6,29 @@ import { MoveLeft } from "lucide-react";
 import { ColorPicker } from "./color-picker";
 import { ThemeToggle } from "./theme-toggle";
 import Image from "next/image";
+import { useState, useEffect } from "react";
 
 export function Header() {
   const pathname = usePathname();
   const isHomePage = pathname === "/";
+  const [selectedCount, setSelectedCount] = useState(0);
+
+  useEffect(() => {
+    const handleItemsChange = (e: CustomEvent) => {
+      setSelectedCount(e.detail);
+    };
+
+    const saved = localStorage.getItem("butterfly-selected-items");
+    if (saved) {
+      const items = JSON.parse(saved);
+      setSelectedCount(items.length);
+    }
+
+    window.addEventListener("selectedItemsChange" as any, handleItemsChange);
+    return () => {
+      window.removeEventListener("selectedItemsChange" as any, handleItemsChange);
+    };
+  }, []);
 
   const openWhatsApp = () => {
     window.open("https://wa.me/+250788724867?text=Hello%20Butterfly%20Decs%20%F0%9F%8C%B8%E2%9C%A8", "_blank");
@@ -70,7 +89,7 @@ export function Header() {
               href="/book"
               className="px-4 py-1 bg-primary text-accent-foreground rounded-full hover:opacity-90 transition-smooth text-sm font-medium"
             >
-              Book Now
+              {selectedCount > 0 ? `Request (${selectedCount}) Item${selectedCount !== 1 ? 's' : ''}` : 'Request Service'}
             </Link>
             <button
               onClick={openWhatsApp}
@@ -125,7 +144,7 @@ export function Header() {
             href="/book"
             className="px-3 py-1 bg-accent text-accent-foreground rounded-lg font-medium"
           >
-            Book Now
+            {selectedCount > 0 ? `Request (${selectedCount})` : 'Request Service'}
           </Link>
         </nav>
       </div>
