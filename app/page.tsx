@@ -14,7 +14,7 @@ export default function Home() {
   const services = [
     {
       id: "wedding",
-      title: "Wedding Decoration",
+      title: "Wedding Decorations",
       features: [
         "Venue styling",
         "Floral arrangements",
@@ -22,11 +22,11 @@ export default function Home() {
         "Custom themes",
       ],
       image: "wedding.png?key=obcjv",
-      link: "/store",
+      link: "/store?service=Wedding Decoration",
     },
     {
       id: "birthday",
-      title: "Birthday Decoration",
+      title: "Birthday Decorations",
       features: [
         "Balloon arrangements",
         "Theme decoration",
@@ -34,7 +34,7 @@ export default function Home() {
         "Photo backdrops",
       ],
       image: "birthdays.png?key=yamyd",
-      link: "/request?service=Birthday Decoration",
+      link: "/store?service=Birthday Decoration",
     },
     {
       id: "church",
@@ -46,11 +46,11 @@ export default function Home() {
         "Traditional elements",
       ],
       image: "birthdays.png?key=5qs2p",
-      link: "/request?service=Church Events",
+      link: "/store?service=Church Events",
     },
     {
       id: "memorial",
-      title: "Memorial Decoration",
+      title: "Memorial Decorations",
       features: [
         "Flower arrangements",
         "Candle lighting",
@@ -58,7 +58,7 @@ export default function Home() {
         "Respectful design",
       ],
       image: "/memorial.png?key=kb2y6",
-      link: "/request?service=Memorial Decoration",
+      link: "/store?service=Memorial Decoration",
     },
   ];
 
@@ -109,7 +109,7 @@ export default function Home() {
                     {/* Centered Title Badge at Top */}
                     <div className="absolute -top-2 left-1/2 -translate-x-1/2 z-10">
                       <div className="bg-primary/20 backdrop-blur-sm px-6 py-2 rounded-b-3xl shadow-lg">
-                        <h3 className="text-base font-playball text-center text-black  whitespace-nowrap">
+                        <h3 className="font-playball text-center text-lg text-black  whitespace-nowrap">
                           {service.title}
                         </h3>
                       </div>
@@ -117,9 +117,9 @@ export default function Home() {
 
                     {/* Features at Bottom */}
                     <div className="absolute bottom-4 left-0 right-0 px-4 z-10">
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap justify-center items-center gap-2">
                         {service.features.map((feature, i) => (
-                          <span key={i} className="text-xs text-white/90">
+                          <span key={i} className="sm:text-xs text-white/90">
                             {feature},
                           </span>
                         ))}

@@ -122,30 +122,30 @@ export default function WeddingDetailsPage() {
       <Header />
       <main className="min-h-screen bg-background relative">
         {/* Hero Section */}
-        <section className="relative h-[12vh] sm:h-[18vh] md:h-[22vh] lg:h-[30vh] overflow-hidden">
+        <section className=" relative h-[12vh] sm:h-[18vh] md:h-[22vh] lg:h-[30vh] overflow-hidden">
           <img
             src="/wedding.png?key=obcjv"
             alt="Wedding Decoration"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-linear-to-t from-black/70 to-transparent flex items-end">
-            <div className="max-w-7xl mx-auto px-4 pb-12 w-full">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-playball text-white mb-4">
-                Wedding Decoration and Dress Rental
+            <div className="max-w-7xl mx-auto px-4 pb-6 sm:pb-12 md:pb-16 lg:pb-20 w-full">
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-playball text-white mb-4">
+                Wedding Decoration and Clothing Rental
               </h1>
             </div>
           </div>
         </section>
 
         {/* Filter Tabs */}
-        <section className="pt-8 px-4">
+        <section className="pt-8 ">
           <div className="max-w-7xl mx-auto">
-            <div className="flex gap-3 overflow-x-auto">
+            <div className="flex flex-wrap gap-1 justify-center">
               {categories.map((category) => (
                 <button
                   key={category}
                   onClick={() => setActiveFilter(category)}
-                  className={`px-4 py-1 rounded-full text-sm whitespace-nowrap transition-smooth ${
+                  className={`px-4 py-1 rounded-full text-sm transition-smooth ${
                     activeFilter === category
                       ? "bg-accent text-accent-foreground"
                       : "bg-card text-foreground border border-border hover:border-accent"
@@ -166,7 +166,7 @@ export default function WeddingDetailsPage() {
                 <div
                   key={item.id}
                   onClick={() => toggleSelection(item.id)}
-                  className={`relative h-75 rounded-2xl overflow-hidden cursor-pointer transition-all ${
+                  className={`relative sm:h-75 h-100 rounded-2xl overflow-hidden cursor-pointer transition-all ${
                     selectedItems.includes(item.id) ? "ring-4 ring-accent" : ""
                   }`}
                 >

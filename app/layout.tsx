@@ -9,7 +9,7 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Decoration Events",
+  title: "Decorations & Clothing Rental",
   description:
     "Event decoration and outfit rental services for weddings, birthdays, and celebrations—bringing beauty, style, and confidence to every event and every person., Dutanga serivisi zo gutaka ibirori no gukodesha imyambaro y’ubwiza mu Bukwe n’ibindi birori tugafasha abantu bose kugaragara neza, bigezweho",
   icons: {

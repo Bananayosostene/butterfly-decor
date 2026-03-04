@@ -7,13 +7,10 @@ export async function POST(req: NextRequest) {
 
     const booking = await prisma.booking.create({
       data: {
-        fullName: body.fullName,
         phone: body.phone,
         eventType: body.eventType,
         eventDate: new Date(body.eventDate),
-        eventLocation: body.eventLocation,
-        preferredColors: body.preferredColors || null,
-        notes: body.notes || null,
+        selectedItems: body.selectedItems || null,
         status: "NEW",
       },
     })

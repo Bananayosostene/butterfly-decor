@@ -20,13 +20,10 @@ model AdminUser {
 
 model Booking {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  fullName      String
   phone         String
   eventType     String
   eventDate     DateTime
-  eventLocation String
-  preferredColors String?
-  notes         String?
+  selectedItems String?
   status        String   @default("NEW")
   adminNotes    String?
   createdAt     DateTime @default(now())

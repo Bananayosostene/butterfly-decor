@@ -50,12 +50,12 @@ export default function PortfolioPage() {
             <div className="flex flex-col md:flex-row items-center md:justify-center gap-6 md:gap-12">
               {/* Title */}
               <div className="text-center md:text-start">
-                <h1 className="text-4xl font-playball md:text-2xl font-bold text-foreground mb-4">
+                <h1 className="text-2xl  font-playball font-bold text-foreground">
                   Events we Created
                 </h1>
-                <p className="text-xs text-muted-foreground">
+                {/* <p className="sm:text-xs text-muted-foreground">
                   Explore our collection of beautifully decorated events.
-                </p>
+                </p> */}
               </div>
 
               {/* Social Icons */}
@@ -75,7 +75,7 @@ export default function PortfolioPage() {
                     height={38}
                     className="rounded-full"
                   />
-                  <span className="text-xs text-muted-foreground">
+                  <span className="sm:text-xs text-muted-foreground">
                     Instagram
                   </span>
                 </a>
@@ -95,7 +95,9 @@ export default function PortfolioPage() {
                     height={38}
                     className="rounded-full"
                   />
-                  <span className="text-xs text-muted-foreground">TikTok</span>
+                  <span className="sm:text-xs text-muted-foreground">
+                    TikTok
+                  </span>
                 </a>
               </div>
             </div>
@@ -103,14 +105,14 @@ export default function PortfolioPage() {
         </section>
 
         {/* Filter Buttons */}
-        <section className="py-4 px-4 bg-background border-b border-border">
+        <section className="py-4  bg-background border-b border-border">
           <div className="max-w-6xl mx-auto">
-            <div className="flex flex-wrap gap-3 justify-center">
+            <div className="flex flex-wrap gap-1 lg:gap-2 justify-center">
               {categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-6 py-1 text-sm rounded-full font-medium transition-smooth ${
+                  className={`px-2 lg:px-4 py-1 text-sm rounded-full font-medium transition-smooth ${
                     selectedCategory === cat
                       ? "bg-primary text-accent-foreground"
                       : "bg-muted text-foreground border border-border hover:border-primary"
@@ -150,7 +152,7 @@ export default function PortfolioPage() {
                     <img
                       src={image.imageUrl || "/placeholder.svg"}
                       alt={image.title}
-                      className="w-full h-64 object-cover group-hover:scale-105 transition-smooth duration-300"
+                      className="w-full sm:h-75 h-100 object-cover group-hover:scale-105 transition-smooth duration-300"
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-smooth flex items-end justify-start">
                       <div className="p-4 text-white">

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MoveLeft } from "lucide-react";
 import { ColorPicker } from "./color-picker";
 import { ThemeToggle } from "./theme-toggle";
 import Image from "next/image";
@@ -10,7 +9,6 @@ import { useState, useEffect } from "react";
 
 export function Header() {
   const pathname = usePathname();
-  const isHomePage = pathname === "/";
   const [selectedCount, setSelectedCount] = useState(0);
 
   useEffect(() => {
@@ -41,6 +39,7 @@ export function Header() {
   );
 
   const navLinks = [
+    { href: "/", label: "Home" },
     { href: "/events", label: "Events We Created" },
   ];
 
@@ -68,28 +67,34 @@ export function Header() {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex gap-8 items-center">
-            {!isHomePage && (
-              <Link
-                href="/"
-                className="text-sm text-foreground/80 hover:text-foreground transition-smooth flex items-center gap-1"
-              >
-                <MoveLeft className="w-8 h-6 text-primary" />
-              </Link>
-            )}
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="px-4 py-1 rounded-full border border-primary text-primary hover:text-primary/80 text-sm transition-smooth"
-              >
-                {link.label}
-              </Link>
-            ))}
+       
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`px-4 py-1 rounded-full border transition-smooth text-sm font-medium ${
+                    isActive
+                      ? 'bg-primary text-accent-foreground border-primary'
+                      : 'border-primary text-primary hover:text-primary/80'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
             <Link
               href="/request"
-              className="px-4 py-1 bg-primary text-accent-foreground rounded-full hover:opacity-90 transition-smooth text-sm font-medium"
+              className={`px-4 py-1 rounded-full border transition-smooth text-sm font-medium ${
+                pathname === '/request'
+                  ? 'bg-primary text-accent-foreground border-primary'
+                  : 'border-primary text-primary hover:text-primary/80'
+              }`}
             >
-              {selectedCount > 0 ? `Request (${selectedCount}) Item${selectedCount !== 1 ? 's' : ''}` : 'Request Service'}
+              {selectedCount > 0
+                ? `Request (${selectedCount}) ${selectedCount !== 1 ? "s" : ""}`
+                : "Request Service"}
             </Link>
             <button
               onClick={openWhatsApp}
@@ -122,29 +127,35 @@ export function Header() {
         {/* Mobile Second Row Nav */}
         <nav className="md:hidden pb-2 flex items-center justify-between text-xs">
           <div className="flex items-center gap-3">
-            {!isHomePage && (
-              <Link
-                href="/"
-                className="text-accent transition-smooth flex items-center gap-1"
-              >
-                <MoveLeft className="w-8 h-6 text-primary" />
-              </Link>
-            )}
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="px-4 py-1 rounded-full border border-primary text-primary hover:text-primary/80 text-xs transition-smooth"
-              >
-                {link.label}
-              </Link>
-            ))}
+         
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`px-2 lg:px-4 py-1 rounded-full border transition-smooth text-sm ${
+                    isActive
+                      ? 'bg-primary text-accent-foreground border-primary'
+                      : 'border-primary text-primary hover:text-primary/80'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </div>
           <Link
             href="/request"
-            className="px-3 py-1 bg-accent text-accent-foreground rounded-lg font-medium"
+            className={`px-3 py-1 rounded-full border text-sm font-medium transition-smooth ${
+              pathname === '/request'
+                ? 'bg-primary text-accent-foreground border-primary'
+                : 'border-primary text-primary hover:text-primary/80'
+            }`}
           >
-            {selectedCount > 0 ? `Request (${selectedCount})` : 'Request Service'}
+            {selectedCount > 0
+              ? `Request (${selectedCount})`
+              : "Request Service"}
           </Link>
         </nav>
       </div>
