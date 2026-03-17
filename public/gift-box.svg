@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" stroke="#666" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
+
+  <!-- Gift box bottom -->
+  <rect x="96" y="220" width="320" height="200" rx="20"></rect>
+
+  <!-- Gift box lid -->
+  <rect x="70" y="170" width="372" height="60" rx="15"></rect>
+
+  <!-- Vertical ribbon -->
+  <line x1="256" y1="170" x2="256" y2="420"></line>
+
+  <!-- Bow left -->
+  <path d="M256 170 
+           C220 120 160 120 180 170 
+           C190 200 230 190 256 170"></path>
+
+  <!-- Bow right -->
+  <path d="M256 170 
+           C292 120 352 120 332 170 
+           C322 200 282 190 256 170"></path>
+
+</svg>

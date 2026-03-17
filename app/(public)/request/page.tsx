@@ -1,11 +1,8 @@
 "use client";
 
 import type React from "react";
-
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import {
   Select,
   SelectContent,
@@ -14,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function BookingPage() {
+function BookingForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const serviceParam = searchParams.get("service");
@@ -65,7 +62,7 @@ export default function BookingPage() {
 
       // Redirect to WhatsApp with auto-filled message
       const selectedItemsText = formData.selectedItems ? `\nSelected: ${formData.selectedItems.split(',').join(', ')}` : '';
-      const whatsappMessage = `Hello Butterfly Decs, I need ${formData.eventType} on ${formData.eventDate}.${selectedItemsText}`;
+      const whatsappMessage = `Hello Butterfly Decor, I need ${formData.eventType} on ${formData.eventDate}.${selectedItemsText}`;
       const whatsappUrl = `https://wa.me/+250788724867?text=${encodeURIComponent(
         whatsappMessage,
       )}`;
@@ -87,8 +84,6 @@ export default function BookingPage() {
   };
 
   return (
-    <>
-      <Header />
       <main className="bg-background py-8 px-4">
         <div className="max-w-2xl mx-auto">
           <div className="text-center">
@@ -190,7 +185,13 @@ export default function BookingPage() {
           </form>
         </div>
       </main>
-      <Footer />
-    </>
+  );
+}
+
+export default function BookingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <BookingForm />
+    </Suspense>
   );
 }

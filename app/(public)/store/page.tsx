@@ -1,8 +1,5 @@
 "use client";
 
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import Link from "next/link";
 import { useState, useEffect } from "react";
 
 export default function WeddingDetailsPage() {
@@ -119,23 +116,7 @@ export default function WeddingDetailsPage() {
 
   return (
     <>
-      <Header />
       <main className="min-h-screen bg-background relative">
-        {/* Hero Section */}
-        <section className=" relative h-[12vh] sm:h-[18vh] md:h-[22vh] lg:h-[30vh] overflow-hidden">
-          <img
-            src="/wedding.png?key=obcjv"
-            alt="Wedding Decoration"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-linear-to-t from-black/70 to-transparent flex items-end">
-            <div className="max-w-7xl mx-auto px-4 pb-6 sm:pb-12 md:pb-16 lg:pb-20 w-full">
-              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-playball text-white mb-4">
-                Wedding Decoration and Clothing Rental
-              </h1>
-            </div>
-          </div>
-        </section>
 
         {/* Filter Tabs */}
         <section className="pt-8 ">
@@ -192,7 +173,6 @@ export default function WeddingDetailsPage() {
           </div>
         </section>
       </main>
-      <Footer />
     </>
   );
 }

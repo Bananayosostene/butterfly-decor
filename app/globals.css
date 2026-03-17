@@ -6,23 +6,24 @@
 :root {
   --background: oklch(0.99 0.001 0);
   --foreground: oklch(0.2 0.01 0);
-  --card: oklch(0.99 0 0);
+  --card: oklch(0.98 0 0);
   --card-foreground: oklch(0.2 0.01 0);
   --popover: oklch(0.99 0 0);
   --popover-foreground: oklch(0.2 0.01 0);
-  --primary: oklch(0.75 0.12 85);
-  --primary-foreground: oklch(0.99 0 0);
+  --primary: #0f0b06;
+  --primary-foreground: oklch(0.85 0.1 90);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.5 0.01 0);
   --muted: oklch(0.94 0.01 0);
   --muted-foreground: oklch(0.5 0.01 0);
-  --accent: oklch(0.85 0.1 90);
-  --accent-foreground: oklch(0.99 0 0);
+  --accent: #271f14;
+  --accent-foreground: oklch(0.85 0.1 90);
+  --content-border: #443826;
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
   --border: oklch(0.9 0.01 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.75 0.12 85);
+  --ring: #443826;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -31,36 +32,37 @@
   --radius: 0.5rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.2 0.01 0);
-  --sidebar-primary: oklch(0.75 0.12 85);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.85 0.1 90);
-  --sidebar-accent-foreground: oklch(0.99 0 0);
+  --sidebar-primary: #0f0b06;
+  --sidebar-primary-foreground: #e8d5b7;
+  --sidebar-accent: #271f14;
+  --sidebar-accent-foreground: #e8d5b7;
   --sidebar-border: oklch(0.9 0.01 0);
-  --sidebar-ring: oklch(0.75 0.12 85);
+  --sidebar-ring: #443826;
   --card-border: #57422C;
   --card-gradient: #57422C;
 }
 
 .dark {
-  --background: linear-gradient(135deg, oklch(0.08 0.01 0) 0%, oklch(0.12 0.01 0) 100%);
+  --background: oklch(0.08 0.01 0);
   --foreground: oklch(0.8 0.02 0);
-  --card: linear-gradient(135deg, oklch(0.12 0.01 0) 0%, oklch(0.16 0.01 0) 100%);
+  --card: oklch(0.15 0.01 0);
   --card-foreground: oklch(0.95 0.01 0);
   --popover: oklch(0.12 0.01 0);
   --popover-foreground: oklch(0.95 0.01 0);
-  --primary: oklch(0.75 0.12 85);
-  --primary-foreground: oklch(0.08 0.01 0);
+  --primary: #100900;
+  --primary-foreground: #e8d5b7;
   --secondary: oklch(0.18 0 0);
   --secondary-foreground: oklch(0.7 0.01 0);
   --muted: oklch(0.16 0.01 0);
   --muted-foreground: oklch(0.7 0.01 0);
-  --accent: oklch(0.85 0.1 90);
-  --accent-foreground: oklch(0.08 0.01 0);
+  --accent: #271f14;
+  --accent-foreground: #e8d5b7;
+  --content-border: #443826;
   --destructive: oklch(0.5 0.2 25);
   --destructive-foreground: oklch(0.9 0.1 25);
   --border: oklch(0.2 0.01 0);
   --input: oklch(0.18 0 0);
-  --ring: oklch(0.75 0.12 85);
+  --ring: #443826;
   --chart-1: oklch(0.6 0.2 45);
   --chart-2: oklch(0.65 0.15 150);
   --chart-3: oklch(0.7 0.12 35);
@@ -68,12 +70,12 @@
   --chart-5: oklch(0.65 0.15 350);
   --sidebar: oklch(0.1 0 0);
   --sidebar-foreground: oklch(0.95 0.01 0);
-  --sidebar-primary: oklch(0.75 0.12 85);
-  --sidebar-primary-foreground: oklch(0.08 0.01 0);
-  --sidebar-accent: oklch(0.85 0.1 90);
-  --sidebar-accent-foreground: oklch(0.08 0.01 0);
+  --sidebar-primary: #0f0b06;
+  --sidebar-primary-foreground: #e8d5b7;
+  --sidebar-accent: #271f14;
+  --sidebar-accent-foreground: #e8d5b7;
   --sidebar-border: oklch(0.2 0.01 0);
-  --sidebar-ring: oklch(0.75 0.12 85);
+  --sidebar-ring: #443826;
   --card-border: #57422C;
   --card-gradient: #2a2116;
 }
@@ -96,6 +98,7 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-content-border: var(--content-border);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
@@ -128,30 +131,21 @@
     @apply text-foreground;
     background: var(--background);
   }
-  .dark body {
-    background: linear-gradient(135deg, oklch(0.08 0.01 0) 0%, oklch(0.12 0.01 0) 100%);
-    min-height: 100vh;
-  }
 }
 
-/* Decoration-specific styles */
 @layer utilities {
   .font-playball {
     font-family: 'Playball', cursive;
   }
-  
+
   .transition-smooth {
     @apply transition-all duration-300 ease-in-out;
   }
-  
-  .gradient-card {
-    background: linear-gradient(135deg, var(--card) 0%, oklch(from var(--card) l c h / 0.8) 100%);
-  }
-  
+
   .decoration-glow {
-    box-shadow: 0 0 20px oklch(from var(--primary) l c h / 0.3);
+    box-shadow: 0 0 20px color-mix(in srgb, var(--primary) 30%, transparent);
   }
-  
+
   .text-gradient {
     background: linear-gradient(135deg, var(--primary), var(--accent));
     -webkit-background-clip: text;
