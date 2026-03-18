@@ -3,19 +3,24 @@ import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
+    const { phone, eventDate, selectedItems = [] } = await req.json()
 
     const booking = await prisma.booking.create({
       data: {
-        phone: body.phone,
-        eventType: body.eventType,
-        eventDate: new Date(body.eventDate),
-        selectedItems: body.selectedItems || null,
+        phone,
+        eventDate: new Date(eventDate),
+        selectedItems,
         status: "NEW",
       },
     })
 
-    return NextResponse.json(booking, { status: 201 })
+    const itemsText = selectedItems.length
+      ? `\nSelected items: ${selectedItems.join(", ")}`
+      : ""
+    const message = `Hello Butterfly Decor, I'd like to book for my event on ${eventDate}.${itemsText}\nPhone: ${phone}`
+    const whatsappUrl = `https://wa.me/+250788724867?text=${encodeURIComponent(message)}`
+
+    return NextResponse.json({ booking, whatsappUrl }, { status: 201 })
   } catch (error) {
     console.error("Booking error:", error)
     return NextResponse.json({ error: "Failed to create booking" }, { status: 500 })

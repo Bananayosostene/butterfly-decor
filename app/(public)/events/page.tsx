@@ -42,12 +42,12 @@ export default function EventsPage() {
   return (
     <main className="w-full">
       {/* Page Header */}
-      <section className="py-6 md:py-8 px-4 md:px-6 lg:px-8 bg-white">
+      <section className="py-6 md:py-8 px-4 md:px-6 lg:px-8 bg-muted">
         <div className="max-w-6xl mx-auto text-center">
           <h1 className="text-2xl md:text-4xl font-light text-primary text-balance mb-4">
             Our Events
           </h1>
-          <p className="text-lg text-primary">
+          <p className="hidden sm:block text-lg text-primary">
             Browse our beautiful collection of wedding events, celebrations, and
             special moments
           </p>
@@ -55,10 +55,10 @@ export default function EventsPage() {
       </section>
 
       {/* Events Gallery */}
-      <section className=" px-0 md:px-20 lg:px-40">
+      <section className="px-0 md:px-20 lg:px-40">
         <div className="mx-auto">
           {loading ? (
-            <div className="text-center py-16">
+            <div className="min-h-screen w-full flex items-center justfy-center">
               <p className="text-gray-400">Loading events...</p>
             </div>
           ) : events.length === 0 ? (
@@ -69,7 +69,7 @@ export default function EventsPage() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-0">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-y-4 md:gap-0">
               {events.map((event) => (
                 <div
                   key={event.id}

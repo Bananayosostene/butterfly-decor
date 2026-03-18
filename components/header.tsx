@@ -22,12 +22,18 @@ export function Header() {
 
     window.addEventListener("selectedItemsChange" as any, handleItemsChange);
     return () => {
-      window.removeEventListener("selectedItemsChange" as any, handleItemsChange);
+      window.removeEventListener(
+        "selectedItemsChange" as any,
+        handleItemsChange,
+      );
     };
   }, []);
 
   const openWhatsApp = () => {
-    window.open("https://wa.me/+250788724867?text=Hello%20Butterfly%20Decor%20%F0%9F%8C%B8%E2%9C%A8", "_blank");
+    window.open(
+      "https://wa.me/+250788724867?text=Hello%20Butterfly%20Decor%20%F0%9F%8C%B8%E2%9C%A8",
+      "_blank",
+    );
   };
 
   const whatsappSvg = (
@@ -40,6 +46,10 @@ export function Header() {
     { href: "/collection", label: "Collections" },
     { href: "/events", label: "Our Events" },
   ];
+
+  const openBookingModal = () => {
+    window.dispatchEvent(new CustomEvent("openBookingModal"));
+  };
 
   const navClass = (href: string) =>
     `px-4 py-1 rounded-full border transition-smooth text-sm font-medium ${
@@ -61,7 +71,10 @@ export function Header() {
               className="object-contain"
               priority
             />
-            <Link href="/" className="text-base sm:text-xl font-playball font-medium text-primary-foreground">
+            <Link
+              href="/"
+              className="text-2xl md:text-xl lg:text-xl  font-playball font-medium text-primary-foreground"
+            >
               <span>Butterfly Decor</span>
             </Link>
           </div>
@@ -73,11 +86,17 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
-            <Link href="/request" className={navClass("/request")}>
-              {selectedCount > 0
-                ? `Request (${selectedCount}) ${selectedCount !== 1 ? "s" : ""}`
-                : "Request Service"}
-            </Link>
+            <button
+              onClick={openBookingModal}
+              className={navClass("/request")}
+            >
+              Book Now
+              {selectedCount > 0 && (
+                <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold bg-accent text-accent-foreground rounded-full">
+                  {selectedCount}
+                </span>
+              )}
+            </button>
             <button
               onClick={openWhatsApp}
               className="p-2 rounded-full bg-green-500 hover:bg-green-600 text-white hover:scale-110 transition-transform"
@@ -102,17 +121,22 @@ export function Header() {
         </div>
 
         {/* Mobile Second Row Nav */}
-        <nav className="md:hidden pb-2 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <nav className="md:hidden pb-4 flex items-center justify-center">
+          <div className="flex items-center gap-2">
             {navLinks.map((link) => (
               <Link key={link.href} href={link.href} className={navClass(link.href)}>
                 {link.label}
               </Link>
             ))}
+            <button onClick={openBookingModal} className={navClass("/request")}>
+              Book Now
+              {selectedCount > 0 && (
+                <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold bg-accent text-accent-foreground rounded-full">
+                  {selectedCount}
+                </span>
+              )}
+            </button>
           </div>
-          <Link href="/request" className={navClass("/request")}>
-            {selectedCount > 0 ? `Request (${selectedCount})` : "Request Service"}
-          </Link>
         </nav>
       </div>
     </header>

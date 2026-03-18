@@ -15,8 +15,8 @@ interface WeddingShopHeroProps {
 
 const defaultProducts: ProductCard[] = [
   {
-    image: "/bridal.jpg",
-    label: "For the Bride",
+    image: "/butterflyTeam.png",
+    label: "For the Decor",
   },
   {
     image: "/groom.jpg",
@@ -24,7 +24,7 @@ const defaultProducts: ProductCard[] = [
   },
   {
     image: "/bridal.jpg",
-    label: "Accessories",
+    label: "For the Bride",
   },
 ];
 
@@ -34,7 +34,7 @@ export function WeddingShopHero({
 }: WeddingShopHeroProps) {
   return (
     <section
-      className="relative w-full min-h-screen flex items-center justify-between overflow-hidden"
+      className="relative w-full min-h-[60vh] sm:min-h-[70vh] md:min-h-screen flex items-center justify-between overflow-hidden"
       style={{
         backgroundImage: `url('${backgroundImage}')`,
         backgroundSize: "cover",
@@ -46,42 +46,47 @@ export function WeddingShopHero({
 
       {/* Content wrapper */}
       <div className="relative z-10 w-full px-8 md:px-16 lg:px-24">
-        <div className="flex items-center justify-between gap-8 lg:gap-16">
+        <div className="flex flex-col lg:flex-row items-center md:justify-between gap-8 lg:gap-16">
           {/* Left Section - Title and CTA */}
-          <div className="flex flex-col items-start gap-8 flex-shrink-0">
+          <div className="flex flex-col items-start gap-8 shrink-0">
             <h1 className="text-xl md:text-2xl lg:text-3xl font-light text-white text-balance leading-tight">
-              The Wedding Studio
+              The Wedding, Decor Studio
             </h1>
             <Button
               size="lg"
+              onClick={() =>
+                window.dispatchEvent(new CustomEvent("openBookingModal"))
+              }
               className="bg-white text-black hover:bg-gray-100 font-semibold px-8 py-3 text-base"
             >
-              REQUEST
+              Book Now
             </Button>
           </div>
 
           {/* Right Section - Product Cards */}
-          <div className="flex gap-6 md:gap-4 lg:gap-6 flex-wrap justify-end lg:flex-nowrap">
+          <div className="flex gap-4 md:gap-4 lg:gap-6 justify-center md:justify-end lg:flex-nowrap w-full md:w-auto">
             {products.map((product, index) => (
               <div
                 key={index}
                 className="flex flex-col items-center gap-4 flex-shrink-0 rounded-lg"
               >
-                {/* Product Image Container */}
-                <div className="relative w-48 h-56 md:w-40 md:h-48 lg:w-48 lg:h-56 overflow-hidden rounded-sm border border-white/10">
-                  <Image
-                    src={product.image}
-                    alt={product.label}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  />
-                </div>
+                <a href="/collection">
+                  <div className="relative w-[30vw] h-[38vw] md:w-40 md:h-48 lg:w-48 lg:h-56 overflow-hidden rounded-sm border border-white/10 cursor-pointer">
+                    <Image
+                      src={product.image}
+                      alt={product.label}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                  </div>
+                </a>
 
-                {/* Product Label */}
-                <p className="text-lg md:text-base lg:text-lg italic text-white text-center font-light">
-                  {product.label}
-                </p>
+                <a href="/collection">
+                  <p className="text-sm md:text-base lg:text-lg italic text-white text-center font-light cursor-pointer">
+                    {product.label}
+                  </p>
+                </a>
               </div>
             ))}
           </div>

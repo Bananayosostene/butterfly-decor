@@ -2,10 +2,9 @@
 
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import Link from "next/link";
 import { useState } from "react";
 import { WeddingShopHero } from "@/components/butterfly-hero";
-import { DecorCollections} from "@/components/butterfly-collection";
+import { DecorCollections } from "@/components/butterfly-collection";
 import { WatchOurEvents } from "@/components/watch-our-events";
 import { ButterflyTeam } from "@/components/butterflyTeam";
 
@@ -26,7 +25,7 @@ export default function Home() {
         "Custom themes",
       ],
       image: "wedding.png?key=obcjv",
-      link: "/store?collection=Wedding Decoration",
+      link: "/collection?collection=Wedding Decoration",
     },
     {
       id: "birthday",
@@ -38,7 +37,7 @@ export default function Home() {
         "Photo backdrops",
       ],
       image: "birthdays.png?key=yamyd",
-      link: "/store?collection=Birthday Decoration",
+      link: "/collection?collection=Birthday Decoration",
     },
     {
       id: "church",
@@ -50,7 +49,7 @@ export default function Home() {
         "Traditional elements",
       ],
       image: "birthdays.png?key=5qs2p",
-      link: "/store?collection=Church Events",
+      link: "/collection?collection=Church Events",
     },
     {
       id: "memorial",
@@ -62,7 +61,7 @@ export default function Home() {
         "Respectful design",
       ],
       image: "/memorial.png?key=kb2y6",
-      link: "/store?collection=Memorial Decoration",
+      link: "/collection?collection=Memorial Decoration",
     },
   ];
 
