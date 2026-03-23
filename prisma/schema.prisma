@@ -37,3 +37,13 @@ model PortfolioImage {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model DeviceVisit {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userAgent  String
+  ip         String?
+  device     String?
+  browser    String?
+  os         String?
+  createdAt  DateTime @default(now())
+}

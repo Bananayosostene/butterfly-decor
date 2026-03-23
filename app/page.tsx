@@ -2,7 +2,7 @@
 
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { WeddingShopHero } from "@/components/butterfly-hero";
 import { DecorCollections } from "@/components/butterfly-collection";
 import { WatchOurEvents } from "@/components/watch-our-events";
@@ -10,6 +10,13 @@ import { ButterflyTeam } from "@/components/butterflyTeam";
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    if (!sessionStorage.getItem("bfly-visited")) {
+      sessionStorage.setItem("bfly-visited", "1");
+      fetch("/api/track", { method: "POST" }).catch(() => {});
+    }
+  }, []);
   const itemsPerPage = 8;
   const whatsappUrl =
     "https://wa.me/+250788724867?text=Hello%20Butterfly%20Ltd%2C%20I%20would%20like%20to%20book%20your%20collections";
