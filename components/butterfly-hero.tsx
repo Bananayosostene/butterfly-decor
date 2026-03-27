@@ -29,7 +29,8 @@ const defaultProducts: ProductCard[] = [
 ];
 
 export function WeddingShopHero({
-  backgroundImage = "/hero-image.jpg",
+  backgroundImage = "/decor04.jpg",
+  // backgroundImage = "/hero-image.jpg",
   products = defaultProducts,
 }: WeddingShopHeroProps) {
   return (
@@ -42,7 +43,7 @@ export function WeddingShopHero({
       }}
     >
       {/* Dark overlay for better text contrast */}
-      <div className="absolute inset-0 bg-black/40" />
+      <div className="absolute inset-0 bg-primary/60" />
 
       {/* Content wrapper */}
       <div className="relative z-10 w-full px-8 md:px-16 lg:px-24">

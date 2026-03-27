@@ -44,10 +44,10 @@ export async function POST(req: NextRequest) {
     await transporter.sendMail({
       from: process.env.NODEMAILER_USER,
       to: "sbananayo99@gmail.com",
-      subject: "🦋 New Visitor on Butterfly Decor",
+      subject: "New Visitor on Butterfly Decor",
       html: `
         <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:24px;border:1px solid #e5e7eb;border-radius:12px;">
-          <h2 style="color:#0f0b06;margin-bottom:16px;">New Visitor 🦋</h2>
+          <h2 style="color:#0f0b06;margin-bottom:16px;">New Visitor</h2>
           <table style="width:100%;border-collapse:collapse;">
             <tr><td style="padding:8px 0;color:#6b7280;font-size:14px;">Device</td><td style="padding:8px 0;font-weight:600;">${device}</td></tr>
             <tr><td style="padding:8px 0;color:#6b7280;font-size:14px;">Browser</td><td style="padding:8px 0;font-weight:600;">${browser}</td></tr>

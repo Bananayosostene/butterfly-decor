@@ -27,9 +27,10 @@ export default function ButterflyCollectionsPage() {
 
   const categories = [
     { id: "all", name: "All", label: "All", icon: "all.svg" },
+    { id: "decor", name: "Decor", label: "Decor", icon: "decor.svg" },
+    { id: "suits", name: "Suits", label: "Suits", icon: "suits.svg" },
     { id: "bridal", name: "Bridal", label: "Bridal", icon: "bridal.svg" },
     { id: "cake", name: "Cake", label: "Cake", icon: "cake.svg" },
-    { id: "decor", name: "Decor", label: "Decor", icon: "decor.svg" },
     { id: "dresses", name: "Dresses", label: "Dresses", icon: "dresses.svg" },
     {
       id: "gift-box",
@@ -43,7 +44,6 @@ export default function ButterflyCollectionsPage() {
       label: "Invitation",
       icon: "invitation.svg",
     },
-    { id: "suits", name: "Suits", label: "Suits", icon: "suits.svg" },
   ];
 
   // Filter and search items
