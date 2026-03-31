@@ -4,7 +4,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { useState, useEffect } from "react";
 import { WeddingShopHero } from "@/components/butterfly-hero";
-import { DecorCollections } from "@/components/butterfly-collection";
+// import { DecorCollections } from "@/components/butterfly-collection";
 import { WatchOurEvents } from "@/components/watch-our-events";
 import { ButterflyTeam } from "@/components/butterflyTeam";
 
@@ -28,7 +28,7 @@ export default function Home() {
       features: [
         "Venue styling",
         "Floral arrangements",
-        "Lighting design",
+        "Elegant design",
         "Custom themes",
       ],
       image: "wedding.png?key=obcjv",
@@ -82,7 +82,7 @@ export default function Home() {
       <Header />
       <main>
         <WeddingShopHero />
-        <DecorCollections />
+        {/* <DecorCollections /> */}
         <WatchOurEvents />
         <ButterflyTeam />
       </main>

@@ -71,15 +71,12 @@ export default function ButterflyCollectionsPage() {
   return (
     <main className="min-h-screen bg-background flex flex-col items-center">
       {/* Header Section */}
-      <section className="pt-8 pb-0 md:pb-4 lg:pb-8 px-4 w-full">
+      <section className="pt-8 pb-0 md:pb-4 lg:pb-4 px-4 w-full">
         <div className="text-left sm:text-center">
           <h1 className="text-2xl md:text-4xl font-light text-primary text-balance mb-4">
             Butterfly Collections
           </h1>
-          <p className="hidden sm:block text-lg text-primary">
-            Explore our elegant butterfly collection and discover the beauty of
-            nature.
-          </p>
+         
         </div>
       </section>
 
@@ -179,7 +176,10 @@ export default function ButterflyCollectionsPage() {
                   </h3>
 
                   <button
-                    onClick={() => window.dispatchEvent(new CustomEvent("openBookingModal"))}
+                    onClick={() => {
+                      toggleSelection(item.id);
+                      window.dispatchEvent(new CustomEvent("openBookingModal"));
+                    }}
                     className="w-full bg-primary text-white py-2 rounded-full text-sm font-medium hover:bg-primary/95 transition cursor-pointer"
                   >
                     Book Now

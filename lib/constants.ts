@@ -16,7 +16,7 @@ export const SERVICES = [
     features: [
       "Venue styling",
       "Floral arrangements",
-      "Lighting design",
+      "Elegant design",
       "Custom themes",
     ],
   },
