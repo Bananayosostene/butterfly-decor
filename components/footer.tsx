@@ -71,7 +71,7 @@ export function Footer() {
                 <span className="text-xs text-white/70">Instagram</span>
               </a>
               <a
-                href="https://www.tiktok.com/@butterfly_decor"
+                href="https://www.tiktok.com/@butterfly__decor"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex flex-col items-center gap-1 hover:scale-110 transition-transform"
