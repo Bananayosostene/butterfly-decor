@@ -4,9 +4,8 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { useState, useEffect } from "react";
 import { WeddingShopHero } from "@/components/butterfly-hero";
-// import { DecorCollections } from "@/components/butterfly-collection";
-import { WatchOurEvents } from "@/components/watch-our-events";
-import { ButterflyTeam } from "@/components/butterflyTeam";
+import { ServiceSections } from "@/components/service-sections";
+import { EntertainmentSection } from "@/components/entertainmentSection";
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -82,9 +81,8 @@ export default function Home() {
       <Header />
       <main>
         <WeddingShopHero />
-        {/* <DecorCollections /> */}
-        <WatchOurEvents />
-        <ButterflyTeam />
+        <ServiceSections />
+        <EntertainmentSection />
       </main>
       <Footer />
     </>
