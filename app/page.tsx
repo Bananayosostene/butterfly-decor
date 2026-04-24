@@ -17,8 +17,6 @@ export default function Home() {
     }
   }, []);
   const itemsPerPage = 8;
-  const whatsappUrl =
-    "https://wa.me/+250788724867?text=Hello%20Butterfly%20Ltd%2C%20I%20would%20like%20to%20book%20your%20collections";
 
   const collections = [
     {

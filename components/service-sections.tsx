@@ -99,14 +99,8 @@ function Panel({
 
 export function ServiceSections() {
   return (
-    <section
-      className="w-full flex flex-col"
-      style={{
-        background: "background-white",
-        gap: "8px",
-        padding: "8px",
-      }}
-    >
+    <section className="w-full" style={{ background: "background-white", padding: "8px" }}>
+      <div className="w-full 2xl:max-w-7xl 2xl:mx-auto flex flex-col" style={{ gap: "8px" }}>
       {sections.map((section, i) => (
         <div
           key={i}
@@ -129,6 +123,7 @@ export function ServiceSections() {
           />
         </div>
       ))}
+      </div>
     </section>
   );
 }

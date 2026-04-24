@@ -44,7 +44,7 @@ export function Header() {
 
   const navLinks = [
     { href: "/collection", label: "Collections" },
-    { href: "/events", label: "Our Events" },
+    { href: "/style-insipiration", label: "Outfit Ideas" },
   ];
 
   const openBookingModal = () => {
@@ -54,12 +54,12 @@ export function Header() {
   const navClass = (href: string) =>
     `px-4 py-1 rounded-full border transition-smooth text-sm font-medium ${
       pathname === href
-        ? "bg-accent text-accent-foreground border-content-border"
-        : "border-content-border text-primary-foreground hover:bg-accent/50"
+        ? "bg-accent text-accent-foreground border-[#3d230e]"
+        : "border-[#3d230e] text-primary-foreground hover:bg-accent/50"
     }`;
 
   return (
-    <header className="sticky top-0 z-50 bg-primary">
+    <header className="sticky top-0 z-50 bg-[#261405] border-[#3d230e]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-2 h-16">
@@ -71,25 +71,25 @@ export function Header() {
               className="object-contain"
               priority
             />
-            <Link
-              href="/"
-              className="text-2xl md:text-xl lg:text-xl  font-playball font-medium text-primary-foreground"
-            >
-              <span>Butterfly Decor</span>
+            <Link href="/" className="">
+              <p className=" text-primary-foreground">
+                Butterfly Decor · Kigali
+              </p>
             </Link>
           </div>
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex gap-8 items-center">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className={navClass(link.href)}>
+              <Link
+                key={link.href}
+                href={link.href}
+                className={navClass(link.href)}
+              >
                 {link.label}
               </Link>
             ))}
-            <button
-              onClick={openBookingModal}
-              className={navClass("/request")}
-            >
+            <button onClick={openBookingModal} className={navClass("/request")}>
               Book Now
               {selectedCount > 0 && (
                 <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold bg-accent text-accent-foreground rounded-full">
@@ -124,7 +124,11 @@ export function Header() {
         <nav className="md:hidden pb-4 flex items-center justify-center">
           <div className="flex items-center gap-2">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className={navClass(link.href)}>
+              <Link
+                key={link.href}
+                href={link.href}
+                className={navClass(link.href)}
+              >
                 {link.label}
               </Link>
             ))}

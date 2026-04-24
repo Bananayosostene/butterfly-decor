@@ -4,8 +4,12 @@ import { hashPassword } from "../lib/auth";
 async function main() {
   console.log("Setting up Butterfly Events Ltd admin...");
 
-  const adminEmail = process.env.ADMIN_EMAIL || "admin@butterflyltd.com";
-  const adminPassword = process.env.ADMIN_PASSWORD || "ButterFly123!";
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminPassword = process.env.ADMIN_PASSWORD;
+
+  if (!adminEmail || !adminPassword) {
+    throw new Error(" Missing env credentials");
+  }
 
   // Check if admin already exists
   const existingAdmin = await prisma.adminUser.findUnique({

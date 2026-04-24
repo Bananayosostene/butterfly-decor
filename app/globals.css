@@ -10,15 +10,15 @@
   --card-foreground: oklch(0.2 0.01 0);
   --popover: oklch(0.99 0 0);
   --popover-foreground: oklch(0.2 0.01 0);
-  --primary: #0f0b06;
+  --primary:   #2b1807;
   --primary-foreground: oklch(0.85 0.1 90);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.5 0.01 0);
   --muted: oklch(0.94 0.01 0);
   --muted-foreground: oklch(0.5 0.01 0);
-  --accent: #271f14;
+  --accent: #3d230c;
   --accent-foreground: oklch(0.85 0.1 90);
-  --content-border: #443826;
+  --content-border: #835105;
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
   --border: oklch(0.9 0.01 0);

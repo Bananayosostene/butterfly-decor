@@ -165,7 +165,11 @@ export default function UploadPortfolioPage() {
                   disabled={uploading || !!formData.imageUrl}
                   className="mt-2 w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 transition-smooth disabled:opacity-50"
                 >
-                  {uploading ? "Uploading to Cloudinary..." : formData.imageUrl ? "✓ Uploaded" : "Upload to Cloudinary"}
+                  {uploading
+                    ? "Uploading to Cloudinary..."
+                    : formData.imageUrl
+                      ? "✓ Uploaded"
+                      : "Upload to Cloudinary"}
                 </button>
               </div>
             )}

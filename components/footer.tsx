@@ -4,7 +4,6 @@ import Image from "next/image";
 export function Footer() {
   const whatsappUrl =
     "https://wa.me/+250788724867?text=Hello%20Butterfly%20Decor,%20I%20would%20like%20to%20book%20your%20decoration%20services%20and%20outfit%20rental%20for%20my%20event.%20Please%20share%20more%20details.%20Thank%20you.";
-  const instagramUrl = "https://www.instagram.com/sostene_____/";
 
   return (
     <footer className="bg-primary">
@@ -34,7 +33,7 @@ export function Footer() {
 
           {/* Social */}
           <div className="text-center">
-            <h4 className="font-semibold mb-4 text-sm text-white">Connect</h4>
+            <h4 className="font-semibold mb-4 text-sm text-white">Follow Us</h4>
             <div className="flex gap-4 justify-center">
               <a
                 href={whatsappUrl}
