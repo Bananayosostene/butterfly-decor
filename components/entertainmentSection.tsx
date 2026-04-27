@@ -11,36 +11,36 @@ import {
 import Autoplay from "embla-carousel-autoplay";
 import { CheckCircle2, Share2, X } from "lucide-react";
 
-const topItems = [
-  { id: "ent-decor-1", label: "Decor", sublabel: "Transform every corner", cta: "Explore now", image: "/bridalCollection.jpg", href: "/collection?collection=Decor", bg: "#1a0a2e" },
-  { id: "ent-car-1", label: "Car Decor", sublabel: "Ride in style", cta: "Shop now", image: "/venueCollection.jpg", href: "/collection?collection=Car Decor", bg: "#3B1A08" },
-  { id: "ent-cake-1", label: "Cake", sublabel: "Sweet celebrations", cta: "Order now", image: "/cakeCollection.jpg", href: "/collection?collection=Cake", bg: "#1a0a2e" },
-  { id: "ent-gifts-1", label: "Gifts", sublabel: "Give with love", cta: "Browse gifts", image: "/cateringCollection.jpg", href: "/collection?collection=Gifts", bg: "#0d2012" },
-  { id: "ent-inv-1", label: "Invitation", sublabel: "Make it memorable", cta: "Design yours", image: "/photographerCollection.jpg", href: "/collection?collection=Invitation", bg: "#0d2012" },
-  { id: "ent-dress-1", label: "Dresses", sublabel: "Elegance redefined", cta: "View collection", image: "/bridal.jpg", href: "/collection?collection=Dresses", bg: "#3B1A08" },
-];
-
-const bottomItems = [
-  { id: "ent-decor-2", label: "Decor", cta: "Explore", image: "/bridalCollection.jpg", href: "/collection?collection=Decor", bg: "#2d1a00" },
-  { id: "ent-car-2", label: "Car Decor", cta: "Shop", image: "/venueCollection.jpg", href: "/collection?collection=Car Decor", bg: "#1a0a2e" },
-  { id: "ent-cake-2", label: "Cake", cta: "Order", image: "/cakeCollection.jpg", href: "/collection?collection=Cake", bg: "#3B1A08" },
-  { id: "ent-gifts-2", label: "Gifts", cta: "Browse", image: "/cateringCollection.jpg", href: "/collection?collection=Gifts", bg: "#0d2012" },
-  { id: "ent-inv-2", label: "Invitation", cta: "Design", image: "/photographerCollection.jpg", href: "/collection?collection=Invitation", bg: "#1a0a2e" },
-  { id: "ent-dress-2", label: "Dresses", cta: "View", image: "/bridal.jpg", href: "/collection?collection=Dresses", bg: "#3B1A08" },
-  { id: "ent-decor-3", label: "Decor", cta: "Explore", image: "/bridalCollection.jpg", href: "/collection?collection=Decor", bg: "#2d1a00" },
-  { id: "ent-gifts-3", label: "Gifts", cta: "Browse", image: "/cateringCollection.jpg", href: "/collection?collection=Gifts", bg: "#0d2012" },
-];
+type CollectionItem = {
+  id: string;
+  name: string;
+  imageUrl: string;
+  category: { id: string; name: string };
+};
 
 export function EntertainmentSection() {
   const topAutoplay = useRef(Autoplay({ delay: 5000, stopOnInteraction: false }));
   const bottomAutoplay = useRef(Autoplay({ delay: 5000, stopOnInteraction: false }));
-  const [shareItem, setShareItem] = useState<{ label: string } | null>(null);
+  const [shareItem, setShareItem] = useState<{ id: string; label: string } | null>(null);
   const [copied, setCopied] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [topItems, setTopItems] = useState<CollectionItem[]>([]);
+  const [bottomItems, setBottomItems] = useState<CollectionItem[]>([]);
 
   useEffect(() => {
     const saved = localStorage.getItem("butterfly-selected-items");
     if (saved) setSelectedItems(JSON.parse(saved));
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/collection-items")
+      .then((r) => r.json())
+      .then((res) => {
+        const all: CollectionItem[] = res.data ?? [];
+        const mid = Math.ceil(all.length / 2);
+        setTopItems(all.slice(0, mid));
+        setBottomItems(all.slice(mid));
+      });
   }, []);
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export function EntertainmentSection() {
   };
 
   const shareLink = shareItem
-    ? `${typeof window !== "undefined" ? window.location.origin : ""}/collection?collection=${encodeURIComponent(shareItem.label)}`
+    ? `${typeof window !== "undefined" ? window.location.origin : ""}/collection/${shareItem.id}`
     : "";
 
   const handleCopy = () => {
@@ -74,36 +74,34 @@ export function EntertainmentSection() {
       style={{ background: "#F5F5F7" }}
     >
       <div className="w-full 2xl:max-w-7xl 2xl:mx-auto">
-        <h2
-          className="text-center text-xl md:text-2xl font-light text-primary text-balance mb-4"
-          style={{ color: "#1a1a1a" }}
+       
+        <h1
+          className="text-3xl md:text-4xl mb-2 text-center"
+          style={{ fontFamily: "'Playball', cursive", color: "var(--primary)" }}
         >
           Decor Collection
-        </h2>
+        </h1>
 
-        {/* TOP ROW — 1 full center + halves on sides = basis ~34% */}
+        {/* TOP ROW */}
         <div className="mb-3">
           <Carousel
             opts={{ align: "center", loop: true }}
             plugins={[topAutoplay.current]}
           >
             <CarouselContent className="-ml-3">
-              {topItems.map((item, i) => (
+              {topItems.map((item) => (
                 <CarouselItem
-                  key={i}
+                  key={item.id}
                   className="pl-3 basis-[85vw] md:basis-[50%]"
                 >
                   <Link
-                    href={item.href}
+                    href={`/collection/${item.id}`}
                     className="relative block overflow-hidden group"
-                    style={{
-                      height: "clamp(200px, 28vw, 300px)",
-                      backgroundColor: item.bg,
-                    }}
+                    style={{ height: "clamp(200px, 28vw, 300px)", backgroundColor: "#1a0a2e" }}
                   >
                     <Image
-                      src={item.image}
-                      alt={item.label}
+                      src={item.imageUrl}
+                      alt={item.name}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
                       sizes="34vw"
@@ -118,7 +116,7 @@ export function EntertainmentSection() {
                         <CheckCircle2 className={`h-3 w-3 ${selectedItems.includes(item.id) ? "text-primary-foreground" : "text-white"}`} />
                       </button>
                       <button
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShareItem({ label: item.label }); setCopied(false); }}
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShareItem({ id: item.id, label: item.name }); setCopied(false); }}
                         className="w-6 h-6 rounded-full flex items-center justify-center cursor-pointer shadow-md bg-black/60"
                       >
                         <Share2 className="w-3 h-3 text-white" />
@@ -128,12 +126,12 @@ export function EntertainmentSection() {
                       <div>
                         <p
                           className="text-xs font-semibold mb-0.5"
-                          style={{
-                            color: "rgba(255,255,255,0.7)",
-                            fontFamily: "Georgia, serif",
-                          }}
+                          style={{ color: "rgba(255,255,255,0.7)", fontFamily: "Georgia, serif" }}
                         >
-                          {item.label}
+                          {item.name}
+                        </p>
+                        <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.5)", fontFamily: "Georgia, serif" }}>
+                          {item.category.name}
                         </p>
                       </div>
                     </div>
@@ -144,55 +142,40 @@ export function EntertainmentSection() {
           </Carousel>
         </div>
 
-        {/* BOTTOM ROW — 3 full center + halves on sides = basis ~26% */}
+        {/* BOTTOM ROW */}
         <Carousel
           opts={{ align: "center", loop: true }}
           plugins={[bottomAutoplay.current]}
         >
           <CarouselContent className="-ml-2">
-            {bottomItems.map((item, i) => (
+            {bottomItems.map((item) => (
               <CarouselItem
-                key={i}
+                key={item.id}
                 className="pl-2 basis-[42vw] md:basis-[26%]"
               >
                 <Link
-                  href={item.href}
-                  className="relative block  overflow-hidden group"
-                  style={{
-                    height: "clamp(120px, 16vw, 170px)",
-                    backgroundColor: item.bg,
-                  }}
+                  href={`/collection/${item.id}`}
+                  className="relative block overflow-hidden group"
+                  style={{ height: "clamp(120px, 16vw, 170px)", backgroundColor: "#1a0a2e" }}
                 >
                   <Image
-                    src={item.image}
-                    alt={item.label}
+                    src={item.imageUrl}
+                    alt={item.name}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
                     sizes="26vw"
                   />
                   <div className="absolute top-2 right-2 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleSelection(item.id);
-                      }}
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleSelection(item.id); }}
                       className={`w-6 h-6 rounded-full flex items-center justify-center transition-smooth cursor-pointer shadow-md ${
-                        selectedItems.includes(item.id)
-                          ? "bg-primary"
-                          : "bg-black/60"
+                        selectedItems.includes(item.id) ? "bg-primary" : "bg-black/60"
                       }`}
                     >
-                      <CheckCircle2
-                        className={`h-3 w-3 ${selectedItems.includes(item.id) ? "text-primary-foreground" : "text-white"}`}
-                      />
+                      <CheckCircle2 className={`h-3 w-3 ${selectedItems.includes(item.id) ? "text-primary-foreground" : "text-white"}`} />
                     </button>
                     <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setShareItem({ label: item.label });
-                        setCopied(false);
-                      }}
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShareItem({ id: item.id, label: item.name }); setCopied(false); }}
                       className="w-6 h-6 rounded-full flex items-center justify-center cursor-pointer shadow-md bg-black/60"
                     >
                       <Share2 className="w-3 h-3 text-white" />
@@ -203,7 +186,7 @@ export function EntertainmentSection() {
                       className="text-white text-sm font-semibold"
                       style={{ fontFamily: "Georgia, serif" }}
                     >
-                      {item.label}
+                      {item.name}
                     </p>
                   </div>
                 </Link>
@@ -215,8 +198,8 @@ export function EntertainmentSection() {
         <div className="text-center mt-6">
           <Link
             href="/collection"
-            className="text-sm font-medium px-6 py-2 rounded-full inline-block"
-            style={{ background: "#3B1A08", color: "white" }}
+            className="text-sm font-medium px-6 py-2 rounded-full inline-block bg-primary"
+            style={{ color: "white" }}
           >
             more...
           </Link>
@@ -249,19 +232,13 @@ export function EntertainmentSection() {
                 className="flex items-center gap-2 mb-3 rounded-lg px-3 py-2"
                 style={{ background: "#f0e6d6", border: "1px solid #57422C" }}
               >
-                <p
-                  className="text-xs truncate flex-1"
-                  style={{ color: "#57422C" }}
-                >
+                <p className="text-xs truncate flex-1" style={{ color: "#57422C" }}>
                   {shareLink}
                 </p>
                 <button
                   onClick={handleCopy}
                   className="text-xs px-2 py-1 rounded-md shrink-0 font-medium"
-                  style={{
-                    background: copied ? "#2b1807" : "#3d230c",
-                    color: "#e8d5b7",
-                  }}
+                  style={{ background: copied ? "#2b1807" : "#3d230c", color: "#e8d5b7" }}
                 >
                   {copied ? "Copied!" : "Copy"}
                 </button>

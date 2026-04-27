@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 export function Header() {
   const pathname = usePathname();
@@ -22,10 +22,7 @@ export function Header() {
 
     window.addEventListener("selectedItemsChange" as any, handleItemsChange);
     return () => {
-      window.removeEventListener(
-        "selectedItemsChange" as any,
-        handleItemsChange,
-      );
+      window.removeEventListener("selectedItemsChange" as any, handleItemsChange);
     };
   }, []);
 
@@ -52,47 +49,45 @@ export function Header() {
   };
 
   const navClass = (href: string) =>
-    `px-4 py-1 rounded-full border transition-smooth text-sm font-medium ${
+    `px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
       pathname === href
-        ? "bg-accent text-accent-foreground border-[#3d230e]"
-        : "border-[#3d230e] text-primary-foreground hover:bg-accent/50"
+        ? "bg-accent text-primary-foreground"
+        : "text-primary-foreground/80 hover:text-primary-foreground"
     }`;
 
   return (
-    <header className="sticky top-0 z-50 bg-[#261405] border-[#3d230e]">
+    <header className="sticky top-0 z-50 bg-primary border-b border-accent">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-2 h-16">
+
+          {/* Brand */}
+          <div className="flex items-center gap-2">
             <Image
               src="/butterfly_logo.png"
               alt="Butterfly Ltd logo"
-              width={40}
-              height={40}
+              width={38}
+              height={38}
               className="object-contain"
               priority
             />
-            <Link href="/" className="">
-              <p className=" text-primary-foreground">
+            <Link href="/">
+              <p className="text-sm font-medium text-primary-foreground">
                 Butterfly Decor · Kigali
               </p>
             </Link>
           </div>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex gap-8 items-center">
+          <nav className="hidden md:flex gap-2 items-center">
             {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={navClass(link.href)}
-              >
+              <Link key={link.href} href={link.href} className={navClass(link.href)}>
                 {link.label}
               </Link>
             ))}
             <button onClick={openBookingModal} className={navClass("/request")}>
               Book Now
               {selectedCount > 0 && (
-                <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold bg-accent text-accent-foreground rounded-full">
+                <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded-full bg-primary-foreground text-primary">
                   {selectedCount}
                 </span>
               )}
@@ -121,21 +116,17 @@ export function Header() {
         </div>
 
         {/* Mobile Second Row Nav */}
-        <nav className="md:hidden pb-4 flex items-center justify-center">
+        <nav className="md:hidden pb-3 flex items-center justify-center">
           <div className="flex items-center gap-2">
             {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={navClass(link.href)}
-              >
+              <Link key={link.href} href={link.href} className={navClass(link.href)}>
                 {link.label}
               </Link>
             ))}
             <button onClick={openBookingModal} className={navClass("/request")}>
               Book Now
               {selectedCount > 0 && (
-                <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold bg-accent text-accent-foreground rounded-full">
+                <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded-full bg-primary-foreground text-primary">
                   {selectedCount}
                 </span>
               )}

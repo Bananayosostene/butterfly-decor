@@ -8,17 +8,18 @@ async function verifyAdminSession(req: NextRequest) {
   return !!sessionToken
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const isAdmin = await verifyAdminSession(req)
     if (!isAdmin) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    const { id } = await params
     const body = await req.json()
 
     const booking = await prisma.booking.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         status: body.status || undefined,
         adminNotes: body.adminNotes || undefined,
@@ -32,10 +33,11 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 }
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params
     const booking = await prisma.booking.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!booking) {

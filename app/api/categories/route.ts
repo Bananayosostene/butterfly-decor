@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET() {
   try {
-    const categories = await prisma.category.findMany({ orderBy: { createdAt: "desc" } })
+    const categories = await prisma.category.findMany({ orderBy: { createdAt: "asc" } })
     return NextResponse.json({ success: true, message: "Categories fetched", statusCode: 200, data: categories })
   } catch {
     return NextResponse.json({ success: false, message: "Failed to fetch categories", statusCode: 500 }, { status: 500 })

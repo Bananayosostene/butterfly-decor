@@ -79,7 +79,7 @@ export default function CategoriesPage() {
             <div key={c.id} className="bg-card border border-border rounded-xl overflow-hidden">
               {c.imageUrl && (
                 <div className="relative h-40 w-full">
-                  <Image src={c.imageUrl} alt={c.name} fill className="object-cover" />
+                  <Image key={c.imageUrl} src={c.imageUrl} alt={c.name} fill className="object-cover" unoptimized />
                 </div>
               )}
               <div className="p-4">
