@@ -38,9 +38,44 @@ export default function StyleIdeaDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--background)" }}>
-        <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: "var(--primary)" }} />
-      </div>
+      <main className="min-h-screen pb-16" style={{ background: "var(--background)" }}>
+        {/* Detail card skeleton */}
+        <div className="max-w-4xl mx-auto pt-4 px-4 md:px-8">
+          <div
+            className="flex flex-col md:flex-row overflow-hidden rounded-3xl"
+            style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}
+          >
+            {/* Image skeleton */}
+            <div className="w-full md:w-[55%] shrink-0 animate-pulse" style={{ minHeight: "340px", background: "var(--muted)" }} />
+            {/* Info skeleton */}
+            <div className="flex flex-col gap-4 p-6 md:p-8 flex-1">
+              <div className="flex gap-2">
+                <div className="h-5 w-16 rounded-full animate-pulse" style={{ background: "var(--muted)" }} />
+                <div className="h-5 w-20 rounded-full animate-pulse" style={{ background: "var(--muted)" }} />
+              </div>
+              <div className="h-8 w-3/4 rounded-xl animate-pulse" style={{ background: "var(--muted)" }} />
+              <div className="h-4 w-full rounded animate-pulse" style={{ background: "var(--muted)" }} />
+              <div className="h-4 w-5/6 rounded animate-pulse" style={{ background: "var(--muted)" }} />
+              <div className="border-t" style={{ borderColor: "var(--border)" }} />
+              <div className="h-11 rounded-full animate-pulse" style={{ background: "var(--muted)" }} />
+              <div className="h-3 w-32 rounded mx-auto animate-pulse" style={{ background: "var(--muted)" }} />
+            </div>
+          </div>
+        </div>
+        {/* Related skeletons */}
+        <div className="max-w-7xl mx-auto px-4 md:px-8 mt-12">
+          <div className="columns-2 sm:columns-3 lg:columns-4 gap-3">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="break-inside-avoid mb-3">
+                <div
+                  className="w-full rounded-2xl animate-pulse"
+                  style={{ background: "var(--muted)", aspectRatio: i % 3 === 0 ? "3/4" : i % 3 === 1 ? "1/1" : "4/5" }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </main>
     );
   }
 
@@ -55,20 +90,9 @@ export default function StyleIdeaDetailPage() {
 
   return (
     <main className="min-h-screen pb-16" style={{ background: "var(--background)" }}>
-      {/* Back button */}
-      <div className="px-4 md:px-8 pt-5 pb-2">
-        <button
-          onClick={() => router.back()}
-          className="flex items-center gap-2 text-sm font-medium transition-opacity hover:opacity-70"
-          style={{ color: "var(--primary)" }}
-        >
-          <ArrowLeft size={16} />
-          Back to Ideas
-        </button>
-      </div>
-
+   
       {/* Pin card — Pinterest style */}
-      <div className="max-w-4xl mx-auto px-4 md:px-8">
+      <div className="max-w-4xl mx-auto pt-4 px-4 md:px-8">
         <div
           className="flex flex-col md:flex-row overflow-hidden rounded-3xl shadow-xl"
           style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}
@@ -147,12 +171,7 @@ export default function StyleIdeaDetailPage() {
       {/* Related ideas */}
       {related.length > 0 && (
         <div className="max-w-7xl mx-auto px-4 md:px-8 mt-12">
-          <h2
-            className="text-xl mb-6 text-center"
-            style={{ fontFamily: "'Playball', cursive", color: "var(--primary)", fontWeight: 400 }}
-          >
-            More Ideas
-          </h2>
+        
           <div className="columns-2 sm:columns-3 lg:columns-4 gap-3">
             {related.map((item, idx) => (
               <div

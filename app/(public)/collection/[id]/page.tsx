@@ -96,10 +96,6 @@ export default function CollectionItemDetailPage() {
   if (loading) {
     return (
       <main className="min-h-screen pb-16" style={{ background: "var(--background)" }}>
-        {/* Back button skeleton */}
-        <div className="px-4 md:px-8 pt-5 pb-2">
-          <div className="h-4 w-28 rounded-full animate-pulse" style={{ background: "var(--muted)" }} />
-        </div>
 
         {/* Detail card skeleton — centered */}
         <div className="max-w-2xl mx-auto pt-4 px-4 md:px-8 w-full">
@@ -282,15 +278,15 @@ export default function CollectionItemDetailPage() {
       {/* All related items */}
       {related.length > 0 && (
         <div className="max-w-7xl mx-auto px-4 md:px-8 mt-4">
-          <div className="columns-2 sm:columns-3 lg:columns-4 gap-3">
+          <div className="columns-2 sm:columns-3 lg:columns-4 gap-2">
             {related.map((rel, idx) => (
               <div
                 key={rel.id}
-                className="break-inside-avoid mb-3 group cursor-pointer"
+                className="break-inside-avoid mb-2 group cursor-pointer"
                 onClick={() => handleRelatedClick(rel)}
               >
                 <div
-                  className="relative overflow-hidden rounded-2xl"
+                  className="relative overflow-hidden "
                   style={{ aspectRatio: idx % 4 === 0 ? "3/4" : idx % 4 === 1 ? "4/5" : idx % 4 === 2 ? "1/1" : "3/5" }}
                 >
                   <Image

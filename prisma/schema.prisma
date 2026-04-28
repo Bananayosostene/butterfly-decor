@@ -52,7 +52,6 @@ model StyleIdea {
   title       String
   description String?
   imageUrl    String
-  tags        String[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

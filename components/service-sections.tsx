@@ -7,57 +7,80 @@ import { useEffect, useState } from "react";
 type Category = { id: string; name: string; description?: string; imageUrl?: string };
 
 const CHOCOLATE = "#2b1807";
+const CARD_BG = "#fdf6ee";
+const BORDER = "#e8d5b7";
+
+function slugify(name: string) {
+  return name.toLowerCase().replace(/\s+/g, "-");
+}
 
 function Panel({ category, flex }: { category: Category; flex: number }) {
   return (
     <Link
-      href={`/collection?collection=${encodeURIComponent(category.name)}`}
-      className="relative overflow-hidden group cursor-pointer shrink-0"
+      href={`/collection?cat=${slugify(category.name)}`}
+      className="group cursor-pointer shrink-0 flex items-center gap-4 md:gap-6 px-5 md:px-8 py-5 rounded-2xl transition-shadow duration-300 hover:shadow-xl"
       style={{
         flex,
-        backgroundColor: !category.imageUrl ? CHOCOLATE : undefined,
+        background: CARD_BG,
+        border: `1.5px solid ${BORDER}`,
+        minHeight: "120px",
       }}
     >
-      {category.imageUrl && (
-        <Image
-          key={category.imageUrl}
-          src={category.imageUrl}
-          alt={category.name}
-          fill
-          unoptimized
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-          sizes="60vw"
-        />
-      )}
-      {/* gradient overlay */}
+      {/* Circle image */}
       <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        className="shrink-0 rounded-full overflow-hidden transition-transform duration-500 group-hover:scale-105"
         style={{
-          background:
-            "linear-gradient(to top, rgba(30,16,8,0.75) 0%, transparent 55%)",
+          width: "clamp(100px, 14vw, 160px)",
+          height: "clamp(100px, 14vw, 160px)",
+          background: CHOCOLATE,
+          border: `3px solid ${BORDER}`,
+          position: "relative",
         }}
-      />
-      <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
+      >
+        {category.imageUrl ? (
+          <Image
+            src={category.imageUrl}
+            alt={category.name}
+            fill
+            unoptimized
+            className="object-cover"
+            sizes="120px"
+          />
+        ) : (
+          <div className="w-full h-full" style={{ background: CHOCOLATE }} />
+        )}
+      </div>
+
+      {/* Text */}
+      <div className="flex flex-col gap-1 min-w-0">
         <span
-          className="text-2xl md:text-3xl font-playball"
-          style={{ color: "#e8d5b7" }}
+          className="font-playball leading-tight truncate"
+          style={{
+            color: CHOCOLATE,
+            fontSize: "clamp(1rem, 2vw, 1.5rem)",
+          }}
         >
           {category.name}
         </span>
         {category.description && (
           <p
-            className="text-xs mt-1 line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-            style={{ color: "rgba(232,213,183,0.8)" }}
+            className="text-xs md:text-sm leading-relaxed line-clamp-3"
+            style={{ color: "rgba(43,24,7,0.65)" }}
           >
             {category.description}
           </p>
         )}
+        <span
+          className="text-xs font-medium mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          style={{ color: "#835105" }}
+        >
+          Explore →
+        </span>
       </div>
     </Link>
   );
 }
 
-// Pair categories into rows of 2, last row gets a single full-width panel if odd count
 function pairCategories(cats: Category[]) {
   const rows: { left: Category; right: Category; leftFlex: number; rightFlex: number }[] = [];
   for (let i = 0; i < cats.length - 1; i += 2) {
@@ -85,11 +108,11 @@ export function ServiceSections() {
 
   if (loading) {
     return (
-      <section className="w-full flex flex-col gap-2 p-2">
+      <section className="w-full flex flex-col gap-3 p-3">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="flex gap-2 h-[50vh] md:h-[60vh]">
-            <div className="animate-pulse rounded-sm" style={{ flex: 6, background: "var(--muted)" }} />
-            <div className="animate-pulse rounded-sm" style={{ flex: 4, background: "var(--muted)" }} />
+          <div key={i} className="flex gap-3">
+            <div className="animate-pulse rounded-2xl h-28" style={{ flex: 6, background: "var(--muted)" }} />
+            <div className="animate-pulse rounded-2xl h-28" style={{ flex: 4, background: "var(--muted)" }} />
           </div>
         ))}
       </section>
@@ -101,17 +124,16 @@ export function ServiceSections() {
   const { rows, solo } = pairCategories(categories);
 
   return (
-    <section className="w-full" style={{ padding: "8px" }}>
-      <div className="w-full 2xl:max-w-7xl 2xl:mx-auto flex flex-col" style={{ gap: "8px" }}>
+    <section className="w-full" style={{ padding: "10px" }}>
+      <div className="w-full 2xl:max-w-7xl 2xl:mx-auto flex flex-col" style={{ gap: "10px" }}>
         {rows.map((row, i) => (
-          <div key={i} className="flex h-[50vh] md:h-[60vh]" style={{ gap: "8px" }}>
+          <div key={i} className="flex" style={{ gap: "10px" }}>
             <Panel category={row.left} flex={row.leftFlex} />
             <Panel category={row.right} flex={row.rightFlex} />
           </div>
         ))}
-        {/* Odd last category — full width, shorter height */}
         {solo && (
-          <div className="flex h-[35vh] md:h-[40vh]">
+          <div className="flex">
             <Panel category={solo} flex={1} />
           </div>
         )}

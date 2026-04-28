@@ -26,6 +26,7 @@ export function EntertainmentSection() {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [topItems, setTopItems] = useState<CollectionItem[]>([]);
   const [bottomItems, setBottomItems] = useState<CollectionItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const saved = localStorage.getItem("butterfly-selected-items");
@@ -40,7 +41,8 @@ export function EntertainmentSection() {
         const mid = Math.ceil(all.length / 2);
         setTopItems(all.slice(0, mid));
         setBottomItems(all.slice(mid));
-      });
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
@@ -69,12 +71,8 @@ export function EntertainmentSection() {
   };
 
   return (
-    <section
-      className="w-full overflow-hidden py-10"
-      style={{ background: "#F5F5F7" }}
-    >
+    <section className="w-full overflow-hidden py-10" style={{ background: "#F5F5F7" }}>
       <div className="w-full 2xl:max-w-7xl 2xl:mx-auto">
-       
         <h1
           className="text-3xl md:text-4xl mb-2 text-center"
           style={{ fontFamily: "'Playball', cursive", color: "var(--primary)" }}
@@ -84,32 +82,97 @@ export function EntertainmentSection() {
 
         {/* TOP ROW */}
         <div className="mb-3">
-          <Carousel
-            opts={{ align: "center", loop: true }}
-            plugins={[topAutoplay.current]}
-          >
-            <CarouselContent className="-ml-3">
-              {topItems.map((item) => (
-                <CarouselItem
-                  key={item.id}
-                  className="pl-3 basis-[85vw] md:basis-[50%]"
-                >
+          {loading ? (
+            <div className="flex gap-3 overflow-hidden px-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="shrink-0 rounded animate-pulse"
+                  style={{ width: "85vw", maxWidth: "50%", height: "clamp(200px, 28vw, 300px)", background: "var(--muted)" }}
+                />
+              ))}
+            </div>
+          ) : (
+            <Carousel opts={{ align: "center", loop: true }} plugins={[topAutoplay.current]}>
+              <CarouselContent className="-ml-3">
+                {topItems.map((item) => (
+                  <CarouselItem key={item.id} className="pl-3 basis-[85vw] md:basis-[50%]">
+                    <Link
+                      href={`/collection/${item.id}`}
+                      className="relative block overflow-hidden group"
+                      style={{ height: "clamp(200px, 28vw, 300px)", backgroundColor: "#1a0a2e" }}
+                    >
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
+                        sizes="34vw"
+                      />
+                      <div className="absolute top-2 right-2 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <button
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleSelection(item.id); }}
+                          className={`w-6 h-6 rounded-full flex items-center justify-center cursor-pointer shadow-md ${
+                            selectedItems.includes(item.id) ? "bg-primary" : "bg-black/60"
+                          }`}
+                        >
+                          <CheckCircle2 className={`h-3 w-3 ${selectedItems.includes(item.id) ? "text-primary-foreground" : "text-white"}`} />
+                        </button>
+                        <button
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShareItem({ id: item.id, label: item.name }); setCopied(false); }}
+                          className="w-6 h-6 rounded-full flex items-center justify-center cursor-pointer shadow-md bg-black/60"
+                        >
+                          <Share2 className="w-3 h-3 text-white" />
+                        </button>
+                      </div>
+                      <div className="absolute bottom-3 left-3 right-3">
+                        <p className="text-xs font-semibold mb-0.5" style={{ color: "rgba(255,255,255,0.7)", fontFamily: "Georgia, serif" }}>
+                          {item.name}
+                        </p>
+                        <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.5)", fontFamily: "Georgia, serif" }}>
+                          {item.category.name}
+                        </p>
+                      </div>
+                    </Link>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
+          )}
+        </div>
+
+        {/* BOTTOM ROW */}
+        {loading ? (
+          <div className="flex gap-2 overflow-hidden px-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div
+                key={i}
+                className="shrink-0 rounded animate-pulse"
+                style={{ width: "42vw", maxWidth: "26%", height: "clamp(120px, 16vw, 170px)", background: "var(--muted)" }}
+              />
+            ))}
+          </div>
+        ) : (
+          <Carousel opts={{ align: "center", loop: true }} plugins={[bottomAutoplay.current]}>
+            <CarouselContent className="-ml-2">
+              {bottomItems.map((item) => (
+                <CarouselItem key={item.id} className="pl-2 basis-[42vw] md:basis-[26%]">
                   <Link
                     href={`/collection/${item.id}`}
                     className="relative block overflow-hidden group"
-                    style={{ height: "clamp(200px, 28vw, 300px)", backgroundColor: "#1a0a2e" }}
+                    style={{ height: "clamp(120px, 16vw, 170px)", backgroundColor: "#1a0a2e" }}
                   >
                     <Image
                       src={item.imageUrl}
                       alt={item.name}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
-                      sizes="34vw"
+                      sizes="26vw"
                     />
                     <div className="absolute top-2 right-2 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                       <button
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleSelection(item.id); }}
-                        className={`w-6 h-6 rounded-full flex items-center justify-center transition-smooth cursor-pointer shadow-md ${
+                        className={`w-6 h-6 rounded-full flex items-center justify-center cursor-pointer shadow-md ${
                           selectedItems.includes(item.id) ? "bg-primary" : "bg-black/60"
                         }`}
                       >
@@ -122,78 +185,17 @@ export function EntertainmentSection() {
                         <Share2 className="w-3 h-3 text-white" />
                       </button>
                     </div>
-                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-                      <div>
-                        <p
-                          className="text-xs font-semibold mb-0.5"
-                          style={{ color: "rgba(255,255,255,0.7)", fontFamily: "Georgia, serif" }}
-                        >
-                          {item.name}
-                        </p>
-                        <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.5)", fontFamily: "Georgia, serif" }}>
-                          {item.category.name}
-                        </p>
-                      </div>
+                    <div className="absolute bottom-2 left-2 right-2">
+                      <p className="text-white text-sm font-semibold" style={{ fontFamily: "Georgia, serif" }}>
+                        {item.name}
+                      </p>
                     </div>
                   </Link>
                 </CarouselItem>
               ))}
             </CarouselContent>
           </Carousel>
-        </div>
-
-        {/* BOTTOM ROW */}
-        <Carousel
-          opts={{ align: "center", loop: true }}
-          plugins={[bottomAutoplay.current]}
-        >
-          <CarouselContent className="-ml-2">
-            {bottomItems.map((item) => (
-              <CarouselItem
-                key={item.id}
-                className="pl-2 basis-[42vw] md:basis-[26%]"
-              >
-                <Link
-                  href={`/collection/${item.id}`}
-                  className="relative block overflow-hidden group"
-                  style={{ height: "clamp(120px, 16vw, 170px)", backgroundColor: "#1a0a2e" }}
-                >
-                  <Image
-                    src={item.imageUrl}
-                    alt={item.name}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
-                    sizes="26vw"
-                  />
-                  <div className="absolute top-2 right-2 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    <button
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleSelection(item.id); }}
-                      className={`w-6 h-6 rounded-full flex items-center justify-center transition-smooth cursor-pointer shadow-md ${
-                        selectedItems.includes(item.id) ? "bg-primary" : "bg-black/60"
-                      }`}
-                    >
-                      <CheckCircle2 className={`h-3 w-3 ${selectedItems.includes(item.id) ? "text-primary-foreground" : "text-white"}`} />
-                    </button>
-                    <button
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShareItem({ id: item.id, label: item.name }); setCopied(false); }}
-                      className="w-6 h-6 rounded-full flex items-center justify-center cursor-pointer shadow-md bg-black/60"
-                    >
-                      <Share2 className="w-3 h-3 text-white" />
-                    </button>
-                  </div>
-                  <div className="absolute bottom-2 left-2 right-2 flex items-end justify-between">
-                    <p
-                      className="text-white text-sm font-semibold"
-                      style={{ fontFamily: "Georgia, serif" }}
-                    >
-                      {item.name}
-                    </p>
-                  </div>
-                </Link>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
+        )}
 
         <div className="text-center mt-6">
           <Link
@@ -207,10 +209,7 @@ export function EntertainmentSection() {
 
         {/* Share Modal */}
         {shareItem && (
-          <div
-            className="fixed inset-0 z-50 md:inset-auto md:top-4 md:right-4"
-            onClick={() => setShareItem(null)}
-          >
+          <div className="fixed inset-0 z-50 md:inset-auto md:top-4 md:right-4" onClick={() => setShareItem(null)}>
             <div className="md:hidden absolute inset-0 bg-black/30" />
             <div
               className="relative md:static mx-4 mt-[35vh] md:mt-0 md:mx-0 rounded-2xl p-4 shadow-xl w-auto md:w-72"
@@ -218,20 +217,14 @@ export function EntertainmentSection() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-3">
-                <p
-                  className="text-sm font-semibold truncate max-w-[80%]"
-                  style={{ color: "#2b1807", fontFamily: "Georgia, serif" }}
-                >
+                <p className="text-sm font-semibold truncate max-w-[80%]" style={{ color: "#2b1807", fontFamily: "Georgia, serif" }}>
                   {shareItem.label}
                 </p>
                 <button onClick={() => setShareItem(null)}>
                   <X className="w-4 h-4" style={{ color: "#835105" }} />
                 </button>
               </div>
-              <div
-                className="flex items-center gap-2 mb-3 rounded-lg px-3 py-2"
-                style={{ background: "#f0e6d6", border: "1px solid #57422C" }}
-              >
+              <div className="flex items-center gap-2 mb-3 rounded-lg px-3 py-2" style={{ background: "#f0e6d6", border: "1px solid #57422C" }}>
                 <p className="text-xs truncate flex-1" style={{ color: "#57422C" }}>
                   {shareLink}
                 </p>

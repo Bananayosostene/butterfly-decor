@@ -4,13 +4,13 @@ import { useState, useEffect } from "react";
 import { Pencil, Trash2, Plus, X } from "lucide-react";
 import Image from "next/image";
 
-type StyleIdea = { id: string; title: string; description?: string; imageUrl: string; tags: string[] };
+type StyleIdea = { id: string; title: string; description?: string; imageUrl: string };
 
 export default function StyleIdeasPage() {
   const [ideas, setIdeas] = useState<StyleIdea[]>([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<{ open: boolean; editing: StyleIdea | null }>({ open: false, editing: null });
-  const [form, setForm] = useState({ title: "", description: "", imageUrl: "", tags: "" });
+  const [form, setForm] = useState({ title: "", description: "", imageUrl: "" });
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -24,8 +24,8 @@ export default function StyleIdeasPage() {
 
   useEffect(() => { load(); }, []);
 
-  const openAdd = () => { setForm({ title: "", description: "", imageUrl: "", tags: "" }); setModal({ open: true, editing: null }); };
-  const openEdit = (idea: StyleIdea) => { setForm({ title: idea.title, description: idea.description ?? "", imageUrl: idea.imageUrl, tags: idea.tags.join(", ") }); setModal({ open: true, editing: idea }); };
+  const openAdd = () => { setForm({ title: "", description: "", imageUrl: "" }); setModal({ open: true, editing: null }); };
+  const openEdit = (idea: StyleIdea) => { setForm({ title: idea.title, description: idea.description ?? "", imageUrl: idea.imageUrl }); setModal({ open: true, editing: idea }); };
   const closeModal = () => setModal({ open: false, editing: null });
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,7 +44,7 @@ export default function StyleIdeasPage() {
   const handleSave = async () => {
     if (!form.title.trim() || !form.imageUrl) return;
     setSaving(true);
-    const payload = { title: form.title, description: form.description, imageUrl: form.imageUrl, tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean) };
+    const payload = { title: form.title, description: form.description, imageUrl: form.imageUrl };
     if (modal.editing) {
       await fetch(`/api/style-ideas/${modal.editing.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
     } else {
@@ -83,12 +83,8 @@ export default function StyleIdeasPage() {
               </div>
               <div className="p-3">
                 <h3 className="font-semibold text-foreground text-sm truncate">{idea.title}</h3>
-                {idea.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {idea.tags.slice(0, 3).map((tag) => (
-                      <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{tag}</span>
-                    ))}
-                  </div>
+                {idea.description && (
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{idea.description}</p>
                 )}
                 <div className="flex gap-2 mt-2">
                   <button onClick={() => openEdit(idea)} className="flex items-center gap-1 text-xs px-2 py-1 rounded border border-border text-foreground hover:bg-muted">
@@ -114,7 +110,6 @@ export default function StyleIdeasPage() {
             <div className="space-y-3">
               <input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="Title *" className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground" />
               <textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Description" rows={2} className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground resize-none" />
-              <input value={form.tags} onChange={(e) => setForm((f) => ({ ...f, tags: e.target.value }))} placeholder="Tags (comma separated)" className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground" />
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">Image *</label>
                 <input type="file" accept="image/*" onChange={handleUpload} className="text-sm text-muted-foreground" />
