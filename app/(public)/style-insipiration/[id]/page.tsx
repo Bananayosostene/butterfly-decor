@@ -10,7 +10,6 @@ type StyleIdea = {
   title: string;
   description?: string;
   imageUrl: string;
-  tags: string[];
   createdAt: string;
 };
 
@@ -30,9 +29,7 @@ export default function StyleIdeaDetailPage() {
       const current: StyleIdea = single.data;
       setIdea(current);
       const others: StyleIdea[] = (all.data ?? []).filter((i: StyleIdea) => i.id !== id);
-      // prefer same-tag related
-      const sameTag = others.filter((i) => i.tags.some((t) => current?.tags.includes(t)));
-      setRelated([...sameTag, ...others.filter((i) => !sameTag.includes(i))].slice(0, 8));
+      setRelated(others.slice(0, 8));
     }).finally(() => setLoading(false));
   }, [id]);
 
@@ -111,20 +108,7 @@ export default function StyleIdeaDetailPage() {
 
           {/* Right — info */}
           <div className="flex flex-col gap-5 p-6 md:p-8 flex-1">
-            {/* Tags */}
-            {idea.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {idea.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-xs px-3 py-1 rounded-full font-medium"
-                    style={{ background: "rgba(131,81,5,0.1)", color: "#835105", border: "1px solid rgba(131,81,5,0.2)" }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
+
 
             {/* Title */}
             <h1
