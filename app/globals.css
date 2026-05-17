@@ -38,8 +38,7 @@
   --sidebar-accent-foreground: #e8d5b7;
   --sidebar-border: oklch(0.9 0.01 0);
   --sidebar-ring: #443826;
-  --card-border: #57422C;
-  --card-gradient: #57422C;
+  --card-border: rgba(87,66,44,0.25);
 }
 
 .dark {
@@ -76,8 +75,7 @@
   --sidebar-accent-foreground: #e8d5b7;
   --sidebar-border: oklch(0.2 0.01 0);
   --sidebar-ring: #443826;
-  --card-border: #57422C;
-  --card-gradient: #2a2116;
+  --card-border: rgba(87,66,44,0.2);
 }
 
 @theme inline {

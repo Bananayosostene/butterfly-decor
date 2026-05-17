@@ -279,25 +279,18 @@ export default function CollectionItemDetailPage() {
       {related.length > 0 && (
         <div className="max-w-7xl mx-auto px-4 md:px-8 mt-4">
           <div className="columns-2 sm:columns-3 lg:columns-4 gap-2">
-            {related.map((rel, idx) => (
+            {related.map((rel) => (
               <div
                 key={rel.id}
                 className="break-inside-avoid mb-2 group cursor-pointer"
                 onClick={() => handleRelatedClick(rel)}
               >
-                <div
-                  className="relative overflow-hidden "
-                  style={{ aspectRatio: idx % 4 === 0 ? "3/4" : idx % 4 === 1 ? "4/5" : idx % 4 === 2 ? "1/1" : "3/5" }}
-                >
-                  <Image
-                    src={rel.imageUrl}
-                    alt={rel.name}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                  />
-               
-                </div>
+                <img
+                  src={rel.imageUrl}
+                  alt={rel.name}
+                  className="w-full h-auto block"
+                  loading="lazy"
+                />
               </div>
             ))}
           </div>

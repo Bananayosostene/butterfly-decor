@@ -145,7 +145,7 @@ export function WeddingShopHero() {
                 Explore Collection
               </a>
               <a
-                href="https://web.whatsapp.com/send?phone=250788724867&text=Hello%20Butterfly%20Decor%20%F0%9F%8C%B8"
+                href="https://wa.me/+250788724867?text=Hello%20Butterfly%20Decor%20%F0%9F%8C%B8"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-medium border transition-opacity hover:opacity-80"
