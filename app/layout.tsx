@@ -89,30 +89,28 @@ export const metadata: Metadata = {
     alternateLocale: "rw_RW",
     url: BASE_URL,
     siteName: "Butterfly Decor Rwanda",
-    title: "Butterfly Decor | Event Decoration & Outfit Rental in Rwanda",
-    description:
-      "Premium event decoration and outfit rental for weddings, birthdays and celebrations in Rwanda. Bridal gowns, groom suits, gift wrapping, invitations and more. | Serivisi zo gutaka ibirori mu Rwanda: impuzu z'ubukwe, gutaka ubukwe, impakira ingabire, n'ibindi.",
+    title: "Butterfly Decor",
+    description: "Event Decoration & Outfit Rental in Rwanda",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Butterfly Decor Rwanda — Event Decoration & Outfit Rental",
+        alt: "Butterfly Decor Rwanda",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Butterfly Decor | Event Decoration & Outfit Rental in Rwanda",
-    description:
-      "Premium event decoration and outfit rental for weddings, birthdays and celebrations in Rwanda.",
+    title: "Butterfly Decor",
+    description: "Event Decoration & Outfit Rental in Rwanda",
     images: ["/og-image.jpg"],
   },
   alternates: {
     canonical: BASE_URL,
     languages: {
       "en-RW": BASE_URL,
-      "rw": `${BASE_URL}/rw`,
+      rw: `${BASE_URL}/rw`,
     },
   },
   icons: {

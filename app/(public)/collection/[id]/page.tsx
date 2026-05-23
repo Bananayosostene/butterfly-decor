@@ -285,12 +285,38 @@ export default function CollectionItemDetailPage() {
                 className="break-inside-avoid mb-2 group cursor-pointer"
                 onClick={() => handleRelatedClick(rel)}
               >
-                <img
-                  src={rel.imageUrl}
-                  alt={rel.name}
-                  className="w-full h-auto block"
-                  loading="lazy"
-                />
+                <div className="relative overflow-hidden">
+                  <img
+                    src={rel.imageUrl}
+                    alt={rel.name}
+                    className="w-full h-auto block"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300" />
+                  <div className="absolute top-2 right-2 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); toggleSelection(rel.id); }}
+                      className={`w-7 h-7 rounded-full flex items-center justify-center shadow-md cursor-pointer ${
+                        selectedItems.includes(rel.id) ? "bg-primary" : "bg-black/60"
+                      }`}
+                    >
+                      <CheckCircle2 className={`h-4 w-4 ${selectedItems.includes(rel.id) ? "text-primary-foreground" : "text-white"}`} />
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setShareItem({ id: rel.id, name: rel.name }); setCopied(false); }}
+                      className="w-7 h-7 rounded-full flex items-center justify-center cursor-pointer shadow-md bg-black/60"
+                    >
+                      <Share2 className="w-3.5 h-3.5 text-white" />
+                    </button>
+                  </div>
+                  <div
+                    className="absolute bottom-0 left-0 right-0 px-2 py-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55), transparent)" }}
+                  >
+                    <p className="text-white text-xs font-medium truncate" style={{ fontFamily: "Georgia, serif" }}>{rel.name}</p>
+                    <p className="text-white/70 text-[10px] truncate" style={{ fontFamily: "Georgia, serif" }}>{rel.category.name}</p>
+                  </div>
+                </div>
               </div>
             ))}
           </div>

@@ -10,6 +10,13 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
   const booking = await prisma.booking.findUnique({ where: { id: params.id } });
   if (!booking) redirect("/admin/bookings");
 
+  const items = booking.selectedItems.length
+    ? await prisma.collectionItem.findMany({
+        where: { id: { in: booking.selectedItems } },
+        select: { id: true, name: true },
+      })
+    : [];
+
   const statusColor = (s: string) =>
     s === "NEW" ? { background: "#fdf6ee", color: "#835105" } :
     s === "CONFIRMED" ? { background: "#f0fdf4", color: "#166534" } :
@@ -38,19 +45,26 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
             <p className="text-muted-foreground text-xs mb-1">Created</p>
             <p className="text-foreground">{new Date(booking.createdAt).toLocaleString()}</p>
           </div>
-          <div>
-            <p className="text-muted-foreground text-xs mb-1">Selected Items</p>
-            <p className="text-foreground">{booking.selectedItems.length} item{booking.selectedItems.length !== 1 ? "s" : ""}</p>
-          </div>
         </div>
 
         {booking.selectedItems.length > 0 && (
           <div>
-            <p className="text-muted-foreground text-xs mb-2">Item IDs</p>
-            <div className="flex flex-wrap gap-1">
-              {booking.selectedItems.map((id) => (
-                <span key={id} className="text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground font-mono">{id}</span>
-              ))}
+            <p className="text-muted-foreground text-xs mb-2">Selected Items</p>
+            <div className="flex flex-wrap gap-2">
+              {booking.selectedItems.map((id) => {
+                const item = items.find((i) => i.id === id);
+                return (
+                  <Link
+                    key={id}
+                    href={`/collection/${id}`}
+                    target="_blank"
+                    className="text-xs px-3 py-1 rounded-full font-medium hover:opacity-80 transition-opacity"
+                    style={{ background: "#fdf6ee", color: "#835105", border: "1px solid #c9a96e" }}
+                  >
+                    {item?.name ?? `#${id.slice(-6)}`}
+                  </Link>
+                );
+              })}
             </div>
           </div>
         )}

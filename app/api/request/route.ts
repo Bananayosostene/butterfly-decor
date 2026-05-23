@@ -14,11 +14,24 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    const itemsText = selectedItems.length
-      ? `\nSelected items: ${selectedItems.join(", ")}`
-      : ""
-    const message = `Hello Butterfly Decor, I'd like to book for my event on ${eventDate}.${itemsText}\nPhone: ${phone}`
-    const whatsappUrl = `https://wa.me/+250788724867?text=${encodeURIComponent(message)}`
+    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://butterfly-decor.vercel.app";
+
+    let itemsText = "";
+    if (selectedItems.length) {
+      const items = await prisma.collectionItem.findMany({
+        where: { id: { in: selectedItems } },
+        select: { id: true, name: true },
+      });
+      const lines = selectedItems.map((id: string) => {
+        const item = items.find((i) => i.id === id);
+        const name = item?.name ?? "Item";
+        return `• ${name}: ${BASE_URL}/collection/${id}`;
+      });
+      itemsText = `\n\nSelected items:\n${lines.join("\n")}`;
+    }
+
+    const message = `Hello Butterfly Decor, I'd like to book for my event on ${eventDate}.${itemsText}\n\nPhone: ${phone}`;
+    const whatsappUrl = `https://wa.me/+250788724867?text=${encodeURIComponent(message)}`;
 
     return NextResponse.json({ booking, whatsappUrl }, { status: 201 })
   } catch (error) {

@@ -5,8 +5,9 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
     const categoryId = searchParams.get("categoryId")
+    const ids = searchParams.get("ids")?.split(",").filter(Boolean)
     const items = await prisma.collectionItem.findMany({
-      where: categoryId ? { categoryId } : undefined,
+      where: ids?.length ? { id: { in: ids } } : categoryId ? { categoryId } : undefined,
       include: { category: true },
       orderBy: { createdAt: "desc" },
     })
