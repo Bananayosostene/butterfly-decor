@@ -125,7 +125,7 @@ export default function StyleInspirationsPage() {
               <div
                 key={idea.id}
                 className="break-inside-avoid mb-3 group cursor-pointer"
-                onClick={() => router.push(`/style-insipiration/${idea.id}`)}
+                onClick={() => router.push(`/style-inspiration/${idea.id}`)}
               >
                 <div
                   className="relative overflow-hidden rounded-2xl"

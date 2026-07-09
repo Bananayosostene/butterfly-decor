@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://butterfly-decor.vercel.app";
+    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://www.butterflydec.com";
 
     let itemsText = "";
     if (selectedItems.length) {

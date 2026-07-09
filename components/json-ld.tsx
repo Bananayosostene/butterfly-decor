@@ -1,5 +1,5 @@
 export function JsonLd() {
-  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://butterfly-decor.vercel.app";
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://www.butterflydec.com";
   const schema = [
     {
       "@context": "https://schema.org",
@@ -37,7 +37,11 @@ export function JsonLd() {
         opens: "08:00",
         closes: "20:00",
       },
-      sameAs: ["https://wa.me/250788724867"],
+      sameAs: [
+        "https://wa.me/250788724867",
+        "https://www.instagram.com/butterfly__decor",
+        "https://www.tiktok.com/@butterfly__decor",
+      ],
       hasOfferCatalog: {
         "@type": "OfferCatalog",
         name: "Event Decoration & Outfit Rental | Gutaka Ibirori n'Impuzu",

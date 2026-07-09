@@ -1,0 +1,24 @@
+try to search and go through in this project, then look how everyting working and what users expected to see.
+ while my idea is to show clients or people what in stock.  
+
+users feedback or client are need.  
+1. give me images of like suits, bridal clothes, backdrops designs. 
+
+
+2. They need to see what type of autofit user can use depends on his 
+skin color as we are affrican, and depends on event type (wedding event, 
+dieth events, graduation events, and any other events ). I want this app 
+to help user to have more hapiness on his or her event. 
+
+my app it looks like only Gallery and users they have enaought photoes no 
+need to show only images, i think i have to show clinent innovation in pages,
+each image should have good description, specify admin editor that will be used 
+to add good description
+
+
+3. for me on wedding plan I always sit with client and talk about all items 
+or tools needed in wedding. i need to record items wit corresponding money we
+ have negotiated with client. i need page to manage this work that can replace 
+ tradition recording in hard book. and i think on client page he can fill wish 
+ list of items or tools he/she need. as no users in table and no registration client
+  who is filling the items
