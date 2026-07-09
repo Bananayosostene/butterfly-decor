@@ -14,7 +14,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://www.butterflydec.c
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "Butterfly Decor | Event Decoration & Outfit Rental in Rwanda",
+    default: "Butterflydecor | Decoration & Outfit Rental", // dont edit this line
     template: "%s | Butterfly Decor Rwanda",
   },
   description:
@@ -93,7 +93,7 @@ export const metadata: Metadata = {
     description: "Event Decoration & Outfit Rental in Rwanda",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "Butterfly Decor Rwanda",
@@ -104,7 +104,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Butterfly Decor",
     description: "Event Decoration & Outfit Rental in Rwanda",
-    images: ["/og-image.jpg"],
+    images: ["/og-image.png"],
   },
   alternates: {
     canonical: BASE_URL,
