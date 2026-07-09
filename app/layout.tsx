@@ -14,7 +14,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://www.butterflydec.c
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "Butterfly Decor | Decoration & Outfit Rental",
+    default: "Butterfly Decor | Event Decoration & Outfit Rental in Rwanda",
     template: "%s | Butterfly Decor Rwanda",
   },
   description:
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   keywords: [
     // English
     "butterfly decor",
-    "butterflydec.com",
+    "butterflydecor.rw",
     "butterfly decor Rwanda",
     "event decoration Rwanda",
     "event decoration Kigali",
@@ -114,16 +114,8 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
-    ],
+    icon: "/icon.svg",
     apple: "/icon.svg",
-    shortcut: "/favicon.ico",
-  },
-  other: {
-    "theme-color": "#8B4513",
-    "apple-mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-status-bar-style": "black-translucent",
   },
 };
 
@@ -135,7 +127,7 @@ export default function RootLayout({
   return (
     <html lang="en-RW">
       <head>
-        <meta name="google-site-verification" content="ADD_YOUR_GOOGLE_SEARCH_CONSOLE_CODE_HERE" />
+        <meta name="google-site-verification" content="PASTE_YOUR_CODE_HERE" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Playball&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />

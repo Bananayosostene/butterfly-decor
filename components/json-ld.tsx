@@ -37,11 +37,7 @@ export function JsonLd() {
         opens: "08:00",
         closes: "20:00",
       },
-      sameAs: [
-        "https://wa.me/250788724867",
-        "https://www.instagram.com/butterfly__decor",
-        "https://www.tiktok.com/@butterfly__decor",
-      ],
+      sameAs: ["https://wa.me/250788724867"],
       hasOfferCatalog: {
         "@type": "OfferCatalog",
         name: "Event Decoration & Outfit Rental | Gutaka Ibirori n'Impuzu",
