@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description:
     "Browse our complete collection of wedding decorations, bridal gowns, groom suits, birthday decorations, gift wrapping, invitations, and event decor in Rwanda.",
   openGraph: {
-    title: "Collections | Butterfly Decor Rwanda",
+    title: "Collections | Sostene decor",
     description:
       "Browse our complete collection of wedding decorations, bridal gowns, groom suits, birthday decorations, and more in Rwanda.",
     url: `${BASE_URL}/collection`,

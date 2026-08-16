@@ -14,16 +14,29 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://www.butterflydec.c
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "Butterflydecor | Decoration & Outfit Rental", // dont edit this line
-    template: "%s | Butterfly Decor Rwanda",
+    default: "Butterflydecor | Sostene decor", // dont edit this line
+    template: "%s | Sostene decor",
   },
   description:
     "Butterfly Decor Rwanda — premium event decoration and outfit rental for weddings, birthdays, church events and celebrations in Rwanda. Bridal gowns, groom suits, gift wrapping, invitations and more. | Serivisi zo gutaka ibirori mu Rwanda: impuzu z'ubukwe, gutaka ubukwe, impakira ingabire n'ibindi.",
   keywords: [
     // English
     "butterfly decor",
-    "butterflydecor.rw",
+    "butterfly decor rwanda",
+    "butterflydec",
+    "butterflydec.com",
     "butterfly decor Rwanda",
+    "butterfly decoration Rwanda",
+    "butterfly decor Kigali",
+    "butterfly decor Kigali Rwanda",
+    "Butterfly Decor by Sostene",
+    "Sostene",
+    "Sostene decor",
+    "Sostene decoration",
+    "Sostene Butterfly Decor",
+    "Sostene decor Rwanda",
+    "Sostene decoration Kigali",
+    "Sostene butterfly",
     "event decoration Rwanda",
     "event decoration Kigali",
     "wedding decoration Rwanda",

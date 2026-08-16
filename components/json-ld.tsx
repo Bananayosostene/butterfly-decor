@@ -8,7 +8,7 @@ export function JsonLd() {
       alternateName: ["Butterfly Events Ltd", "Butterfly Decor Rwanda"],
       url: BASE_URL,
       logo: `${BASE_URL}/new_logo.png`,
-      image: `${BASE_URL}/flyer-03.png`,
+      image: `${BASE_URL}/flyer-03.jpg`,
       description:
         "Premium event decoration and outfit rental for weddings, birthdays, church events and celebrations in Rwanda. Bridal gowns, groom suits, gift wrapping, invitations and more. | Serivisi zo gutaka ibirori mu Rwanda: impuzu z'ubukwe, gutaka ubukwe, impakira ingabire, impapuro z'ubutumire n'ibindi.",
       telephone: "+250788724867",
