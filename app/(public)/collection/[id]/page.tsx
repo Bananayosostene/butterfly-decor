@@ -182,30 +182,22 @@ export default function CollectionItemDetailPage() {
           </div>
 
           {/* Info */}
-          <div className="flex flex-col gap-4 p-4 md:p-6 flex-1">
-              <span
-                className="self-start text-xs px-3 py-1 rounded-full font-medium"
-                style={{
-                  background: "rgba(131,81,5,0.1)",
-                  color: "#835105",
-                  border: "1px solid rgba(131,81,5,0.2)",
-                }}
-              >
-                {item.category.name}
-              </span>
-              <h1
-                className="text-2xl md:text-3xl leading-snug"
-                style={{
-                  fontFamily: "'Playball', cursive",
-                  color: "var(--primary)",
-                  fontWeight: 400,
-                }}
-              >
-                {item.name}
-              </h1>
+          <div className="flex flex-col pt-2 px-4 pb-2 md:pt-4 md:px-6 md:pb-3 flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-3 ">
+                <h1
+                  className="text-xl md:text-2xl leading-snug "
+                  style={{
+                    fontFamily: "'Playball', cursive",
+                    color: "var(--primary)",
+                    fontWeight: 400,
+                  }}
+                >
+                  {item.name}
+                </h1>
+              </div>
               {item.description && (
                 <p
-                  className="text-sm leading-relaxed"
+                  className="text-sm leading-relaxed mt-1"
                   style={{
                     color: "var(--muted-foreground)",
                     fontStyle: "italic",
@@ -214,14 +206,11 @@ export default function CollectionItemDetailPage() {
                   {item.description}
                 </p>
               )}
-              <div
-                className="border-t"
-                style={{ borderColor: "var(--border)" }}
-              />
-              <div className="flex gap-3">
+             
+              <div className="flex items-center justify-center gap-2 mt-auto pt-4">
                 <button
                   onClick={() => toggleSelection(item.id)}
-                  className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full text-sm font-semibold transition-opacity hover:opacity-90"
+                  className="flex items-center justify-center gap-2 px-4 py-1 rounded-full text-sm font-semibold whitespace-nowrap transition-opacity cursor-pointer hover:opacity-90"
                   style={
                     selectedItems.includes(item.id)
                       ? {
@@ -229,13 +218,13 @@ export default function CollectionItemDetailPage() {
                           color: "var(--primary-foreground)",
                         }
                       : {
-                          border: "1.5px solid var(--primary)",
+                          border: "1px solid var(--primary)",
                           color: "var(--primary)",
                           background: "transparent",
                         }
                   }
                 >
-                  <CheckCircle2 size={15} />
+                  <CheckCircle2 size={13} />
                   {selectedItems.includes(item.id) ? "Selected" : "Select"}
                 </button>
                 <button
@@ -243,37 +232,37 @@ export default function CollectionItemDetailPage() {
                     setShareItem({ id: item.id, name: item.name });
                     setCopied(false);
                   }}
-                  className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+                  className="w-10 h-7 rounded-full flex items-center justify-center shrink-0 cursor-pointer"
                   style={{
-                    border: "1.5px solid var(--primary)",
+                    border: "1px solid var(--primary)",
                     color: "var(--primary)",
                   }}
                 >
-                  <Share2 size={15} />
+                  <Share2 size={13} />
                 </button>
-              </div>
-              <a
-                href="https://wa.me/+250788724867?text=Hello%20Butterfly%20Decor%2C%20I%20love%20this%20item%20and%20would%20like%20to%20book%20it%20for%20my%20event!"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 py-3 rounded-full text-sm font-semibold transition-opacity hover:opacity-90"
-                style={{
-                  background: "var(--primary)",
-                  color: "var(--primary-foreground)",
-                }}
-              >
-                <svg
-                  className="w-4 h-4"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
+                <a
+                  href="https://wa.me/+250788724867?text=Hello%20Butterfly%20Decor%2C%20I%20love%20this%20item%20and%20would%20like%20to%20book%20it%20for%20my%20event!"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-1 rounded-full text-sm font-semibold whitespace-nowrap transition-opacity hover:opacity-90"
+                  style={{
+                    background: "var(--primary)",
+                    color: "var(--primary-foreground)",
+                  }}
                 >
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488" />
-                </svg>
-                Book this item
-              </a>
+                  <svg
+                    className="w-3.5 h-3.5"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                  </svg>
+                  Book
+                </a>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
       {/* All related items */}
       {related.length > 0 && (
@@ -293,28 +282,13 @@ export default function CollectionItemDetailPage() {
                     loading="lazy"
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300" />
-                  <div className="absolute top-2 right-2 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); toggleSelection(rel.id); }}
-                      className={`w-7 h-7 rounded-full flex items-center justify-center shadow-md cursor-pointer ${
-                        selectedItems.includes(rel.id) ? "bg-primary" : "bg-black/60"
-                      }`}
-                    >
-                      <CheckCircle2 className={`h-4 w-4 ${selectedItems.includes(rel.id) ? "text-primary-foreground" : "text-white"}`} />
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setShareItem({ id: rel.id, name: rel.name }); setCopied(false); }}
-                      className="w-7 h-7 rounded-full flex items-center justify-center cursor-pointer shadow-md bg-black/60"
-                    >
-                      <Share2 className="w-3.5 h-3.5 text-white" />
-                    </button>
-                  </div>
                   <div
-                    className="absolute bottom-0 left-0 right-0 px-2 py-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                    style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55), transparent)" }}
+                    className="absolute bottom-0 left-0 right-0 px-2.5 py-2"
+                    style={{ background: "linear-gradient(to top, rgba(0,0,0,0.65), transparent)" }}
                   >
-                    <p className="text-white text-xs font-medium truncate" style={{ fontFamily: "Georgia, serif" }}>{rel.name}</p>
-                    <p className="text-white/70 text-[10px] truncate" style={{ fontFamily: "Georgia, serif" }}>{rel.category.name}</p>
+                    <p className="text-white text-base sm:text-lg font-semibold truncate" style={{ fontFamily: "Georgia, serif", textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>
+                      {rel.name}
+                    </p>
                   </div>
                 </div>
               </div>

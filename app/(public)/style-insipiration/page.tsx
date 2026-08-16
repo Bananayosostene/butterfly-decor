@@ -135,14 +135,14 @@ export default function StyleInspirationsPage() {
                     src={idea.imageUrl}
                     alt={idea.title}
                     fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="object-cover"
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   />
                   <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3"
-                    style={{ background: "linear-gradient(to top, rgba(30,16,8,0.85) 0%, transparent 60%)" }}
+                    className="absolute bottom-0 left-0 right-0 px-2.5 py-2"
+                    style={{ background: "linear-gradient(to top, rgba(0,0,0,0.65), transparent)" }}
                   >
-                    <p className="text-xs font-semibold leading-snug" style={{ color: "#e8d5b7" }}>
+                    <p className="text-white text-base sm:text-lg font-semibold truncate" style={{ fontFamily: "Georgia, serif", textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>
                       {idea.title}
                     </p>
                   </div>

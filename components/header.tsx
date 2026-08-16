@@ -50,7 +50,7 @@ export function Header() {
 
   const navClass = (href: string) =>
     `px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
-      pathname === href
+      pathname === href || pathname.startsWith(`${href}/`)
         ? "bg-accent text-primary-foreground"
         : "text-primary-foreground/80 hover:text-primary-foreground"
     }`;

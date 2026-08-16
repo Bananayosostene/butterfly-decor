@@ -172,7 +172,6 @@ function CollectionsContent({
                   className="relative overflow-hidden group cursor-pointer w-full block"
                 >
                   <img src={item.imageUrl} alt={item.name} className="w-full h-auto block" loading="lazy" />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300" />
                   <div className="absolute top-2 right-2 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleSelection(item.id); }}
@@ -190,11 +189,10 @@ function CollectionsContent({
                     </button>
                   </div>
                   <div
-                    className="absolute bottom-0 left-0 right-0 px-2 py-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                    style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55), transparent)" }}
+                    className="absolute bottom-0 left-0 right-0 px-2.5 py-2"
+                    style={{ background: "linear-gradient(to top, rgba(0,0,0,0.65), transparent)" }}
                   >
-                    <p className="text-white text-xs font-medium truncate" style={{ fontFamily: "Georgia, serif" }}>{item.name}</p>
-                    <p className="text-white/70 text-[10px] truncate" style={{ fontFamily: "Georgia, serif" }}>{item.category.name}</p>
+                    <p className="text-white text-base sm:text-lg font-semibold truncate" style={{ fontFamily: "Georgia, serif", textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>{item.name}</p>
                   </div>
                 </Link>
               </div>
