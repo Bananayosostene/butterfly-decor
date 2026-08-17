@@ -1,10 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Pencil, Trash2, Plus, X } from "lucide-react";
+import { Pencil, Trash2, Plus, X, Images } from "lucide-react";
 import Image from "next/image";
+import { RichTextEditor } from "@/components/admin/rich-text-editor";
+import { CategoryImagesManager } from "@/components/admin/category-images-manager";
+import { stripHtmlToText } from "@/lib/text";
 
-type Category = { id: string; name: string; description?: string; imageUrl?: string };
+type CategoryImage = { id: string; imageUrl: string; order: number };
+type Category = { id: string; name: string; description?: string; imageUrl?: string; images?: CategoryImage[] };
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -13,6 +17,7 @@ export default function CategoriesPage() {
   const [form, setForm] = useState({ name: "", description: "", imageUrl: "" });
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [imagesManagerFor, setImagesManagerFor] = useState<Category | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -84,10 +89,16 @@ export default function CategoriesPage() {
               )}
               <div className="p-4">
                 <h3 className="font-semibold text-foreground">{c.name}</h3>
-                {c.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{c.description}</p>}
-                <div className="flex gap-2 mt-3">
+                {c.description && (
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{stripHtmlToText(c.description)}</p>
+                )}
+                <p className="text-[11px] text-muted-foreground mt-1">{c.images?.length ?? 0} gallery image(s)</p>
+                <div className="flex gap-2 mt-3 flex-wrap">
                   <button onClick={() => openEdit(c)} className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg border border-border text-foreground hover:bg-muted">
                     <Pencil className="w-3 h-3" /> Edit
+                  </button>
+                  <button onClick={() => setImagesManagerFor(c)} className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg border border-border text-foreground hover:bg-muted">
+                    <Images className="w-3 h-3" /> Gallery
                   </button>
                   <button onClick={() => handleDelete(c.id)} className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50">
                     <Trash2 className="w-3 h-3" /> Delete
@@ -109,13 +120,18 @@ export default function CategoriesPage() {
             </div>
             <div className="space-y-3">
               <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Name *" className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground" />
-              <textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Description" rows={3} className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground resize-none" />
+              <RichTextEditor value={form.description} onChange={(html) => setForm((f) => ({ ...f, description: html }))} placeholder="Description" />
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Image</label>
+                <label className="text-xs text-muted-foreground mb-1 block">Cover Image (used on cards)</label>
                 <input type="file" accept="image/*" onChange={handleUpload} className="text-sm text-muted-foreground" />
                 {uploading && <p className="text-xs text-muted-foreground mt-1">Uploading...</p>}
                 {form.imageUrl && <img src={form.imageUrl} alt="preview" className="mt-2 h-24 w-full object-cover rounded-lg" />}
               </div>
+              {modal.editing && (
+                <p className="text-xs text-muted-foreground">
+                  Add more photos of this service via the <strong>Gallery</strong> button after saving — the homepage shows two of them side by side.
+                </p>
+              )}
             </div>
             <div className="flex gap-2 justify-end">
               <button onClick={closeModal} className="px-4 py-2 text-sm rounded-lg border border-border text-foreground">Cancel</button>
@@ -125,6 +141,17 @@ export default function CategoriesPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {imagesManagerFor && (
+        <CategoryImagesManager
+          category={imagesManagerFor}
+          onClose={() => setImagesManagerFor(null)}
+          onChange={(images) => {
+            setCategories((prev) => prev.map((c) => (c.id === imagesManagerFor.id ? { ...c, images } : c)));
+            setImagesManagerFor((f) => (f ? { ...f, images } : f));
+          }}
+        />
       )}
     </div>
   );

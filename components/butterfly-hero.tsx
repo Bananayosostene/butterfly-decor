@@ -2,9 +2,12 @@
 
 import { useEffect, useState } from "react";
 
+const FALLBACK_VIDEO = "/hero-video.mp4";
+
 export function WeddingShopHero() {
   const [heroHeight, setHeroHeight] = useState<string | undefined>(undefined);
   const [videoAvailable, setVideoAvailable] = useState(true);
+  const [videoSrc, setVideoSrc] = useState(FALLBACK_VIDEO);
 
   useEffect(() => {
     const updateHeight = () => {
@@ -17,6 +20,15 @@ export function WeddingShopHero() {
     updateHeight();
     window.addEventListener("resize", updateHeight);
     return () => window.removeEventListener("resize", updateHeight);
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((r) => r.json())
+      .then((res) => {
+        if (res?.data?.heroVideoUrl) setVideoSrc(res.data.heroVideoUrl);
+      })
+      .catch(() => {});
   }, []);
 
   // With the video visible, text sits on a dark warm scrim (brand chocolate).
@@ -41,6 +53,7 @@ export function WeddingShopHero() {
       {/* background video — replace public/hero-video.mp4 with your own footage any time; falls back to the gradient below if the file is missing */}
       {videoAvailable && (
         <video
+          key={videoSrc}
           autoPlay
           muted
           loop
@@ -50,7 +63,7 @@ export function WeddingShopHero() {
           className="absolute inset-0 w-full h-full object-cover"
           style={{ zIndex: 0 }}
         >
-          <source src="/hero-video.mp4" type="video/mp4" />
+          <source src={videoSrc} type="video/mp4" />
         </video>
       )}
       {videoAvailable && (

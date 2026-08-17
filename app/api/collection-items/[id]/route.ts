@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db"
 import { requireAdmin } from "@/lib/auth"
+import { sanitizeRichText } from "@/lib/sanitize"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -19,6 +20,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       return NextResponse.json({ success: false, message: "Unauthorized", statusCode: 401 }, { status: 401 })
     const { id } = await params
     const body = await req.json()
+    if (body.description) body.description = sanitizeRichText(body.description)
     const item = await prisma.collectionItem.update({ where: { id }, data: body, include: { category: true } })
     return NextResponse.json({ success: true, message: "Item updated", statusCode: 200, data: item })
   } catch {

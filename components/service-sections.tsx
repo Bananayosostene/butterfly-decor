@@ -3,8 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { stripHtmlToText } from "@/lib/text";
 
-type Category = { id: string; name: string; description?: string; imageUrl?: string };
+type CategoryImage = { id: string; imageUrl: string; order: number };
+type Category = { id: string; name: string; description?: string; imageUrl?: string; images?: CategoryImage[] };
 
 const CHOCOLATE = "#2b1807";
 const BORDER = "#e8d5b7";
@@ -70,6 +72,10 @@ export function ServiceSections() {
   if (categories.length === 0) return null;
 
   const activeCategory = categories[active];
+  const gallery = (activeCategory.images ?? []).map((img) => img.imageUrl);
+  const candidateImages = [activeCategory.imageUrl, ...gallery].filter(Boolean) as string[];
+  const leftImage = candidateImages[0];
+  const rightImage = candidateImages[1] ?? candidateImages[0];
 
   return (
     <section className="w-full py-10 md:py-14 px-4 md:px-8 lg:px-12" style={{ background: "#F5F5F7" }}>
@@ -96,8 +102,8 @@ export function ServiceSections() {
                 key={cat.id}
                 href={`/collection?cat=${slugify(cat.name)}`}
                 onMouseEnter={() => goTo(i)}
-                className="group relative flex items-start gap-4 py-4 md:py-5 pl-4 border-b transition-colors duration-300"
-                style={{ borderColor: BORDER }}
+                className="group relative flex items-center gap-4 pl-4 border-b transition-all duration-300 overflow-hidden"
+                style={{ borderColor: BORDER, paddingTop: isActive ? "1.1rem" : "0.6rem", paddingBottom: isActive ? "1.1rem" : "0.6rem" }}
               >
                 <span
                   className="absolute left-0 top-2 bottom-2 rounded-full transition-all duration-300"
@@ -112,21 +118,25 @@ export function ServiceSections() {
                 <div className="flex flex-col gap-1 min-w-0">
                   <span
                     className="font-playball leading-tight transition-all duration-300"
-                    style={{ color: CHOCOLATE, fontSize: isActive ? "1.5rem" : "1.15rem", opacity: isActive ? 1 : 0.65 }}
+                    style={{ color: CHOCOLATE, fontSize: isActive ? "1.5rem" : "1rem", opacity: isActive ? 1 : 0.6 }}
                   >
                     {cat.name}
                   </span>
-                  {cat.description && isActive && (
-                    <p className="text-sm leading-relaxed line-clamp-2" style={{ color: "rgba(43,24,7,0.6)" }}>
-                      {cat.description}
-                    </p>
-                  )}
-                  <span
-                    className="text-xs font-medium mt-0.5 transition-opacity duration-300"
-                    style={{ color: GOLD, opacity: isActive ? 1 : 0 }}
+                  <div
+                    className="grid transition-all duration-300"
+                    style={{ gridTemplateRows: isActive ? "1fr" : "0fr", opacity: isActive ? 1 : 0 }}
                   >
-                    Explore this collection →
-                  </span>
+                    <div className="overflow-hidden min-h-0">
+                      {cat.description && (
+                        <p className="text-sm leading-relaxed line-clamp-2" style={{ color: "rgba(43,24,7,0.6)" }}>
+                          {stripHtmlToText(cat.description)}
+                        </p>
+                      )}
+                      <span className="text-xs font-medium mt-0.5 inline-block" style={{ color: GOLD }}>
+                        Explore this collection →
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </Link>
             );
@@ -150,9 +160,9 @@ export function ServiceSections() {
                 transition: "transform 0.7s cubic-bezier(0.34, 1.3, 0.64, 1) 0ms, opacity 0.5s ease 0ms",
               }}
             >
-              {activeCategory.imageUrl && (
+              {leftImage && (
                 <Image
-                  src={activeCategory.imageUrl}
+                  src={leftImage}
                   alt={activeCategory.name}
                   fill
                   unoptimized
@@ -162,7 +172,7 @@ export function ServiceSections() {
               )}
             </div>
 
-            {/* RIGHT WING — mirrors the same active image */}
+            {/* RIGHT WING — a second, different photo of the same active service when one is available */}
             <div
               className="relative overflow-hidden shadow-lg"
               style={{
@@ -176,9 +186,9 @@ export function ServiceSections() {
                 transition: "transform 0.7s cubic-bezier(0.34, 1.3, 0.64, 1) 80ms, opacity 0.5s ease 80ms",
               }}
             >
-              {activeCategory.imageUrl && (
+              {rightImage && (
                 <Image
-                  src={activeCategory.imageUrl}
+                  src={rightImage}
                   alt={activeCategory.name}
                   fill
                   unoptimized

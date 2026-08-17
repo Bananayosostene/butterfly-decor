@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { Pencil, Trash2, Plus, X } from "lucide-react";
 import Image from "next/image";
+import { RichTextEditor } from "@/components/admin/rich-text-editor";
+import { stripHtmlToText } from "@/lib/text";
 
 type Category = { id: string; name: string };
 type Item = { id: string; name: string; description?: string; imageUrl: string; categoryId: string; category: Category };
@@ -96,7 +98,9 @@ export default function CollectionItemsPage() {
               <div className="p-3">
                 <p className="text-xs font-medium text-muted-foreground">{item.category.name}</p>
                 <h3 className="font-semibold text-foreground text-sm mt-0.5 truncate">{item.name}</h3>
-                {item.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{item.description}</p>}
+                {item.description && (
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{stripHtmlToText(item.description)}</p>
+                )}
                 <div className="flex gap-2 mt-2">
                   <button onClick={() => openEdit(item)} className="flex items-center gap-1 text-xs px-2 py-1 rounded border border-border text-foreground hover:bg-muted">
                     <Pencil className="w-3 h-3" />
@@ -120,7 +124,7 @@ export default function CollectionItemsPage() {
             </div>
             <div className="space-y-3">
               <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Name *" className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground" />
-              <textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Description" rows={2} className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground resize-none" />
+              <RichTextEditor value={form.description} onChange={(html) => setForm((f) => ({ ...f, description: html }))} placeholder="Description" />
               <select value={form.categoryId} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))} className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground">
                 <option value="">Select Category *</option>
                 {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}

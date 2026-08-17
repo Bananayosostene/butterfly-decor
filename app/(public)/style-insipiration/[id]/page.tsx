@@ -123,12 +123,11 @@ export default function StyleIdeaDetailPage() {
 
             {/* Description */}
             {idea.description && (
-              <p
-                className="text-sm leading-relaxed"
-                style={{ color: "var(--muted-foreground)", fontStyle: "italic" }}
-              >
-                {idea.description}
-              </p>
+              <div
+                className="text-sm leading-relaxed prose prose-sm max-w-none"
+                style={{ color: "var(--muted-foreground)" }}
+                dangerouslySetInnerHTML={{ __html: idea.description }}
+              />
             )}
 
             {/* Divider */}

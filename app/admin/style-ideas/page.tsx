@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { Pencil, Trash2, Plus, X } from "lucide-react";
 import Image from "next/image";
+import { RichTextEditor } from "@/components/admin/rich-text-editor";
+import { stripHtmlToText } from "@/lib/text";
 
 type StyleIdea = { id: string; title: string; description?: string; imageUrl: string };
 
@@ -84,7 +86,7 @@ export default function StyleIdeasPage() {
               <div className="p-3">
                 <h3 className="font-semibold text-foreground text-sm truncate">{idea.title}</h3>
                 {idea.description && (
-                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{idea.description}</p>
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{stripHtmlToText(idea.description)}</p>
                 )}
                 <div className="flex gap-2 mt-2">
                   <button onClick={() => openEdit(idea)} className="flex items-center gap-1 text-xs px-2 py-1 rounded border border-border text-foreground hover:bg-muted">
@@ -109,7 +111,7 @@ export default function StyleIdeasPage() {
             </div>
             <div className="space-y-3">
               <input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="Title *" className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground" />
-              <textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Description" rows={2} className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground resize-none" />
+              <RichTextEditor value={form.description} onChange={(html) => setForm((f) => ({ ...f, description: html }))} placeholder="Description" />
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">Image *</label>
                 <input type="file" accept="image/*" onChange={handleUpload} className="text-sm text-muted-foreground" />

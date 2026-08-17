@@ -207,15 +207,11 @@ export default function CollectionItemDetailPage() {
               </h1>
             </div>
             {item.description && (
-              <p
-                className="text-sm leading-relaxed mt-1"
-                style={{
-                  color: "var(--muted-foreground)",
-                  fontStyle: "italic",
-                }}
-              >
-                {item.description}
-              </p>
+              <div
+                className="text-sm leading-relaxed mt-1 prose prose-sm max-w-none"
+                style={{ color: "var(--muted-foreground)" }}
+                dangerouslySetInnerHTML={{ __html: item.description }}
+              />
             )}
 
             <div className="flex items-center justify-center gap-2 mt-auto pt-4">

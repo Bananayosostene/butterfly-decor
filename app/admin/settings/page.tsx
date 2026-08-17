@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { deleteSession } from "@/lib/auth";
+import { HeroVideoManager } from "@/components/admin/hero-video-manager";
 
 export default async function AdminSettingsPage() {
   const cookieStore = await cookies();
@@ -16,6 +17,11 @@ export default async function AdminSettingsPage() {
             Session duration is 7 days. Use the{" "}
             <a href="/admin/forgot-password" className="underline font-medium">forgot password</a> link on the sign-in page to change your password.
           </p>
+        </div>
+
+        <div className="border-t border-border pt-6">
+          <h2 className="font-semibold text-foreground mb-2">Homepage Hero Video</h2>
+          <HeroVideoManager />
         </div>
 
         <div className="border-t border-border pt-6">
