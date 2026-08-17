@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db"
+import { requireAdmin } from "@/lib/auth"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -14,6 +15,8 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    if (!(await requireAdmin(req)))
+      return NextResponse.json({ success: false, message: "Unauthorized", statusCode: 401 }, { status: 401 })
     const { id } = await params
     const body = await req.json()
     const idea = await prisma.styleIdea.update({ where: { id }, data: body })
@@ -23,8 +26,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   }
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    if (!(await requireAdmin(req)))
+      return NextResponse.json({ success: false, message: "Unauthorized", statusCode: 401 }, { status: 401 })
     const { id } = await params
     await prisma.styleIdea.delete({ where: { id } })
     return NextResponse.json({ success: true, message: "Style idea deleted", statusCode: 200, data: null })

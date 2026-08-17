@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { v2 as cloudinary } from "cloudinary"
+import { requireAdmin } from "@/lib/auth"
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -22,6 +23,8 @@ async function uploadToCloudinary(buffer: Buffer, folder: string): Promise<any> 
 
 export async function POST(req: NextRequest) {
   try {
+    if (!(await requireAdmin(req)))
+      return NextResponse.json({ success: false, message: "Unauthorized", statusCode: 401 }, { status: 401 })
     const formData = await req.formData()
     const file = formData.get("file") as File
     const folder = (formData.get("folder") as string) || "butterfly-events"

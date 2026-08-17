@@ -2,108 +2,24 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Category = { id: string; name: string; description?: string; imageUrl?: string };
 
 const CHOCOLATE = "#2b1807";
-const CARD_BG = "#fdf6ee";
 const BORDER = "#e8d5b7";
+const GOLD = "#835105";
 
 function slugify(name: string) {
   return name.toLowerCase().replace(/\s+/g, "-");
 }
 
-function Panel({ category, flex }: { category: Category; flex: number }) {
-  return (
-    <Link
-      href={`/collection?cat=${slugify(category.name)}`}
-      className="group cursor-pointer flex items-center gap-3 md:gap-6 px-4 md:px-8 py-4 md:py-5 rounded-2xl transition-shadow duration-300 hover:shadow-xl w-full"
-      style={{
-        flex,
-        background: CARD_BG,
-        border: `1.5px solid ${BORDER}`,
-        minHeight: "90px",
-      }}
-    >
-      {/* Circle image */}
-      <div
-        className="shrink-0 rounded-full overflow-hidden transition-transform duration-500 group-hover:scale-105 relative"
-        style={{
-          width: "clamp(60px, 12vw, 160px)",
-          height: "clamp(60px, 12vw, 160px)",
-          background: CHOCOLATE,
-          border: `2px solid ${BORDER}`,
-        }}
-      >
-        {category.imageUrl ? (
-          <Image
-            src={category.imageUrl}
-            alt={category.name}
-            fill
-            unoptimized
-            className="object-cover"
-            sizes="(max-width: 640px) 60px, 160px"
-          />
-        ) : (
-          <div className="w-full h-full" style={{ background: CHOCOLATE }} />
-        )}
-      </div>
-
-      {/* Text */}
-      <div className="flex flex-col gap-0.5 min-w-0 flex-1">
-        <span
-          className="font-playball leading-tight"
-          style={{
-            color: CHOCOLATE,
-            fontSize: "clamp(0.85rem, 2.5vw, 1.5rem)",
-            display: "-webkit-box",
-            WebkitLineClamp: 1,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-          }}
-        >
-          {category.name}
-        </span>
-        {category.description && (
-          <p
-            className="leading-relaxed line-clamp-2"
-            style={{
-              color: "rgba(43,24,7,0.65)",
-              fontSize: "clamp(0.65rem, 1.8vw, 0.875rem)",
-            }}
-          >
-            {category.description}
-          </p>
-        )}
-        <span
-          className="font-medium mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          style={{ color: "#835105", fontSize: "clamp(0.6rem, 1.5vw, 0.75rem)" }}
-        >
-          Explore →
-        </span>
-      </div>
-    </Link>
-  );
-}
-
-function pairCategories(cats: Category[]) {
-  const rows: { left: Category; right: Category; leftFlex: number; rightFlex: number }[] = [];
-  for (let i = 0; i < cats.length - 1; i += 2) {
-    const isEven = rows.length % 2 === 0;
-    rows.push({
-      left: cats[i],
-      right: cats[i + 1],
-      leftFlex: isEven ? 6 : 4,
-      rightFlex: isEven ? 4 : 6,
-    });
-  }
-  return { rows, solo: cats.length % 2 !== 0 ? cats[cats.length - 1] : null };
-}
-
 export function ServiceSections() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [active, setActive] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const pausedRef = useRef(false);
 
   useEffect(() => {
     fetch("/api/categories")
@@ -112,23 +28,40 @@ export function ServiceSections() {
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    if (categories.length < 2) return;
+    const interval = setInterval(() => {
+      if (pausedRef.current) return;
+      setVisible(false);
+      setTimeout(() => {
+        setActive((prev) => (prev + 1) % categories.length);
+        setVisible(true);
+      }, 350);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [categories.length]);
+
+  const goTo = (i: number) => {
+    setActive((prev) => {
+      if (prev === i) return prev;
+      setVisible(false);
+      setTimeout(() => setVisible(true), 300);
+      return i;
+    });
+  };
+
   if (loading) {
     return (
-      <section className="w-full flex flex-col gap-3 p-3">
-        {/* mobile: two column skeletons */}
-        <div className="grid grid-cols-2 gap-2 md:hidden">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="animate-pulse rounded-2xl h-32" style={{ background: "var(--muted)" }} />
-          ))}
-        </div>
-        {/* desktop: two column skeletons */}
-        <div className="hidden md:flex flex-col gap-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="flex gap-3">
-              <div className="animate-pulse rounded-2xl h-28" style={{ flex: 6, background: "var(--muted)" }} />
-              <div className="animate-pulse rounded-2xl h-28" style={{ flex: 4, background: "var(--muted)" }} />
-            </div>
-          ))}
+      <section className="w-full py-10 md:py-14 px-4 md:px-8 lg:px-12" style={{ background: "#F5F5F7" }}>
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-8 md:gap-14">
+          <div className="flex-1 flex flex-col gap-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="animate-pulse rounded-xl h-16" style={{ background: "var(--muted)" }} />
+            ))}
+          </div>
+          <div className="flex-1 flex items-center justify-center">
+            <div className="animate-pulse rounded-2xl w-full max-w-sm" style={{ height: 280, background: "var(--muted)" }} />
+          </div>
         </div>
       </section>
     );
@@ -136,58 +69,147 @@ export function ServiceSections() {
 
   if (categories.length === 0) return null;
 
-  const { rows, solo } = pairCategories(categories);
+  const activeCategory = categories[active];
 
   return (
-    <section className="w-full" style={{ padding: "10px" }}>
-      <div className="w-full 2xl:max-w-7xl 2xl:mx-auto flex flex-col" style={{ gap: "10px" }}>
+    <section className="w-full py-10 md:py-14 px-4 md:px-8 lg:px-12" style={{ background: "#F5F5F7" }}>
+      <div className="max-w-6xl mx-auto mb-8 md:mb-12 text-center">
+        <h2 className="text-xl md:text-3xl font-light mb-2 font-playball" style={{ color: CHOCOLATE }}>
+          Our Signature Services
+        </h2>
+        <p className="text-sm md:text-base" style={{ color: "rgba(43,24,7,0.65)" }}>
+          Hover a service to preview it, tap to explore the full collection.
+        </p>
+      </div>
 
-        {/* Mobile: two columns grid */}
-        <div className="grid grid-cols-2 gap-2 md:hidden">
-          {categories.map((cat) => (
-            <Link
-              key={cat.id}
-              href={`/collection?cat=${slugify(cat.name)}`}
-              className="group cursor-pointer flex flex-col items-center gap-2 px-3 py-3 rounded-2xl transition-shadow duration-300 hover:shadow-xl text-center"
-              style={{ background: CARD_BG, border: `1.5px solid ${BORDER}` }}
-            >
-              <div
-                className="shrink-0 rounded-full overflow-hidden relative transition-transform duration-500 group-hover:scale-105"
-                style={{ width: 64, height: 64, background: CHOCOLATE, border: `2px solid ${BORDER}` }}
+      <div className="max-w-6xl mx-auto flex flex-col-reverse md:flex-row items-center md:items-stretch gap-10 md:gap-14">
+        {/* LEFT — service list, text only */}
+        <div
+          className="flex-1 w-full flex flex-col"
+          onMouseEnter={() => { pausedRef.current = true; }}
+          onMouseLeave={() => { pausedRef.current = false; }}
+        >
+          {categories.map((cat, i) => {
+            const isActive = i === active;
+            return (
+              <Link
+                key={cat.id}
+                href={`/collection?cat=${slugify(cat.name)}`}
+                onMouseEnter={() => goTo(i)}
+                className="group relative flex items-start gap-4 py-4 md:py-5 pl-4 border-b transition-colors duration-300"
+                style={{ borderColor: BORDER }}
               >
-                {cat.imageUrl ? (
-                  <Image src={cat.imageUrl} alt={cat.name} fill unoptimized className="object-cover" sizes="64px" />
-                ) : (
-                  <div className="w-full h-full" style={{ background: CHOCOLATE }} />
-                )}
-              </div>
-              <span className="font-playball leading-tight text-sm line-clamp-1" style={{ color: CHOCOLATE }}>
-                {cat.name}
-              </span>
-              {cat.description && (
-                <p className="text-[10px] leading-snug line-clamp-2" style={{ color: "rgba(43,24,7,0.6)" }}>
-                  {cat.description}
-                </p>
-              )}
-            </Link>
-          ))}
+                <span
+                  className="absolute left-0 top-2 bottom-2 rounded-full transition-all duration-300"
+                  style={{ width: isActive ? 3 : 0, background: GOLD }}
+                />
+                <span
+                  className="shrink-0 font-playball transition-colors duration-300"
+                  style={{ fontSize: "1.1rem", color: isActive ? GOLD : "rgba(43,24,7,0.35)" }}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div className="flex flex-col gap-1 min-w-0">
+                  <span
+                    className="font-playball leading-tight transition-all duration-300"
+                    style={{ color: CHOCOLATE, fontSize: isActive ? "1.5rem" : "1.15rem", opacity: isActive ? 1 : 0.65 }}
+                  >
+                    {cat.name}
+                  </span>
+                  {cat.description && isActive && (
+                    <p className="text-sm leading-relaxed line-clamp-2" style={{ color: "rgba(43,24,7,0.6)" }}>
+                      {cat.description}
+                    </p>
+                  )}
+                  <span
+                    className="text-xs font-medium mt-0.5 transition-opacity duration-300"
+                    style={{ color: GOLD, opacity: isActive ? 1 : 0 }}
+                  >
+                    Explore this collection →
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
 
-        {/* Desktop: paired rows with alternating flex widths */}
-        <div className="hidden md:flex md:flex-col" style={{ gap: "10px" }}>
-          {rows.map((row, i) => (
-            <div key={i} className="flex" style={{ gap: "10px" }}>
-              <Panel category={row.left} flex={row.leftFlex} />
-              <Panel category={row.right} flex={row.rightFlex} />
+        {/* RIGHT — butterfly wings revealing the active service */}
+        <div className="flex-1 w-full flex flex-col items-center gap-5">
+          <div className="flex items-center justify-center gap-1" style={{ perspective: "900px" }}>
+            {/* LEFT WING */}
+            <div
+              className="relative overflow-hidden shadow-lg"
+              style={{
+                width: "clamp(130px, 19vw, 210px)",
+                height: "clamp(190px, 28vw, 310px)",
+                borderRadius: "6px",
+                background: CHOCOLATE,
+                transformOrigin: "right center",
+                transform: visible ? "rotateY(0deg) rotateZ(-2deg)" : "rotateY(-75deg) rotateZ(-15deg)",
+                opacity: visible ? 1 : 0,
+                transition: "transform 0.7s cubic-bezier(0.34, 1.3, 0.64, 1) 0ms, opacity 0.5s ease 0ms",
+              }}
+            >
+              {activeCategory.imageUrl && (
+                <Image
+                  src={activeCategory.imageUrl}
+                  alt={activeCategory.name}
+                  fill
+                  unoptimized
+                  className="object-cover"
+                  sizes="210px"
+                />
+              )}
             </div>
-          ))}
-          {solo && (
-            <div className="flex">
-              <Panel category={solo} flex={1} />
+
+            {/* RIGHT WING — mirrors the same active image */}
+            <div
+              className="relative overflow-hidden shadow-lg"
+              style={{
+                width: "clamp(130px, 19vw, 210px)",
+                height: "clamp(190px, 28vw, 310px)",
+                borderRadius: "6px",
+                background: CHOCOLATE,
+                transformOrigin: "left center",
+                transform: visible ? "rotateY(0deg) rotateZ(2deg)" : "rotateY(75deg) rotateZ(15deg)",
+                opacity: visible ? 1 : 0,
+                transition: "transform 0.7s cubic-bezier(0.34, 1.3, 0.64, 1) 80ms, opacity 0.5s ease 80ms",
+              }}
+            >
+              {activeCategory.imageUrl && (
+                <Image
+                  src={activeCategory.imageUrl}
+                  alt={activeCategory.name}
+                  fill
+                  unoptimized
+                  className="object-cover"
+                  sizes="210px"
+                />
+              )}
+            </div>
+          </div>
+
+          <p className="font-playball text-lg" style={{ color: CHOCOLATE }}>
+            {activeCategory.name}
+          </p>
+
+          {categories.length > 1 && (
+            <div className="flex gap-2 flex-wrap justify-center max-w-xs">
+              {categories.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => goTo(i)}
+                  className="rounded-full transition-all duration-300"
+                  style={{
+                    width: i === active ? "20px" : "8px",
+                    height: "8px",
+                    background: i === active ? GOLD : "rgba(131,81,5,0.25)",
+                  }}
+                />
+              ))}
             </div>
           )}
         </div>
-
       </div>
     </section>
   );

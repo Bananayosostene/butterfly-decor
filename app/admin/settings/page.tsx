@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import { deleteSession } from "@/lib/auth";
 
 export default async function AdminSettingsPage() {
   const cookieStore = await cookies();
@@ -11,7 +12,10 @@ export default async function AdminSettingsPage() {
 
         <div>
           <h2 className="font-semibold text-foreground mb-2">Admin Account</h2>
-          <p className="text-sm text-muted-foreground">Session duration is 7 days. Password changes must be done through the database directly.</p>
+          <p className="text-sm text-muted-foreground">
+            Session duration is 7 days. Use the{" "}
+            <a href="/admin/forgot-password" className="underline font-medium">forgot password</a> link on the sign-in page to change your password.
+          </p>
         </div>
 
         <div className="border-t border-border pt-6">
@@ -27,8 +31,9 @@ export default async function AdminSettingsPage() {
         <div className="border-t border-border pt-6">
           <h2 className="font-semibold text-foreground mb-2">Security</h2>
           <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
-            <li>Sessions stored in secure HTTP-only cookies</li>
-            <li>Passwords hashed with SHA-256</li>
+            <li>Sessions are random tokens, stored server-side and validated on every request</li>
+            <li>Passwords hashed with salted scrypt</li>
+            <li>Account locks after 3 failed sign-in attempts; unlock by resetting your password via email</li>
             <li>Never share admin credentials</li>
           </ul>
         </div>
@@ -37,7 +42,9 @@ export default async function AdminSettingsPage() {
           <form action={async () => {
             "use server";
             const { cookies: getCookies } = await import("next/headers");
-            (await getCookies()).delete("admin_session");
+            const store = await getCookies();
+            await deleteSession(store.get("admin_session")?.value);
+            store.delete("admin_session");
             redirect("/admin/login");
           }}>
             <button type="submit" className="px-4 py-2 text-sm rounded-lg border border-border text-foreground hover:bg-muted font-medium">

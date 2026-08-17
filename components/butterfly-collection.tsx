@@ -27,12 +27,16 @@ const defaultCollections: Collection[] = [
 
 const cardStyle = (bg = "#1a0a2e") => ({ backgroundColor: bg });
 
+function slugify(name: string) {
+  return name.toLowerCase().replace(/\s+/g, "-");
+}
+
 const bgs = ["#1a0a2e", "#3B1A08", "#0d2012", "#2d1a00", "#1a0a2e", "#3B1A08", "#0d2012", "#2d1a00", "#1a0a2e", "#3B1A08"];
 
 function CollectionCard({ item, height, index }: { item: Collection; height: string; index: number }) {
   return (
     <Link
-      href={`/collection?collection=${encodeURIComponent(item.name)}`}
+      href={`/collection?cat=${slugify(item.name)}`}
       className="relative block overflow-hidden rounded-2xl group flex-shrink-0 w-full"
       style={{ height, ...cardStyle(bgs[index % bgs.length]) }}
     >
@@ -55,12 +59,12 @@ function CollectionCard({ item, height, index }: { item: Collection; height: str
       >
         {item.name}
       </p>
-      {/* book button */}
+      {/* explore badge */}
       <span
         className="absolute bottom-3 left-3 text-xs px-3 py-1.5 rounded-full font-medium whitespace-nowrap"
         style={{ background: "rgba(255,255,255,0.18)", backdropFilter: "blur(8px)", color: "white", border: "1px solid rgba(255,255,255,0.25)" }}
       >
-        Book
+        Explore
       </span>
     </Link>
   );

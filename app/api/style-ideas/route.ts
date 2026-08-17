@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db"
+import { requireAdmin } from "@/lib/auth"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest) {
@@ -23,6 +24,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    if (!(await requireAdmin(req)))
+      return NextResponse.json({ success: false, message: "Unauthorized", statusCode: 401 }, { status: 401 })
     const { title, description, imageUrl } = await req.json()
     if (!title || !imageUrl)
       return NextResponse.json({ success: false, message: "title and imageUrl are required", statusCode: 400 }, { status: 400 })
