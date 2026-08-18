@@ -14,7 +14,7 @@ export function WeddingShopHero() {
       if (window.innerWidth >= 768) {
         setHeroHeight(`calc(100vh - 64px)`);
       } else {
-        setHeroHeight(undefined);
+        setHeroHeight(undefined); 
       }
     };
     updateHeight();
