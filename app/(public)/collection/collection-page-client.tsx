@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle2, Share2, X } from "lucide-react";
+import { Pagination } from "@/components/pagination";
 
 type CollectionItem = {
   id: string;
@@ -33,20 +34,29 @@ function getIconForCategory(name: string): string {
 function CollectionsContent({
   initialItems,
   initialCategories,
+  initialPage,
+  initialTotalPages,
 }: {
   initialItems: CollectionItem[];
   initialCategories: Category[];
+  initialPage: number;
+  initialTotalPages: number;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeSlug = searchParams.get("cat") ?? "all";
+  const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1);
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [allItems] = useState<CollectionItem[]>(initialItems);
+  const [items, setItems] = useState<CollectionItem[]>(initialItems);
+  const [totalPages, setTotalPages] = useState(initialTotalPages);
+  const [loading, setLoading] = useState(false);
   const [categories] = useState<Category[]>(initialCategories);
   const [shareItem, setShareItem] = useState<{ id: string; name: string } | null>(null);
   const [copied, setCopied] = useState(false);
   const [colCount, setColCount] = useState(3);
+  const topRef = useRef<HTMLDivElement>(null);
+  const skipNextFetch = useRef(true);
 
   const shareLink = shareItem
     ? `${typeof window !== "undefined" ? window.location.origin : ""}/collection/${shareItem.id}`
@@ -73,6 +83,26 @@ function CollectionsContent({
     return () => window.removeEventListener("resize", update);
   }, []);
 
+  // Re-fetch items whenever the category or page changes (the very first render
+  // already has server-fetched data matching the URL, so that one is skipped).
+  useEffect(() => {
+    if (skipNextFetch.current) {
+      skipNextFetch.current = false;
+      return;
+    }
+    const categoryId = activeSlug === "all" ? null : categories.find((c) => slugify(c.name) === activeSlug)?.id;
+    setLoading(true);
+    const url = `/api/collection-items?page=${page}&limit=24${categoryId ? `&categoryId=${categoryId}` : ""}`;
+    fetch(url)
+      .then((r) => r.json())
+      .then((res) => {
+        setItems(res.data ?? []);
+        setTotalPages(res.pagination?.totalPages ?? 1);
+      })
+      .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSlug, page]);
+
   const toggleSelection = (id: string) => {
     setSelectedItems((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
@@ -89,10 +119,13 @@ function CollectionsContent({
     window.open(`https://wa.me/?text=${encodeURIComponent(shareLink)}`, "_blank");
   };
 
-  const displayedItems =
-    activeSlug === "all"
-      ? allItems
-      : allItems.filter((item) => slugify(item.category.name) === activeSlug);
+  const goToPage = (nextPage: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (nextPage <= 1) params.delete("page");
+    else params.set("page", String(nextPage));
+    router.push(`/collection${params.toString() ? `?${params.toString()}` : ""}`, { scroll: false });
+    topRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const filterTabs = [
     { slug: "all", label: "All", icon: "all.svg" },
@@ -110,6 +143,7 @@ function CollectionsContent({
 
   return (
     <main className="min-h-screen bg-background flex flex-col items-center">
+      <div ref={topRef} />
       <section className="pt-8 pb-0 md:pb-4 px-4 w-full">
         <div className="text-left sm:text-center">
           <h1
@@ -148,8 +182,8 @@ function CollectionsContent({
         </div>
       </section>
 
-      <section className="py-4 sm:py-5 md:py-6 lg:py-8 px-1 pb-16 w-full">
-        {displayedItems.length === 0 ? (
+      <section className="py-4 sm:py-5 md:py-6 lg:py-8 px-1 pb-16 w-full" style={{ opacity: loading ? 0.5 : 1, transition: "opacity 0.2s ease" }}>
+        {items.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-lg font-medium" style={{ color: "var(--muted-foreground)" }}>
               No items found in{" "}
@@ -165,7 +199,7 @@ function CollectionsContent({
           </div>
         ) : (
           <div style={{ columnCount: colCount, columnGap: "6px" }}>
-            {displayedItems.map((item) => (
+            {items.map((item) => (
               <div key={item.id} style={{ breakInside: "avoid", marginBottom: "6px" }}>
                 <Link
                   href={`/collection/${item.id}`}
@@ -199,6 +233,8 @@ function CollectionsContent({
             ))}
           </div>
         )}
+
+        <Pagination page={page} totalPages={totalPages} onPageChange={goToPage} className="mt-10" />
 
         {shareItem && (
           <div className="fixed inset-0 z-50 md:inset-auto md:top-4 md:right-4" onClick={() => setShareItem(null)}>
@@ -235,13 +271,22 @@ function CollectionsContent({
 export default function ButterflyCollectionsPage({
   initialItems,
   initialCategories,
+  initialPage,
+  initialTotalPages,
 }: {
   initialItems: CollectionItem[];
   initialCategories: Category[];
+  initialPage: number;
+  initialTotalPages: number;
 }) {
   return (
     <Suspense>
-      <CollectionsContent initialItems={initialItems} initialCategories={initialCategories} />
+      <CollectionsContent
+        initialItems={initialItems}
+        initialCategories={initialCategories}
+        initialPage={initialPage}
+        initialTotalPages={initialTotalPages}
+      />
     </Suspense>
   );
 }

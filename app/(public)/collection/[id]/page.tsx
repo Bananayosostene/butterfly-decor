@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeft, CheckCircle2, Share2, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckCircle2, Share2, X } from "lucide-react";
 
 type CollectionItem = {
   id: string;
@@ -18,7 +17,7 @@ export default function CollectionItemDetailPage() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
   const [item, setItem] = useState<CollectionItem | null>(null);
-  const [allItems, setAllItems] = useState<CollectionItem[]>([]);
+  const [categoryItems, setCategoryItems] = useState<CollectionItem[]>([]);
   const [related, setRelated] = useState<CollectionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [imgFading, setImgFading] = useState(false);
@@ -31,14 +30,10 @@ export default function CollectionItemDetailPage() {
     ? `${typeof window !== "undefined" ? window.location.origin : ""}/collection/${shareItem.id}`
     : "";
 
-  const loadItem = (targetId: string, all: CollectionItem[]) => {
-    const current = all.find((i) => i.id === targetId) ?? null;
+  const selectFromList = (targetId: string, list: CollectionItem[]) => {
+    const current = list.find((i) => i.id === targetId) ?? null;
     setItem(current);
-    if (current) {
-      const others = all.filter((i) => i.id !== targetId);
-      const sameCategory = others.filter((i) => i.category.id === current.category.id);
-      setRelated([...sameCategory, ...others.filter((i) => i.category.id !== current.category.id)].slice(0, 10));
-    }
+    if (current) setRelated(list.filter((i) => i.id !== targetId).slice(0, 10));
   };
 
   useEffect(() => {
@@ -48,15 +43,41 @@ export default function CollectionItemDetailPage() {
 
   useEffect(() => {
     if (!id) return;
-    fetch("/api/collection-items")
+    setLoading(true);
+    fetch(`/api/collection-items/${id}`)
       .then((r) => r.json())
       .then((res) => {
-        const all: CollectionItem[] = res.data ?? [];
-        setAllItems(all);
-        loadItem(id as string, all);
+        const current: CollectionItem | null = res.data ?? null;
+        if (!current) {
+          setItem(null);
+          return;
+        }
+        return fetch(`/api/collection-items?categoryId=${current.categoryId}&page=1&limit=60`)
+          .then((r) => r.json())
+          .then((res2) => {
+            const list: CollectionItem[] = res2.data ?? [current];
+            setCategoryItems(list);
+            selectFromList(current.id, list);
+          });
       })
       .finally(() => setLoading(false));
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  const currentIndex = item ? categoryItems.findIndex((i) => i.id === item.id) : -1;
+  const prevItem = categoryItems.length > 1 && currentIndex !== -1 ? categoryItems[(currentIndex - 1 + categoryItems.length) % categoryItems.length] : null;
+  const nextItem = categoryItems.length > 1 && currentIndex !== -1 ? categoryItems[(currentIndex + 1) % categoryItems.length] : null;
+
+  const goToSibling = (sibling: CollectionItem | null) => {
+    if (!sibling) return;
+    router.replace(`/collection/${sibling.id}`, { scroll: false });
+    setImgFading(true);
+    setTimeout(() => {
+      selectFromList(sibling.id, categoryItems);
+      setImgFading(false);
+      topRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 180);
+  };
 
   const toggleSelection = (itemId: string) => {
     setSelectedItems((prev) => {
@@ -82,16 +103,7 @@ export default function CollectionItemDetailPage() {
     // preload image so it's in cache before we swap
     const img = new window.Image();
     img.src = relatedItem.imageUrl;
-
-    router.replace(`/collection/${relatedItem.id}`, { scroll: false });
-
-    // fade out → swap → fade in
-    setImgFading(true);
-    setTimeout(() => {
-      loadItem(relatedItem.id, allItems);
-      setImgFading(false);
-      topRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 180);
+    goToSibling(relatedItem);
   };
 
   const handleCopy = () => {
@@ -174,7 +186,7 @@ export default function CollectionItemDetailPage() {
         >
           {/* Image */}
           <div
-            className="w-full md:w-[46%] shrink-0 flex items-center justify-center"
+            className="relative w-full md:w-[46%] shrink-0 flex items-center justify-center"
             style={{ background: "var(--muted)", minHeight: "200px", maxHeight: "340px" }}
           >
             <img
@@ -190,6 +202,24 @@ export default function CollectionItemDetailPage() {
                 opacity: imgFading ? 0 : 1,
               }}
             />
+            {prevItem && (
+              <button
+                onClick={() => goToSibling(prevItem)}
+                aria-label="Previous item"
+                className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center bg-black/40 hover:bg-black/60 transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4 text-white" />
+              </button>
+            )}
+            {nextItem && (
+              <button
+                onClick={() => goToSibling(nextItem)}
+                aria-label="Next item"
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center bg-black/40 hover:bg-black/60 transition-colors"
+              >
+                <ChevronRight className="w-4 h-4 text-white" />
+              </button>
+            )}
           </div>
 
           {/* Info */}
@@ -206,6 +236,11 @@ export default function CollectionItemDetailPage() {
                 {item.name}
               </h1>
             </div>
+            {categoryItems.length > 1 && currentIndex !== -1 && (
+              <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>
+                {currentIndex + 1} of {categoryItems.length} in {item.category.name}
+              </p>
+            )}
             {item.description && (
               <div
                 className="text-sm leading-relaxed mt-1 prose prose-sm max-w-none"

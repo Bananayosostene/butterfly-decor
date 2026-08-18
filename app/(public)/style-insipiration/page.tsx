@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
+import { Pagination } from "@/components/pagination";
 
 type StyleIdea = {
   id: string;
@@ -13,45 +14,68 @@ type StyleIdea = {
   createdAt: string;
 };
 
+const PAGE_SIZE = 16;
+
 export default function StyleInspirationsPage() {
   const router = useRouter();
   const [ideas, setIdeas] = useState<StyleIdea[]>([]);
   const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalResults, setTotalResults] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const topRef = useRef<HTMLDivElement>(null);
 
-  const fetchIdeas = (q: string) => {
-    const url = q.trim() ? `/api/style-ideas?q=${encodeURIComponent(q.trim())}` : "/api/style-ideas";
-    return fetch(url).then((r) => r.json()).then((res) => res.data ?? []);
+  const fetchIdeas = (q: string, pageNum: number) => {
+    const params = new URLSearchParams({ page: String(pageNum), limit: String(PAGE_SIZE) });
+    if (q.trim()) params.set("q", q.trim());
+    return fetch(`/api/style-ideas?${params.toString()}`)
+      .then((r) => r.json())
+      .then((res) => ({ data: res.data ?? [], pagination: res.pagination }));
   };
 
   // Initial load
   useEffect(() => {
-    fetchIdeas("").then((data) => {
+    fetchIdeas("", 1).then(({ data, pagination }) => {
       setIdeas(data);
+      setTotalPages(pagination?.totalPages ?? 1);
+      setTotalResults(pagination?.total ?? data.length);
       setLoading(false);
     });
   }, []);
 
-  // Debounced search on query change
+  const runSearch = async (q: string, pageNum: number) => {
+    setSearching(true);
+    const { data, pagination } = await fetchIdeas(q, pageNum);
+    setIdeas(data);
+    setTotalPages(pagination?.totalPages ?? 1);
+    setTotalResults(pagination?.total ?? data.length);
+    setSearching(false);
+  };
+
+  // Debounced search on query change — always resets to page 1
   const handleSearch = (value: string) => {
     setQuery(value);
+    setPage(1);
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(async () => {
-      setSearching(true);
-      const data = await fetchIdeas(value);
-      setIdeas(data);
-      setSearching(false);
-    }, 400);
+    debounceRef.current = setTimeout(() => runSearch(value, 1), 400);
   };
 
   const clearSearch = () => handleSearch("");
+
+  const goToPage = (nextPage: number) => {
+    setPage(nextPage);
+    runSearch(query, nextPage);
+    topRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const showSkeletons = loading || searching;
 
   return (
     <main className="min-h-screen" style={{ background: "var(--background)" }}>
+      <div ref={topRef} />
       {/* Header */}
       <div className="text-center px-6 pt-8 pb-4">
         <h1
@@ -88,7 +112,7 @@ export default function StyleInspirationsPage() {
         </div>
         {query && !searching && (
           <p className="text-xs mt-2 text-center" style={{ color: "var(--muted-foreground)" }}>
-            {ideas.length} result{ideas.length !== 1 ? "s" : ""} for &ldquo;{query}&rdquo;
+            {totalResults} result{totalResults !== 1 ? "s" : ""} for &ldquo;{query}&rdquo;
           </p>
         )}
       </div>
@@ -120,36 +144,39 @@ export default function StyleInspirationsPage() {
             )}
           </div>
         ) : (
-          <div className="columns-2 sm:columns-3 lg:columns-4 gap-3">
-            {ideas.map((idea, idx) => (
-              <div
-                key={idea.id}
-                className="break-inside-avoid mb-3 group cursor-pointer"
-                onClick={() => router.push(`/style-insipiration/${idea.id}`)}
-              >
+          <>
+            <div className="columns-2 sm:columns-3 lg:columns-4 gap-3">
+              {ideas.map((idea, idx) => (
                 <div
-                  className="relative overflow-hidden rounded-2xl"
-                  style={{ aspectRatio: idx % 4 === 0 ? "3/4" : idx % 4 === 1 ? "4/5" : idx % 4 === 2 ? "1/1" : "3/5" }}
+                  key={idea.id}
+                  className="break-inside-avoid mb-3 group cursor-pointer"
+                  onClick={() => router.push(`/style-insipiration/${idea.id}`)}
                 >
-                  <Image
-                    src={idea.imageUrl}
-                    alt={idea.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                  />
                   <div
-                    className="absolute bottom-0 left-0 right-0 px-2.5 py-2"
-                    style={{ background: "linear-gradient(to top, rgba(0,0,0,0.65), transparent)" }}
+                    className="relative overflow-hidden rounded-2xl"
+                    style={{ aspectRatio: idx % 4 === 0 ? "3/4" : idx % 4 === 1 ? "4/5" : idx % 4 === 2 ? "1/1" : "3/5" }}
                   >
-                    <p className="text-white text-base sm:text-lg font-semibold truncate" style={{ fontFamily: "Georgia, serif", textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>
-                      {idea.title}
-                    </p>
+                    <Image
+                      src={idea.imageUrl}
+                      alt={idea.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    />
+                    <div
+                      className="absolute bottom-0 left-0 right-0 px-2.5 py-2"
+                      style={{ background: "linear-gradient(to top, rgba(0,0,0,0.65), transparent)" }}
+                    >
+                      <p className="text-white text-base sm:text-lg font-semibold truncate" style={{ fontFamily: "Georgia, serif", textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>
+                        {idea.title}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+            <Pagination page={page} totalPages={totalPages} onPageChange={goToPage} className="mt-10" />
+          </>
         )}
       </div>
     </main>
