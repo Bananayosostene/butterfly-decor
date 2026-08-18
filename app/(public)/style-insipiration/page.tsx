@@ -210,11 +210,6 @@ export default function StyleInspirationsPage() {
               ))}
             </div>
             {hasMore && <div ref={sentinelRef} className="h-4" />}
-            {!hasMore && ideas.length > 0 && (
-              <p className="text-center text-sm mt-8" style={{ color: "var(--muted-foreground)" }}>
-                You&apos;ve seen all {ideas.length} ideas
-              </p>
-            )}
             {loadingMore && (
               <div className="columns-2 sm:columns-3 lg:columns-4 gap-3 mt-3">
                 {Array.from({ length: 4 }).map((_, i) => (

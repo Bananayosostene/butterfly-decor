@@ -283,12 +283,6 @@ function CollectionsContent({
         {/* Sentinel for IntersectionObserver */}
         {hasMore && <div ref={sentinelRef} className="h-4" />}
 
-        {!hasMore && items.length > 0 && (
-          <p className="text-center text-sm mt-8" style={{ color: "var(--muted-foreground)" }}>
-            You&apos;ve seen all {items.length} items 🦋
-          </p>
-        )}
-
         {shareItem && (
           <div className="fixed inset-0 z-50 md:inset-auto md:top-4 md:right-4" onClick={() => setShareItem(null)}>
             <div className="md:hidden absolute inset-0 bg-black/30" />

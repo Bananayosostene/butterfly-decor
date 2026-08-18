@@ -297,11 +297,6 @@ export default function StyleIdeaDetailPage() {
               ))}
             </div>
           )}
-          {ideasPage >= ideasTotalPages && related.length > 0 && (
-            <p className="text-center text-xs mt-4" style={{ color: "var(--muted-foreground)" }}>
-              All {related.length} ideas loaded
-            </p>
-          )}
         </div>
       )}
     </main>

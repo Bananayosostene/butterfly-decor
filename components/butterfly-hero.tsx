@@ -8,18 +8,6 @@ export function WeddingShopHero() {
   const [videoAvailable, setVideoAvailable] = useState(true);
   const [videoSrc, setVideoSrc] = useState(FALLBACK_VIDEO);
 
-  useEffect(() => {
-    const updateHeight = () => {
-      if (window.innerWidth >= 768) {
-        setHeroHeight(`calc(100vh - 64px)`);
-      } else {
-        setHeroHeight(undefined); 
-      }
-    };
-    updateHeight();
-    window.addEventListener("resize", updateHeight);
-    return () => window.removeEventListener("resize", updateHeight);
-  }, []);
 
   useEffect(() => {
     fetch("/api/settings")
