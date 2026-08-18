@@ -24,20 +24,33 @@ export function HeroVideoManager() {
     setError("");
     setUploading(true);
     try {
+      // Step 1: get signature from server (tiny request, no file payload)
+      const signRes = await fetch("/api/upload/sign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ folder: "butterfly-hero" }),
+      });
+      const signJson = await signRes.json();
+      if (!signJson.success) { setError("Could not get upload signature"); return; }
+      const { signature, timestamp, cloudName, apiKey, folder } = signJson.data;
+
+      // Step 2: upload directly to Cloudinary from the browser (bypasses Vercel 4.5MB limit)
       const fd = new FormData();
       fd.append("file", file);
-      fd.append("folder", "butterfly-hero");
-      const uploadRes = await fetch("/api/upload", { method: "POST", body: fd });
-      const uploadJson = await uploadRes.json();
-      if (!uploadJson.success) {
-        setError(uploadJson.message ?? "Upload failed");
-        return;
-      }
+      fd.append("api_key", apiKey);
+      fd.append("timestamp", String(timestamp));
+      fd.append("signature", signature);
+      fd.append("folder", folder);
+      fd.append("resource_type", "video");
+      const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/video/upload`, { method: "POST", body: fd });
+      const cloudJson = await cloudRes.json();
+      if (!cloudJson.secure_url) { setError(cloudJson.error?.message ?? "Upload failed"); return; }
 
+      // Step 3: save URL to settings
       const res = await fetch("/api/settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ heroVideoUrl: uploadJson.data.url }),
+        body: JSON.stringify({ heroVideoUrl: cloudJson.secure_url }),
       });
       const json = await res.json();
       if (json.success) {
