@@ -6,20 +6,16 @@ const HEX_OR_RGB_COLOR = /^(#[0-9a-fA-F]{3,8}|rgb\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\
 export function sanitizeRichText(html: string): string {
   return sanitizeHtml(html, {
     allowedTags: [
-      "p", "br", "strong", "em", "u", "s", "a", "img", "span",
+      "p", "br", "strong", "em", "u", "s", "a", "span",
       "h1", "h2", "h3", "ul", "ol", "li", "blockquote",
-      "table", "thead", "tbody", "tr", "th", "td",
     ],
     allowedAttributes: {
       a: ["href", "target", "rel"],
-      img: ["src", "alt", "class"],
       p: ["style"],
       h1: ["style"],
       h2: ["style"],
       h3: ["style"],
       span: ["style"],
-      td: ["colspan", "rowspan"],
-      th: ["colspan", "rowspan"],
     },
     allowedStyles: {
       "*": {

@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef, Suspense } from "react";
+import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle2, Share2, X } from "lucide-react";
-import { Pagination } from "@/components/pagination";
 
 type CollectionItem = {
   id: string;
@@ -31,10 +30,20 @@ function getIconForCategory(name: string): string {
   return "cake.svg";
 }
 
+function SkeletonCard() {
+  return (
+    <div
+      className="w-full animate-pulse rounded-md overflow-hidden"
+      style={{ background: "#e8d5b7", marginBottom: "6px", breakInside: "avoid" }}
+    >
+      <div style={{ paddingBottom: "130%", background: "linear-gradient(110deg, #e8d5b7 30%, #f5ead8 50%, #e8d5b7 70%)", backgroundSize: "200% 100%", animation: "shimmer 1.4s infinite" }} />
+    </div>
+  );
+}
+
 function CollectionsContent({
   initialItems,
   initialCategories,
-  initialPage,
   initialTotalPages,
 }: {
   initialItems: CollectionItem[];
@@ -45,18 +54,20 @@ function CollectionsContent({
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeSlug = searchParams.get("cat") ?? "all";
-  const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1);
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [items, setItems] = useState<CollectionItem[]>(initialItems);
+  const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(initialTotalPages);
-  const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [categories] = useState<Category[]>(initialCategories);
   const [shareItem, setShareItem] = useState<{ id: string; name: string } | null>(null);
   const [copied, setCopied] = useState(false);
   const [colCount, setColCount] = useState(3);
-  const topRef = useRef<HTMLDivElement>(null);
-  const skipNextFetch = useRef(true);
+
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const activeSlugRef = useRef(activeSlug);
+  const isFetchingRef = useRef(false);
 
   const shareLink = shareItem
     ? `${typeof window !== "undefined" ? window.location.origin : ""}/collection/${shareItem.id}`
@@ -83,25 +94,54 @@ function CollectionsContent({
     return () => window.removeEventListener("resize", update);
   }, []);
 
-  // Re-fetch items whenever the category or page changes (the very first render
-  // already has server-fetched data matching the URL, so that one is skipped).
+  // Reset when category changes
   useEffect(() => {
-    if (skipNextFetch.current) {
-      skipNextFetch.current = false;
-      return;
+    if (activeSlugRef.current === activeSlug) return;
+    activeSlugRef.current = activeSlug;
+    setItems(initialItems);
+    setPage(1);
+    setTotalPages(initialTotalPages);
+  }, [activeSlug, initialItems, initialTotalPages]);
+
+  const fetchNextPage = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    const nextPage = page + 1;
+    if (nextPage > totalPages) return;
+
+    isFetchingRef.current = true;
+    setLoadingMore(true);
+
+    const categoryId =
+      activeSlugRef.current === "all"
+        ? null
+        : categories.find((c) => slugify(c.name) === activeSlugRef.current)?.id;
+
+    const url = `/api/collection-items?page=${nextPage}&limit=24${categoryId ? `&categoryId=${categoryId}` : ""}`;
+    try {
+      const res = await fetch(url);
+      const json = await res.json();
+      setItems((prev) => [...prev, ...(json.data ?? [])]);
+      setTotalPages(json.pagination?.totalPages ?? totalPages);
+      setPage(nextPage);
+    } finally {
+      setLoadingMore(false);
+      isFetchingRef.current = false;
     }
-    const categoryId = activeSlug === "all" ? null : categories.find((c) => slugify(c.name) === activeSlug)?.id;
-    setLoading(true);
-    const url = `/api/collection-items?page=${page}&limit=24${categoryId ? `&categoryId=${categoryId}` : ""}`;
-    fetch(url)
-      .then((r) => r.json())
-      .then((res) => {
-        setItems(res.data ?? []);
-        setTotalPages(res.pagination?.totalPages ?? 1);
-      })
-      .finally(() => setLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeSlug, page]);
+  }, [page, totalPages, categories]);
+
+  // Intersection observer on sentinel
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) fetchNextPage();
+      },
+      { rootMargin: "300px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [fetchNextPage]);
 
   const toggleSelection = (id: string) => {
     setSelectedItems((prev) =>
@@ -119,14 +159,6 @@ function CollectionsContent({
     window.open(`https://wa.me/?text=${encodeURIComponent(shareLink)}`, "_blank");
   };
 
-  const goToPage = (nextPage: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (nextPage <= 1) params.delete("page");
-    else params.set("page", String(nextPage));
-    router.push(`/collection${params.toString() ? `?${params.toString()}` : ""}`, { scroll: false });
-    topRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   const filterTabs = [
     { slug: "all", label: "All", icon: "all.svg" },
     ...categories.map((cat) => ({
@@ -141,9 +173,17 @@ function CollectionsContent({
       ? "All"
       : categories.find((c) => slugify(c.name) === activeSlug)?.name ?? activeSlug;
 
+  const hasMore = page < totalPages;
+
   return (
     <main className="min-h-screen bg-background flex flex-col items-center">
-      <div ref={topRef} />
+      <style>{`
+        @keyframes shimmer {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+      `}</style>
+
       <section className="pt-8 pb-0 md:pb-4 px-4 w-full">
         <div className="text-left sm:text-center">
           <h1
@@ -182,8 +222,8 @@ function CollectionsContent({
         </div>
       </section>
 
-      <section className="py-4 sm:py-5 md:py-6 lg:py-8 px-1 pb-16 w-full" style={{ opacity: loading ? 0.5 : 1, transition: "opacity 0.2s ease" }}>
-        {items.length === 0 ? (
+      <section className="py-4 sm:py-5 md:py-6 lg:py-8 px-1 pb-16 w-full">
+        {items.length === 0 && !loadingMore ? (
           <div className="text-center py-20">
             <p className="text-lg font-medium" style={{ color: "var(--muted-foreground)" }}>
               No items found in{" "}
@@ -231,10 +271,23 @@ function CollectionsContent({
                 </Link>
               </div>
             ))}
+
+            {/* Skeleton cards while loading more */}
+            {loadingMore &&
+              Array.from({ length: 8 }).map((_, i) => (
+                <SkeletonCard key={`sk-${i}`} />
+              ))}
           </div>
         )}
 
-        <Pagination page={page} totalPages={totalPages} onPageChange={goToPage} className="mt-10" />
+        {/* Sentinel for IntersectionObserver */}
+        {hasMore && <div ref={sentinelRef} className="h-4" />}
+
+        {!hasMore && items.length > 0 && (
+          <p className="text-center text-sm mt-8" style={{ color: "var(--muted-foreground)" }}>
+            You&apos;ve seen all {items.length} items 🦋
+          </p>
+        )}
 
         {shareItem && (
           <div className="fixed inset-0 z-50 md:inset-auto md:top-4 md:right-4" onClick={() => setShareItem(null)}>

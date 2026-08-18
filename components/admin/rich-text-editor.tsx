@@ -5,18 +5,12 @@ import StarterKit from "@tiptap/starter-kit";
 import { TextStyle } from "@tiptap/extension-text-style";
 import Color from "@tiptap/extension-color";
 import TextAlign from "@tiptap/extension-text-align";
-import ImageExtension from "@tiptap/extension-image";
-import { Table } from "@tiptap/extension-table";
-import TableRow from "@tiptap/extension-table-row";
-import TableHeader from "@tiptap/extension-table-header";
-import TableCell from "@tiptap/extension-table-cell";
 import { Placeholder } from "@tiptap/extensions";
-import { useRef, useState } from "react";
 import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough, List, ListOrdered, Quote,
-  Link as LinkIcon, Image as ImageIcon, Table as TableIcon, Undo2, Redo2,
+  Link as LinkIcon, Undo2, Redo2,
   AlignLeft, AlignCenter, AlignRight, AlignJustify, Heading1, Heading2, Heading3,
-  Eraser, Rows3, Columns3, Trash2,
+  Eraser,
 } from "lucide-react";
 
 function ToolbarButton({
@@ -63,9 +57,6 @@ export function RichTextEditor({
   onChange: (html: string) => void;
   placeholder?: string;
 }) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploadingImage, setUploadingImage] = useState(false);
-
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -75,11 +66,6 @@ export function RichTextEditor({
       TextStyle,
       Color,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
-      ImageExtension.configure({ HTMLAttributes: { class: "rounded-lg max-w-full" } }),
-      Table.configure({ resizable: true }),
-      TableRow,
-      TableHeader,
-      TableCell,
       Placeholder.configure({ placeholder: placeholder ?? "Write something…" }),
     ],
     content: value,
@@ -103,25 +89,6 @@ export function RichTextEditor({
     }
     editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
   };
-
-  const insertImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file) return;
-    setUploadingImage(true);
-    try {
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("folder", "butterfly-content");
-      const res = await fetch("/api/upload", { method: "POST", body: fd });
-      const json = await res.json();
-      if (json.success) editor.chain().focus().setImage({ src: json.data.url }).run();
-    } finally {
-      setUploadingImage(false);
-    }
-  };
-
-  const inTable = editor.isActive("table");
 
   return (
     <div className="border border-border rounded-lg overflow-hidden bg-background">
@@ -193,31 +160,6 @@ export function RichTextEditor({
           <LinkIcon className="w-3.5 h-3.5" />
         </ToolbarButton>
 
-        <ToolbarButton title="Insert image" disabled={uploadingImage} onClick={() => fileInputRef.current?.click()}>
-          <ImageIcon className="w-3.5 h-3.5" />
-        </ToolbarButton>
-        <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={insertImage} />
-
-        <Divider />
-
-        {!inTable ? (
-          <ToolbarButton title="Insert table" onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}>
-            <TableIcon className="w-3.5 h-3.5" />
-          </ToolbarButton>
-        ) : (
-          <>
-            <ToolbarButton title="Add row" onClick={() => editor.chain().focus().addRowAfter().run()}>
-              <Rows3 className="w-3.5 h-3.5" />
-            </ToolbarButton>
-            <ToolbarButton title="Add column" onClick={() => editor.chain().focus().addColumnAfter().run()}>
-              <Columns3 className="w-3.5 h-3.5" />
-            </ToolbarButton>
-            <ToolbarButton title="Delete table" onClick={() => editor.chain().focus().deleteTable().run()}>
-              <Trash2 className="w-3.5 h-3.5" />
-            </ToolbarButton>
-          </>
-        )}
-
         <Divider />
 
         <ToolbarButton title="Clear formatting" onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}>
@@ -231,7 +173,7 @@ export function RichTextEditor({
         </ToolbarButton>
       </div>
 
-      <EditorContent editor={editor} className="text-sm text-foreground [&_table]:border-collapse [&_td]:border [&_td]:border-border [&_td]:px-2 [&_td]:py-1 [&_th]:border [&_th]:border-border [&_th]:px-2 [&_th]:py-1 [&_th]:bg-muted [&_.is-editor-empty:first-child::before]:content-[attr(data-placeholder)] [&_.is-editor-empty:first-child::before]:text-muted-foreground [&_.is-editor-empty:first-child::before]:float-left [&_.is-editor-empty:first-child::before]:h-0 [&_.is-editor-empty:first-child::before]:pointer-events-none" />
+      <EditorContent editor={editor} className="text-sm text-foreground [&_.is-editor-empty:first-child::before]:content-[attr(data-placeholder)] [&_.is-editor-empty:first-child::before]:text-muted-foreground [&_.is-editor-empty:first-child::before]:float-left [&_.is-editor-empty:first-child::before]:h-0 [&_.is-editor-empty:first-child::before]:pointer-events-none" />
     </div>
   );
 }
