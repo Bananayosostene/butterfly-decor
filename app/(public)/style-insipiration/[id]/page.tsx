@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -21,29 +21,74 @@ export default function StyleIdeaDetailPage() {
   const [related, setRelated] = useState<StyleIdea[]>([]);
   const [loading, setLoading] = useState(true);
   const [imgFading, setImgFading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [ideasPage, setIdeasPage] = useState(1);
+  const [ideasTotalPages, setIdeasTotalPages] = useState(1);
   const topRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const isFetchingRef = useRef(false);
 
   const selectFromList = (targetId: string, list: StyleIdea[]) => {
     const current = list.find((i) => i.id === targetId) ?? null;
     setIdea(current);
-    if (current) setRelated(list.filter((i) => i.id !== targetId).slice(0, 8));
   };
+
+  useEffect(() => {
+    if (idea) {
+      setRelated(allIdeas.filter((i) => i.id !== idea.id));
+    }
+  }, [allIdeas, idea]);
 
   useEffect(() => {
     if (!id) return;
     setLoading(true);
     Promise.all([
       fetch(`/api/style-ideas/${id}`).then((r) => r.json()),
-      fetch("/api/style-ideas?page=1&limit=100").then((r) => r.json()),
+      fetch("/api/style-ideas?page=1&limit=24").then((r) => r.json()),
     ]).then(([single, all]) => {
       const current: StyleIdea = single.data;
       const list: StyleIdea[] = all.data ?? [];
-      // Guarantee the current idea is in the list even if it fell outside the capped page.
       const merged = current && !list.some((i) => i.id === current.id) ? [current, ...list] : list;
       setAllIdeas(merged);
+      setIdeasTotalPages(all.pagination?.totalPages ?? 1);
+      setIdeasPage(1);
       selectFromList(id as string, merged);
     }).finally(() => setLoading(false));
   }, [id]);
+
+  const fetchNextIdeasPage = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    const nextPage = ideasPage + 1;
+    if (nextPage > ideasTotalPages) return;
+
+    isFetchingRef.current = true;
+    setLoadingMore(true);
+
+    try {
+      const res = await fetch(`/api/style-ideas?page=${nextPage}&limit=24`);
+      const json = await res.json();
+      const more: StyleIdea[] = json.data ?? [];
+      setAllIdeas((prev) => [...prev, ...more]);
+      setIdeasTotalPages(json.pagination?.totalPages ?? ideasTotalPages);
+      setIdeasPage(nextPage);
+    } finally {
+      setLoadingMore(false);
+      isFetchingRef.current = false;
+    }
+  }, [ideasPage, ideasTotalPages]);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) fetchNextIdeasPage();
+      },
+      { rootMargin: "300px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [fetchNextIdeasPage]);
 
   const currentIndex = idea ? allIdeas.findIndex((i) => i.id === idea.id) : -1;
   const prevIdea = allIdeas.length > 1 && currentIndex !== -1 ? allIdeas[(currentIndex - 1 + allIdeas.length) % allIdeas.length] : null;
@@ -242,6 +287,21 @@ export default function StyleIdeaDetailPage() {
               </div>
             ))}
           </div>
+          {ideasPage < ideasTotalPages && <div ref={sentinelRef} className="h-4" />}
+          {loadingMore && (
+            <div className="columns-2 sm:columns-3 lg:columns-4 gap-3 mt-3">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={`sk-${i}`} className="break-inside-avoid mb-3">
+                  <div className="w-full rounded-2xl animate-pulse" style={{ background: "var(--muted)", aspectRatio: "3/4" }} />
+                </div>
+              ))}
+            </div>
+          )}
+          {ideasPage >= ideasTotalPages && related.length > 0 && (
+            <p className="text-center text-xs mt-4" style={{ color: "var(--muted-foreground)" }}>
+              All {related.length} ideas loaded
+            </p>
+          )}
         </div>
       )}
     </main>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Palette, Grid3x3, Award, ArrowRight } from "lucide-react";
+import { Award, ArrowRight } from "lucide-react";
 import { getAllBests, badgesEarned, totalBadgeCount, studioTitle, type GameMode } from "@/lib/game-progress";
 import { BrideIcon, GroomIcon, VenueIcon } from "./composite-icons";
 
@@ -19,14 +19,6 @@ const MODES: {
   icon: React.ReactNode;
   pace: string;
 }[] = [
-  {
-    mode: "paletteMatch",
-    href: "/style-game/palette-match",
-    title: "Palette Match",
-    description: "Beat the clock pairing colors across 12 real event moments, from bouquet to cake.",
-    icon: <Palette className="w-7 h-7" style={{ color: CREAM }} />,
-    pace: "Fast & timed",
-  },
   {
     mode: "outfitBuilder",
     href: "/style-game/outfit-builder",
@@ -48,14 +40,6 @@ const MODES: {
     icon: <VenueIcon colors={{}} className="w-10 h-8" />,
     pace: "Relaxed & creative",
   },
-  {
-    mode: "memoryMatch",
-    href: "/style-game/memory-match",
-    title: "Memory Match",
-    description: "Flip cards to pair every decor piece with its perfect complementary color.",
-    icon: <Grid3x3 className="w-7 h-7" style={{ color: CREAM }} />,
-    pace: "Sharp & focused",
-  },
 ];
 
 export function StudioHub() {
@@ -74,7 +58,7 @@ export function StudioHub() {
         <span className="text-3xl">🦋</span>
         <h1 className="text-3xl sm:text-4xl font-playball" style={{ color: CHOCOLATE }}>Butterfly Style Studio</h1>
         <p className="text-sm sm:text-base max-w-lg" style={{ color: "rgba(43,24,7,0.75)" }}>
-          Four ways to test your eye for color and design. Every choice is scored by real
+          Two ways to test your eye for color and design. Every choice is scored by real
           color-theory — no fake answers, no two rounds the same.
         </p>
         {bests && badgeCount > 0 && (

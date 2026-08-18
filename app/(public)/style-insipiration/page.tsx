@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
-import { Pagination } from "@/components/pagination";
 
 type StyleIdea = {
   id: string;
@@ -25,8 +24,12 @@ export default function StyleInspirationsPage() {
   const [totalResults, setTotalResults] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const topRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const isFetchingRef = useRef(false);
+  const queryRef = useRef(query);
 
   const fetchIdeas = (q: string, pageNum: number) => {
     const params = new URLSearchParams({ page: String(pageNum), limit: String(PAGE_SIZE) });
@@ -46,18 +49,53 @@ export default function StyleInspirationsPage() {
     });
   }, []);
 
+  const fetchNextPage = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    const nextPage = page + 1;
+    if (nextPage > totalPages) return;
+
+    isFetchingRef.current = true;
+    setLoadingMore(true);
+
+    try {
+      const { data, pagination } = await fetchIdeas(queryRef.current, nextPage);
+      setIdeas((prev) => [...prev, ...data]);
+      setTotalPages(pagination?.totalPages ?? totalPages);
+      setTotalResults(pagination?.total ?? totalResults);
+      setPage(nextPage);
+    } finally {
+      setLoadingMore(false);
+      isFetchingRef.current = false;
+    }
+  }, [page, totalPages, totalResults]);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) fetchNextPage();
+      },
+      { rootMargin: "300px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [fetchNextPage]);
+
   const runSearch = async (q: string, pageNum: number) => {
     setSearching(true);
     const { data, pagination } = await fetchIdeas(q, pageNum);
     setIdeas(data);
     setTotalPages(pagination?.totalPages ?? 1);
     setTotalResults(pagination?.total ?? data.length);
+    setPage(1);
     setSearching(false);
   };
 
   // Debounced search on query change — always resets to page 1
   const handleSearch = (value: string) => {
     setQuery(value);
+    queryRef.current = value;
     setPage(1);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => runSearch(value, 1), 400);
@@ -65,13 +103,9 @@ export default function StyleInspirationsPage() {
 
   const clearSearch = () => handleSearch("");
 
-  const goToPage = (nextPage: number) => {
-    setPage(nextPage);
-    runSearch(query, nextPage);
-    topRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   const showSkeletons = loading || searching;
+
+  const hasMore = page < totalPages;
 
   return (
     <main className="min-h-screen" style={{ background: "var(--background)" }}>
@@ -175,7 +209,26 @@ export default function StyleInspirationsPage() {
                 </div>
               ))}
             </div>
-            <Pagination page={page} totalPages={totalPages} onPageChange={goToPage} className="mt-10" />
+            {hasMore && <div ref={sentinelRef} className="h-4" />}
+            {!hasMore && ideas.length > 0 && (
+              <p className="text-center text-sm mt-8" style={{ color: "var(--muted-foreground)" }}>
+                You&apos;ve seen all {ideas.length} ideas
+              </p>
+            )}
+            {loadingMore && (
+              <div className="columns-2 sm:columns-3 lg:columns-4 gap-3 mt-3">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div
+                    key={`sk-${i}`}
+                    className="break-inside-avoid mb-3 rounded-2xl animate-pulse"
+                    style={{
+                      aspectRatio: i % 4 === 0 ? "3/4" : i % 4 === 1 ? "4/5" : i % 4 === 2 ? "1/1" : "3/5",
+                      background: "var(--muted)",
+                    }}
+                  />
+                ))}
+              </div>
+            )}
           </>
         )}
       </div>

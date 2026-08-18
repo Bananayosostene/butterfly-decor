@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
 import { StyleMatchGame } from "@/components/style-game/style-match-game";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Palette Match | Butterfly Style Studio",

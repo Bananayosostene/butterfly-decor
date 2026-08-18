@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, CheckCircle2, Share2, X } from "lucide-react";
 
@@ -24,7 +24,12 @@ export default function CollectionItemDetailPage() {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [shareItem, setShareItem] = useState<{ id: string; name: string } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [categoryPage, setCategoryPage] = useState(1);
+  const [categoryTotalPages, setCategoryTotalPages] = useState(1);
   const topRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const isFetchingRef = useRef(false);
 
   const shareLink = shareItem
     ? `${typeof window !== "undefined" ? window.location.origin : ""}/collection/${shareItem.id}`
@@ -42,6 +47,12 @@ export default function CollectionItemDetailPage() {
   }, []);
 
   useEffect(() => {
+    if (item) {
+      setRelated(categoryItems.filter((i) => i.id !== item.id));
+    }
+  }, [categoryItems, item]);
+
+  useEffect(() => {
     if (!id) return;
     setLoading(true);
     fetch(`/api/collection-items/${id}`)
@@ -52,17 +63,53 @@ export default function CollectionItemDetailPage() {
           setItem(null);
           return;
         }
-        return fetch(`/api/collection-items?categoryId=${current.categoryId}&page=1&limit=60`)
+        return fetch(`/api/collection-items?categoryId=${current.categoryId}&page=1&limit=24`)
           .then((r) => r.json())
           .then((res2) => {
             const list: CollectionItem[] = res2.data ?? [current];
             setCategoryItems(list);
+            setCategoryTotalPages(res2.pagination?.totalPages ?? 1);
+            setCategoryPage(1);
             selectFromList(current.id, list);
           });
       })
       .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  const fetchNextCategoryPage = useCallback(async () => {
+    if (isFetchingRef.current || !item) return;
+    const nextPage = categoryPage + 1;
+    if (nextPage > categoryTotalPages) return;
+
+    isFetchingRef.current = true;
+    setLoadingMore(true);
+
+    try {
+      const res = await fetch(`/api/collection-items?categoryId=${item.categoryId}&page=${nextPage}&limit=24`);
+      const json = await res.json();
+      const more: CollectionItem[] = json.data ?? [];
+      setCategoryItems((prev) => [...prev, ...more]);
+      setCategoryTotalPages(json.pagination?.totalPages ?? categoryTotalPages);
+      setCategoryPage(nextPage);
+    } finally {
+      setLoadingMore(false);
+      isFetchingRef.current = false;
+    }
+  }, [item, categoryPage, categoryTotalPages]);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) fetchNextCategoryPage();
+      },
+      { rootMargin: "300px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [fetchNextCategoryPage]);
 
   const currentIndex = item ? categoryItems.findIndex((i) => i.id === item.id) : -1;
   const prevItem = categoryItems.length > 1 && currentIndex !== -1 ? categoryItems[(currentIndex - 1 + categoryItems.length) % categoryItems.length] : null;
@@ -335,6 +382,21 @@ export default function CollectionItemDetailPage() {
               </div>
             ))}
           </div>
+          {categoryPage < categoryTotalPages && <div ref={sentinelRef} className="h-4" />}
+          {loadingMore && (
+            <div className="columns-2 sm:columns-3 lg:columns-4 gap-2 mt-2">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={`sk-${i}`} className="break-inside-avoid mb-2">
+                  <div className="w-full rounded-2xl animate-pulse" style={{ background: "var(--muted)", aspectRatio: "3/4" }} />
+                </div>
+              ))}
+            </div>
+          )}
+          {categoryPage >= categoryTotalPages && related.length > 0 && (
+            <p className="text-center text-xs mt-4" style={{ color: "var(--muted-foreground)" }}>
+              All {related.length} items loaded
+            </p>
+          )}
         </div>
       )}
 
