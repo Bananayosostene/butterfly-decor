@@ -1,17 +1,24 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Pencil, Trash2, Plus, X, Images } from "lucide-react";
+import { Pencil, Trash2, Plus, X, Images, Table as TableIcon, LayoutGrid } from "lucide-react";
 import Image from "next/image";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
 import { CategoryImagesManager } from "@/components/admin/category-images-manager";
+import { Pagination } from "@/components/pagination";
 import { stripHtmlToText } from "@/lib/text";
+
+const PAGE_SIZE = 10;
 
 type CategoryImage = { id: string; imageUrl: string; order: number };
 type Category = { id: string; name: string; description?: string; imageUrl?: string; images?: CategoryImage[] };
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [view, setView] = useState<"table" | "cards">("table");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<{ open: boolean; editing: Category | null }>({ open: false, editing: null });
   const [form, setForm] = useState({ name: "", description: "", imageUrl: "" });
@@ -19,15 +26,19 @@ export default function CategoriesPage() {
   const [saving, setSaving] = useState(false);
   const [imagesManagerFor, setImagesManagerFor] = useState<Category | null>(null);
 
-  const load = async () => {
+  const load = async (pageNum = page) => {
     setLoading(true);
-    const res = await fetch("/api/categories");
+    const res = await fetch(`/api/categories?page=${pageNum}&limit=${PAGE_SIZE}`);
     const json = await res.json();
     setCategories(json.data ?? []);
+    setTotalPages(json.pagination?.totalPages ?? 1);
+    setTotal(json.pagination?.total ?? (json.data ?? []).length);
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(page); }, [page]);
+
+  const goToPage = (p: number) => setPage(p);
 
   const openAdd = () => { setForm({ name: "", description: "", imageUrl: "" }); setModal({ open: true, editing: null }); };
   const openEdit = (c: Category) => { setForm({ name: c.name, description: c.description ?? "", imageUrl: c.imageUrl ?? "" }); setModal({ open: true, editing: c }); };
@@ -56,28 +67,94 @@ export default function CategoriesPage() {
     }
     setSaving(false);
     closeModal();
-    load();
+    load(modal.editing ? page : 1);
+    if (!modal.editing) setPage(1);
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this category?")) return;
     await fetch(`/api/categories/${id}`, { method: "DELETE" });
-    load();
+    const isLastRowOnPage = categories.length === 1 && page > 1;
+    load(isLastRowOnPage ? page - 1 : page);
+    if (isLastRowOnPage) setPage(page - 1);
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">{categories.length} categories</p>
-        <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "#2b1807", color: "#e8d5b7" }}>
-          <Plus className="w-4 h-4" /> Add Category
-        </button>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground">{total} categor{total === 1 ? "y" : "ies"}</p>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center rounded-lg border border-border overflow-hidden">
+            <button
+              onClick={() => setView("table")}
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors"
+              style={view === "table" ? { background: "#2b1807", color: "#e8d5b7" } : { color: "var(--muted-foreground)" }}
+            >
+              <TableIcon className="w-3.5 h-3.5" /> Table
+            </button>
+            <button
+              onClick={() => setView("cards")}
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors border-l border-border"
+              style={view === "cards" ? { background: "#2b1807", color: "#e8d5b7" } : { color: "var(--muted-foreground)" }}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" /> Cards
+            </button>
+          </div>
+          <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "#2b1807", color: "#e8d5b7" }}>
+            <Plus className="w-4 h-4" /> Add Category
+          </button>
+        </div>
       </div>
 
       {loading ? (
         <p className="text-muted-foreground text-sm">Loading...</p>
       ) : categories.length === 0 ? (
         <p className="text-muted-foreground text-sm">No categories yet.</p>
+      ) : view === "table" ? (
+        <div className="bg-card border border-border rounded-xl overflow-hidden overflow-x-auto">
+          <table className="w-full text-sm min-w-[640px]">
+            <thead className="bg-muted">
+              <tr>
+                <th className="text-left px-4 py-3 text-muted-foreground font-medium">Cover</th>
+                <th className="text-left px-4 py-3 text-muted-foreground font-medium">Name</th>
+                <th className="text-left px-4 py-3 text-muted-foreground font-medium">Description</th>
+                <th className="text-left px-4 py-3 text-muted-foreground font-medium">Gallery</th>
+                <th className="text-left px-4 py-3 text-muted-foreground font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {categories.map((c) => (
+                <tr key={c.id} className="border-t border-border">
+                  <td className="px-4 py-3">
+                    {c.imageUrl ? (
+                      <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0">
+                        <Image src={c.imageUrl} alt={c.name} fill className="object-cover" unoptimized />
+                      </div>
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-muted shrink-0" />
+                    )}
+                  </td>
+                  <td className="px-4 py-3 font-semibold text-foreground whitespace-nowrap">{c.name}</td>
+                  <td className="px-4 py-3 text-muted-foreground max-w-xs truncate">{c.description ? stripHtmlToText(c.description) : "—"}</td>
+                  <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{c.images?.length ?? 0} photo{c.images?.length === 1 ? "" : "s"}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-2">
+                      <button onClick={() => openEdit(c)} className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg border border-border text-foreground hover:bg-muted">
+                        <Pencil className="w-3 h-3" />
+                      </button>
+                      <button onClick={() => setImagesManagerFor(c)} className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg border border-border text-foreground hover:bg-muted">
+                        <Images className="w-3 h-3" />
+                      </button>
+                      <button onClick={() => handleDelete(c.id)} className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50">
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {categories.map((c) => (
@@ -109,6 +186,8 @@ export default function CategoriesPage() {
           ))}
         </div>
       )}
+
+      <Pagination page={page} totalPages={totalPages} onPageChange={goToPage} />
 
       {/* Modal */}
       {modal.open && (

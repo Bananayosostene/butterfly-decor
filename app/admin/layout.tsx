@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, FolderOpen, Image, Shirt, BookOpen, Settings, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, FolderOpen, Image, Shirt, BookOpen, Settings, LogOut, Menu, X, BarChart3 } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/admin/statistics", label: "Statistics", icon: BarChart3 },
   { href: "/admin/categories", label: "Categories", icon: FolderOpen },
   { href: "/admin/collection-items", label: "Collection Items", icon: Image },
   { href: "/admin/style-ideas", label: "Style Ideas", icon: Shirt },
