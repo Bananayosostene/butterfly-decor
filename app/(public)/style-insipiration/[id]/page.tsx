@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type StyleIdea = {
   id: string;
@@ -17,21 +17,48 @@ export default function StyleIdeaDetailPage() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
   const [idea, setIdea] = useState<StyleIdea | null>(null);
+  const [allIdeas, setAllIdeas] = useState<StyleIdea[]>([]);
   const [related, setRelated] = useState<StyleIdea[]>([]);
   const [loading, setLoading] = useState(true);
+  const [imgFading, setImgFading] = useState(false);
+  const topRef = useRef<HTMLDivElement>(null);
+
+  const selectFromList = (targetId: string, list: StyleIdea[]) => {
+    const current = list.find((i) => i.id === targetId) ?? null;
+    setIdea(current);
+    if (current) setRelated(list.filter((i) => i.id !== targetId).slice(0, 8));
+  };
 
   useEffect(() => {
     if (!id) return;
+    setLoading(true);
     Promise.all([
       fetch(`/api/style-ideas/${id}`).then((r) => r.json()),
-      fetch("/api/style-ideas").then((r) => r.json()),
+      fetch("/api/style-ideas?page=1&limit=100").then((r) => r.json()),
     ]).then(([single, all]) => {
       const current: StyleIdea = single.data;
-      setIdea(current);
-      const others: StyleIdea[] = (all.data ?? []).filter((i: StyleIdea) => i.id !== id);
-      setRelated(others.slice(0, 8));
+      const list: StyleIdea[] = all.data ?? [];
+      // Guarantee the current idea is in the list even if it fell outside the capped page.
+      const merged = current && !list.some((i) => i.id === current.id) ? [current, ...list] : list;
+      setAllIdeas(merged);
+      selectFromList(id as string, merged);
     }).finally(() => setLoading(false));
   }, [id]);
+
+  const currentIndex = idea ? allIdeas.findIndex((i) => i.id === idea.id) : -1;
+  const prevIdea = allIdeas.length > 1 && currentIndex !== -1 ? allIdeas[(currentIndex - 1 + allIdeas.length) % allIdeas.length] : null;
+  const nextIdea = allIdeas.length > 1 && currentIndex !== -1 ? allIdeas[(currentIndex + 1) % allIdeas.length] : null;
+
+  const goToSibling = (sibling: StyleIdea | null) => {
+    if (!sibling) return;
+    router.replace(`/style-insipiration/${sibling.id}`, { scroll: false });
+    setImgFading(true);
+    setTimeout(() => {
+      selectFromList(sibling.id, allIdeas);
+      setImgFading(false);
+      topRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 180);
+  };
 
   if (loading) {
     return (
@@ -87,7 +114,8 @@ export default function StyleIdeaDetailPage() {
 
   return (
     <main className="min-h-screen pb-16" style={{ background: "var(--background)" }}>
-   
+      <div ref={topRef} />
+
       {/* Pin card — Pinterest style */}
       <div className="max-w-4xl mx-auto pt-4 px-4 md:px-8">
         <div
@@ -106,7 +134,26 @@ export default function StyleIdeaDetailPage() {
               className="object-contain"
               sizes="(max-width: 768px) 100vw, 55vw"
               priority
+              style={{ transition: "opacity 0.18s ease", opacity: imgFading ? 0 : 1 }}
             />
+            {prevIdea && (
+              <button
+                onClick={() => goToSibling(prevIdea)}
+                aria-label="Previous idea"
+                className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center bg-black/40 hover:bg-black/60 transition-colors z-10"
+              >
+                <ChevronLeft className="w-4 h-4 text-white" />
+              </button>
+            )}
+            {nextIdea && (
+              <button
+                onClick={() => goToSibling(nextIdea)}
+                aria-label="Next idea"
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center bg-black/40 hover:bg-black/60 transition-colors z-10"
+              >
+                <ChevronRight className="w-4 h-4 text-white" />
+              </button>
+            )}
           </div>
 
           {/* Right — info */}
@@ -120,15 +167,19 @@ export default function StyleIdeaDetailPage() {
             >
               {idea.title}
             </h1>
+            {allIdeas.length > 1 && currentIndex !== -1 && (
+              <p className="text-xs -mt-4" style={{ color: "var(--muted-foreground)" }}>
+                {currentIndex + 1} of {allIdeas.length}
+              </p>
+            )}
 
             {/* Description */}
             {idea.description && (
-              <p
-                className="text-sm leading-relaxed"
-                style={{ color: "var(--muted-foreground)", fontStyle: "italic" }}
-              >
-                {idea.description}
-              </p>
+              <div
+                className="text-sm leading-relaxed prose prose-sm max-w-none"
+                style={{ color: "var(--muted-foreground)" }}
+                dangerouslySetInnerHTML={{ __html: idea.description }}
+              />
             )}
 
             {/* Divider */}
@@ -166,7 +217,7 @@ export default function StyleIdeaDetailPage() {
               <div
                 key={item.id}
                 className="break-inside-avoid mb-3 group cursor-pointer"
-                onClick={() => router.push(`/style-insipiration/${item.id}`)}
+                onClick={() => goToSibling(item)}
               >
                 <div
                   className="relative overflow-hidden rounded-2xl"

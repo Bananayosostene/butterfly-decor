@@ -1,15 +1,21 @@
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
+import { getSessionAdminId } from "@/lib/auth"
 
-export function proxy(request: NextRequest) {
+const PUBLIC_ADMIN_PATHS = ["/admin/login", "/admin/forgot-password", "/admin/reset-password"]
+
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Protect admin routes
-  if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+  if (pathname.startsWith("/admin") && !PUBLIC_ADMIN_PATHS.includes(pathname)) {
     const sessionToken = request.cookies.get("admin_session")?.value
+    const adminId = await getSessionAdminId(sessionToken)
 
-    if (!sessionToken) {
-      return NextResponse.redirect(new URL("/admin/login", request.url))
+    if (!adminId) {
+      const loginUrl = new URL("/admin/login", request.url)
+      const response = NextResponse.redirect(loginUrl)
+      response.cookies.delete("admin_session")
+      return response
     }
   }
 

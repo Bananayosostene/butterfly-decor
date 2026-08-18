@@ -1,16 +1,10 @@
 import { prisma } from "@/lib/db"
+import { requireAdmin } from "@/lib/auth"
 import { type NextRequest, NextResponse } from "next/server"
-import { cookies } from "next/headers"
-
-async function verifyAdminSession(req: NextRequest) {
-  const cookieStore = await cookies()
-  const sessionToken = cookieStore.get("admin_session")?.value
-  return !!sessionToken
-}
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const isAdmin = await verifyAdminSession(req)
+    const isAdmin = await requireAdmin(req)
     if (!isAdmin) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }

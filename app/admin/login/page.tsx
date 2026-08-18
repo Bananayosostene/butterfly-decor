@@ -3,6 +3,7 @@
 import type React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function AdminLoginPage() {
@@ -10,6 +11,7 @@ export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [locked, setLocked] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -17,6 +19,7 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setLocked(false);
 
     try {
       const response = await fetch("/api/admin/login", {
@@ -25,8 +28,12 @@ export default function AdminLoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
+      const json = await response.json().catch(() => ({}));
+
       if (!response.ok) {
-        throw new Error("Invalid credentials");
+        setError(json.error ?? "Invalid email or password");
+        setLocked(response.status === 423);
+        return;
       }
 
       router.push("/admin");
@@ -50,9 +57,14 @@ export default function AdminLoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {error && (
-            <p className="text-sm text-center py-2 px-3 rounded-lg" style={{ background: "#fde8e8", color: "#991b1b" }}>
-              {error}
-            </p>
+            <div className="text-sm text-center py-2 px-3 rounded-lg space-y-1" style={{ background: "#fde8e8", color: "#991b1b" }}>
+              <p>{error}</p>
+              {locked && (
+                <Link href="/admin/forgot-password" className="inline-block font-semibold underline">
+                  Reset your password
+                </Link>
+              )}
+            </div>
           )}
 
           {/* Email */}
@@ -106,6 +118,12 @@ export default function AdminLoginPage() {
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>
+
+          {!locked && (
+            <Link href="/admin/forgot-password" className="block text-center text-sm font-medium underline" style={{ color: "#835105" }}>
+              Forgot password?
+            </Link>
+          )}
         </form>
       </div>
     </div>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import { Palette } from "lucide-react";
 import React, { useState, useEffect } from "react";
 
 export function Header() {
@@ -55,6 +56,22 @@ export function Header() {
         : "text-primary-foreground/80 hover:text-primary-foreground"
     }`;
 
+  const PlayButton = (
+    <Link
+      href="/style-game"
+      className="relative flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold transition-transform hover:scale-105"
+      style={{ background: "linear-gradient(135deg, #835105, #a97d3c)", color: "#fdf6ee" }}
+    >
+      <Palette className="h-3.5 w-3.5" />
+      Style Game
+      {!pathname.startsWith("/style-game") && (
+        <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-white">
+          <span className="absolute inset-0 rounded-full bg-white animate-ping" />
+        </span>
+      )}
+    </Link>
+  );
+
   return (
     <header className="sticky top-0 z-50 bg-primary border-b border-accent">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -84,6 +101,7 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
+            {PlayButton}
             <button onClick={openBookingModal} className={navClass("/request")}>
               Book Now
               {selectedCount > 0 && (
@@ -123,6 +141,7 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
+            {PlayButton}
             <button onClick={openBookingModal} className={navClass("/request")}>
               Book Now
               {selectedCount > 0 && (

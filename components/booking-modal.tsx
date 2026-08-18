@@ -66,6 +66,7 @@ export function BookingModal({ open, onClose }: BookingModalProps) {
     setDateError("");
 
     let valid = true;
+    if (!selectedItems.length) { setError("Please select at least one item before booking."); valid = false; }
     if (!phone.trim()) { setPhoneError("Please enter your phone number."); valid = false; }
     if (!eventDate) { setDateError("Please pick an event date."); valid = false; }
     if (!valid) return;
@@ -206,7 +207,7 @@ export function BookingModal({ open, onClose }: BookingModalProps) {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || selectedItems.length === 0}
             className="w-full py-3 bg-accent text-accent-foreground rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {loading ? "Requesting..." : "Request"}

@@ -8,11 +8,25 @@ datasource db {
 }
 
 model AdminUser {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  email            String    @unique
+  password         String
+  failedAttempts   Int       @default(0)
+  lockedAt         DateTime?
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  sessions         Session[]
+}
+
+model Session {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  token     String    @unique
+  adminId   String    @db.ObjectId
+  admin     AdminUser @relation(fields: [adminId], references: [id])
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
 }
 
 model Booking {
@@ -34,6 +48,22 @@ model Category {
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
   items       CollectionItem[]
+  images      CategoryImage[]
+}
+
+model CategoryImage {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  categoryId String   @db.ObjectId
+  category   Category @relation(fields: [categoryId], references: [id])
+  imageUrl   String
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+}
+
+model SiteSettings {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  heroVideoUrl String?
+  updatedAt    DateTime @updatedAt
 }
 
 model CollectionItem {

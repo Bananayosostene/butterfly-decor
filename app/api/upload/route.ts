@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { v2 as cloudinary } from "cloudinary"
+import { requireAdmin } from "@/lib/auth"
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -22,6 +23,8 @@ async function uploadToCloudinary(buffer: Buffer, folder: string): Promise<any> 
 
 export async function POST(req: NextRequest) {
   try {
+    if (!(await requireAdmin(req)))
+      return NextResponse.json({ success: false, message: "Unauthorized", statusCode: 401 }, { status: 401 })
     const formData = await req.formData()
     const file = formData.get("file") as File
     const folder = (formData.get("folder") as string) || "butterfly-events"
@@ -29,8 +32,10 @@ export async function POST(req: NextRequest) {
     if (!file)
       return NextResponse.json({ success: false, message: "No file provided", statusCode: 400 }, { status: 400 })
 
-    if (file.size > 10 * 1024 * 1024)
-      return NextResponse.json({ success: false, message: "File too large (max 10MB)", statusCode: 400 }, { status: 400 })
+    const isVideo = file.type.startsWith("video/")
+    const maxSize = isVideo ? 60 * 1024 * 1024 : 10 * 1024 * 1024
+    if (file.size > maxSize)
+      return NextResponse.json({ success: false, message: `File too large (max ${isVideo ? "60MB" : "10MB"})`, statusCode: 400 }, { status: 400 })
 
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)

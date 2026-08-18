@@ -1,8 +1,12 @@
 import { prisma } from "@/lib/db";
-import { NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/auth";
+import { type NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    if (!(await requireAdmin(req)))
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const now = new Date();
     const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
