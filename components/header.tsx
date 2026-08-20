@@ -56,21 +56,7 @@ export function Header() {
         : "text-primary-foreground/80 hover:text-primary-foreground"
     }`;
 
-  const PlayButton = (
-    <Link
-      href="/style-game"
-      className="relative flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold transition-transform hover:scale-105"
-      style={{ background: "linear-gradient(135deg, #835105, #a97d3c)", color: "#fdf6ee" }}
-    >
-      <Palette className="h-3.5 w-3.5" />
-      Style Game
-      {!pathname.startsWith("/style-game") && (
-        <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-white">
-          <span className="absolute inset-0 rounded-full bg-white animate-ping" />
-        </span>
-      )}
-    </Link>
-  );
+
 
   return (
     <header className="sticky top-0 z-50 bg-primary border-b border-accent">
@@ -89,35 +75,13 @@ export function Header() {
             />
             <Link href="/">
               <p className="text-sm font-medium text-primary-foreground">
-                Butterfly Decor · Kigali
+                Butterfly Decor <span className="hidden sm:inline">· Kigali</span>
               </p>
             </Link>
           </div>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex gap-2 items-center">
-            {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className={navClass(link.href)}>
-                {link.label}
-              </Link>
-            ))}
-            {PlayButton}
-            <button onClick={openBookingModal} className={navClass("/request")}>
-              Book Now
-              {selectedCount > 0 && (
-                <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded-full bg-primary-foreground text-primary">
-                  {selectedCount}
-                </span>
-              )}
-            </button>
-            <button
-              onClick={openWhatsApp}
-              className="p-2 rounded-full bg-green-500 hover:bg-green-600 text-white hover:scale-110 transition-transform"
-              aria-label="WhatsApp"
-            >
-              {whatsappSvg}
-            </button>
-          </nav>
+     
 
           {/* Mobile WhatsApp */}
           <div className="md:hidden flex items-center gap-2">
@@ -141,7 +105,6 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
-            {PlayButton}
             <button onClick={openBookingModal} className={navClass("/request")}>
               Book Now
               {selectedCount > 0 && (
