@@ -1,21 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Upload, Check } from "lucide-react";
 
-export function HeroVideoManager() {
-  const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+export function HeroVideoManager({ initialVideoUrl }: { initialVideoUrl: string | null }) {
+  const [videoUrl, setVideoUrl] = useState<string | null>(initialVideoUrl);
   const [uploading, setUploading] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then((res) => setVideoUrl(res?.data?.heroVideoUrl ?? null))
-      .finally(() => setLoading(false));
-  }, []);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -64,8 +56,6 @@ export function HeroVideoManager() {
       setUploading(false);
     }
   };
-
-  if (loading) return <p className="text-sm text-muted-foreground">Loading...</p>;
 
   return (
     <div className="space-y-3">

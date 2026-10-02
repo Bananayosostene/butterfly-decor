@@ -38,6 +38,8 @@ model Booking {
   adminNotes    String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  @@index([createdAt])
 }
 
 model Category {
@@ -58,6 +60,8 @@ model CategoryImage {
   imageUrl   String
   order      Int      @default(0)
   createdAt  DateTime @default(now())
+
+  @@index([categoryId, order])
 }
 
 model SiteSettings {
@@ -75,6 +79,9 @@ model CollectionItem {
   category    Category @relation(fields: [categoryId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([categoryId, createdAt])
 }
 
 model StyleIdea {
@@ -84,6 +91,8 @@ model StyleIdea {
   imageUrl    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([createdAt])
 }
 
 model DeviceVisit {
@@ -94,4 +103,6 @@ model DeviceVisit {
   browser   String?
   os        String?
   createdAt DateTime @default(now())
+
+  @@index([createdAt])
 }

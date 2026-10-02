@@ -3,11 +3,12 @@ import { cookies } from "next/headers";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
 
-export default async function BookingDetailPage({ params }: { params: { id: string } }) {
+export default async function BookingDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const cookieStore = await cookies();
   if (!cookieStore.get("admin_session")?.value) redirect("/admin/login");
 
-  const booking = await prisma.booking.findUnique({ where: { id: params.id } });
+  const booking = await prisma.booking.findUnique({ where: { id } });
   if (!booking) redirect("/admin/bookings");
 
   const items = booking.selectedItems.length
@@ -82,8 +83,8 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
         "use server";
         const status = fd.get("status") as string;
         const notes = fd.get("notes") as string;
-        await prisma.booking.update({ where: { id: params.id }, data: { status, adminNotes: notes } });
-        redirect(`/admin/bookings/${params.id}`);
+        await prisma.booking.update({ where: { id }, data: { status, adminNotes: notes } });
+        redirect(`/admin/bookings/${id}`);
       }} className="bg-card border border-border rounded-xl p-6 space-y-4">
         <h3 className="font-semibold text-foreground text-sm">Update Status</h3>
         <select name="status" defaultValue={booking.status} className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground">

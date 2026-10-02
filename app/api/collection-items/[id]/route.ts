@@ -1,18 +1,8 @@
 import { prisma } from "@/lib/db"
+import { refreshPublicData } from "@/lib/data"
 import { requireAdmin } from "@/lib/auth"
 import { sanitizeRichText } from "@/lib/sanitize"
 import { type NextRequest, NextResponse } from "next/server"
-
-export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  try {
-    const { id } = await params
-    const item = await prisma.collectionItem.findUnique({ where: { id }, include: { category: true } })
-    if (!item) return NextResponse.json({ success: false, message: "Item not found", statusCode: 404 }, { status: 404 })
-    return NextResponse.json({ success: true, message: "Item fetched", statusCode: 200, data: item })
-  } catch {
-    return NextResponse.json({ success: false, message: "Failed to fetch item", statusCode: 500 }, { status: 500 })
-  }
-}
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -22,6 +12,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const body = await req.json()
     if (body.description) body.description = sanitizeRichText(body.description)
     const item = await prisma.collectionItem.update({ where: { id }, data: body, include: { category: true } })
+    refreshPublicData("collection-items")
     return NextResponse.json({ success: true, message: "Item updated", statusCode: 200, data: item })
   } catch {
     return NextResponse.json({ success: false, message: "Failed to update item", statusCode: 500 }, { status: 500 })
@@ -34,6 +25,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       return NextResponse.json({ success: false, message: "Unauthorized", statusCode: 401 }, { status: 401 })
     const { id } = await params
     await prisma.collectionItem.delete({ where: { id } })
+    refreshPublicData("collection-items")
     return NextResponse.json({ success: true, message: "Item deleted", statusCode: 200, data: null })
   } catch {
     return NextResponse.json({ success: false, message: "Failed to delete item", statusCode: 500 }, { status: 500 })

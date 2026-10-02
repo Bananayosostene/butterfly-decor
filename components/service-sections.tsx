@@ -3,10 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { cldImage } from "@/lib/image";
 import { stripHtmlToText } from "@/lib/text";
 
-type CategoryImage = { id: string; imageUrl: string; order: number };
-type Category = { id: string; name: string; description?: string; imageUrl?: string; images?: CategoryImage[] };
+type CategoryImage = { id: string; imageUrl: string };
+type Category = { id: string; name: string; description: string | null; imageUrl: string | null; images: CategoryImage[] };
 
 const CHOCOLATE = "#2b1807";
 const BORDER = "#e8d5b7";
@@ -16,19 +17,10 @@ function slugify(name: string) {
   return name.toLowerCase().replace(/\s+/g, "-");
 }
 
-export function ServiceSections() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+export function ServiceSections({ categories }: { categories: Category[] }) {
   const [active, setActive] = useState(0);
   const [visible, setVisible] = useState(true);
   const pausedRef = useRef(false);
-
-  useEffect(() => {
-    fetch("/api/categories")
-      .then((r) => r.json())
-      .then((res) => setCategories(res.data ?? []))
-      .finally(() => setLoading(false));
-  }, []);
 
   useEffect(() => {
     if (categories.length < 2) return;
@@ -52,27 +44,10 @@ export function ServiceSections() {
     });
   };
 
-  if (loading) {
-    return (
-      <section className="w-full py-10 md:py-14 px-4 md:px-8 lg:px-12" style={{ background: "#F5F5F7" }}>
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-8 md:gap-14">
-          <div className="flex-1 flex flex-col gap-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="animate-pulse rounded-xl h-16" style={{ background: "var(--muted)" }} />
-            ))}
-          </div>
-          <div className="flex-1 flex items-center justify-center">
-            <div className="animate-pulse rounded-2xl w-full max-w-sm" style={{ height: 280, background: "var(--muted)" }} />
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   if (categories.length === 0) return null;
 
   const activeCategory = categories[active];
-  const gallery = (activeCategory.images ?? []).map((img) => img.imageUrl);
+  const gallery = activeCategory.images.map((img) => img.imageUrl);
   const candidateImages = [activeCategory.imageUrl, ...gallery].filter(Boolean) as string[];
   const leftImage = candidateImages[0];
   const rightImage = candidateImages[1] ?? candidateImages[0];
@@ -162,7 +137,7 @@ export function ServiceSections() {
             >
               {leftImage && (
                 <Image
-                  src={leftImage}
+                  src={cldImage(leftImage, 420)}
                   alt={activeCategory.name}
                   fill
                   unoptimized
@@ -188,7 +163,7 @@ export function ServiceSections() {
             >
               {rightImage && (
                 <Image
-                  src={rightImage}
+                  src={cldImage(rightImage, 420)}
                   alt={activeCategory.name}
                   fill
                   unoptimized

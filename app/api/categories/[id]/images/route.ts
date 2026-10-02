@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db"
+import { refreshPublicData } from "@/lib/data"
 import { requireAdmin } from "@/lib/auth"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -17,6 +18,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const image = await prisma.categoryImage.create({
       data: { categoryId: id, imageUrl, order: (last?.order ?? -1) + 1 },
     })
+    refreshPublicData("categories")
     return NextResponse.json({ success: true, message: "Image added", statusCode: 201, data: image }, { status: 201 })
   } catch {
     return NextResponse.json({ success: false, message: "Failed to add image", statusCode: 500 }, { status: 500 })

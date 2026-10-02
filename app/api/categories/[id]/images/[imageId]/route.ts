@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db"
+import { refreshPublicData } from "@/lib/data"
 import { requireAdmin } from "@/lib/auth"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -8,6 +9,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       return NextResponse.json({ success: false, message: "Unauthorized", statusCode: 401 }, { status: 401 })
     const { id, imageId } = await params
     await prisma.categoryImage.deleteMany({ where: { id: imageId, categoryId: id } })
+    refreshPublicData("categories")
     return NextResponse.json({ success: true, message: "Image deleted", statusCode: 200, data: null })
   } catch {
     return NextResponse.json({ success: false, message: "Failed to delete image", statusCode: 500 }, { status: 500 })
@@ -39,6 +41,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       prisma.categoryImage.update({ where: { id: swap.id }, data: { order: current.order } }),
     ])
 
+    refreshPublicData("categories")
     const updated = await prisma.categoryImage.findMany({ where: { categoryId: id }, orderBy: { order: "asc" } })
     return NextResponse.json({ success: true, message: "Reordered", statusCode: 200, data: updated })
   } catch {

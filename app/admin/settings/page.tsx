@@ -1,11 +1,14 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { deleteSession } from "@/lib/auth";
+import { prisma } from "@/lib/db";
 import { HeroVideoManager } from "@/components/admin/hero-video-manager";
 
 export default async function AdminSettingsPage() {
   const cookieStore = await cookies();
   if (!cookieStore.get("admin_session")?.value) redirect("/admin/login");
+
+  const settings = await prisma.siteSettings.findFirst();
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -21,7 +24,7 @@ export default async function AdminSettingsPage() {
 
         <div className="border-t border-border pt-6">
           <h2 className="font-semibold text-foreground mb-2">Homepage Hero Video</h2>
-          <HeroVideoManager />
+          <HeroVideoManager initialVideoUrl={settings?.heroVideoUrl ?? null} />
         </div>
 
         <div className="border-t border-border pt-6">

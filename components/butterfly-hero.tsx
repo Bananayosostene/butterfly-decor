@@ -1,22 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-const FALLBACK_VIDEO = "/hero-video.mp4";
-
-export function WeddingShopHero() {
+export function WeddingShopHero({ videoSrc }: { videoSrc: string }) {
   const [videoAvailable, setVideoAvailable] = useState(true);
-  const [videoSrc, setVideoSrc] = useState(FALLBACK_VIDEO);
-
-
-  useEffect(() => {
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then((res) => {
-        if (res?.data?.heroVideoUrl) setVideoSrc(res.data.heroVideoUrl);
-      })
-      .catch(() => {});
-  }, []);
 
   // With the video visible, text sits on a dark warm scrim (brand chocolate).
   // Without it, we fall back to the plain cream gradient with dark text — never mix the two.
@@ -37,7 +24,6 @@ export function WeddingShopHero() {
     >
       {videoAvailable && (
         <video
-          key={videoSrc}
           autoPlay
           muted
           loop

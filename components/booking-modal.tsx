@@ -3,14 +3,8 @@
 import type React from "react";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { X, ExternalLink } from "lucide-react";
-
-type ItemMeta = { id: string; name: string; category: { name: string } };
-
-function syncStorage(items: string[]) {
-  localStorage.setItem("butterfly-selected-items", JSON.stringify(items));
-  window.dispatchEvent(new CustomEvent("selectedItemsChange", { detail: items.length }));
-}
+import { X } from "lucide-react";
+import { readSelectedIds, readSelectedLabels, writeSelectedIds as syncStorage } from "@/lib/selection";
 
 interface BookingModalProps {
   open: boolean;
@@ -20,7 +14,7 @@ interface BookingModalProps {
 export function BookingModal({ open, onClose }: BookingModalProps) {
   const pathname = usePathname();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [itemsMeta, setItemsMeta] = useState<ItemMeta[]>([]);
+  const [labels, setLabels] = useState<Record<string, string>>({});
   const [phone, setPhone] = useState("");
   const [eventDate, setEventDate] = useState("");
   const [phoneError, setPhoneError] = useState("");
@@ -30,17 +24,9 @@ export function BookingModal({ open, onClose }: BookingModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem("butterfly-selected-items");
-    if (saved) setSelectedItems(JSON.parse(saved));
+    setSelectedItems(readSelectedIds());
+    setLabels(readSelectedLabels());
   }, [open]);
-
-  useEffect(() => {
-    if (!selectedItems.length) { setItemsMeta([]); return; }
-    fetch(`/api/collection-items?ids=${selectedItems.join(",")}`)
-      .then((r) => r.json())
-      .then((res) => setItemsMeta(res.data ?? []))
-      .catch(() => {});
-  }, [selectedItems]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -151,9 +137,8 @@ export function BookingModal({ open, onClose }: BookingModalProps) {
             ) : (
               <div className="flex flex-wrap gap-2">
                 {selectedItems.map((id) => {
-                  const item = itemsMeta.find((i) => i.id === id);
-                  const label = item
-                    ? `${item.category.name} ***${id.slice(-3)}`
+                  const label = labels[id]
+                    ? `${labels[id]} ***${id.slice(-3)}`
                     : `***${id.slice(-3)}`;
                   return (
                     <span key={id} className="flex items-center gap-1 px-3 py-1 bg-blue-50 border border-blue-200 text-sm rounded-full">
