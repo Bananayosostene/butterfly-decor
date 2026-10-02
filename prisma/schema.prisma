@@ -106,3 +106,24 @@ model DeviceVisit {
 
   @@index([createdAt])
 }
+
+model ItemLike {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  itemId    String   @db.ObjectId
+  visitorId String
+  createdAt DateTime @default(now())
+
+  @@unique([itemId, visitorId])
+}
+
+model ItemComment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  itemId    String   @db.ObjectId
+  visitorId String
+  name      String
+  text      String
+  createdAt DateTime @default(now())
+
+  @@index([itemId, createdAt])
+  @@index([visitorId, createdAt])
+}

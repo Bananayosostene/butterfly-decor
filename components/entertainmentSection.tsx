@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
 import {
@@ -38,18 +37,18 @@ export function EntertainmentSection({
           <Carousel opts={{ align: "center", loop: true }} plugins={[topAutoplay.current]}>
             <CarouselContent className="-ml-3">
               {topItems.map((item) => (
-                <CarouselItem key={item.id} className="pl-3 basis-[85vw] md:basis-[50%]">
+                // Each card is as wide as its own image at the row height, so nothing is cropped and no gaps appear.
+                <CarouselItem key={item.id} className="pl-3 basis-auto">
                   <Link
                     href={`/collection/${item.id}`}
-                    className="relative block overflow-hidden group"
-                    style={{ height: "clamp(200px, 28vw, 300px)", backgroundColor: "#1a0a2e" }}
+                    className="relative block overflow-hidden rounded-xl shadow-sm group"
+                    style={{ height: "clamp(200px, 28vw, 300px)", background: "rgba(43,24,7,0.06)" }}
                   >
-                    <Image
+                    <img
                       src={cldImage(item.imageUrl, 900)}
                       alt={item.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
-                      sizes="34vw"
+                      decoding="async"
+                      className="h-full w-auto min-w-[150px] max-w-[85vw] object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div
                       className="absolute bottom-0 left-0 right-0 px-3 py-3"
@@ -68,26 +67,25 @@ export function EntertainmentSection({
 
         {/* BOTTOM ROW */}
         <Carousel opts={{ align: "center", loop: true }} plugins={[bottomAutoplay.current]}>
-          <CarouselContent className="-ml-2">
+          <CarouselContent className="-ml-3">
             {bottomItems.map((item) => (
-              <CarouselItem key={item.id} className="pl-2 basis-[42vw] md:basis-[26%]">
+              <CarouselItem key={item.id} className="pl-3 basis-auto">
                 <Link
                   href={`/collection/${item.id}`}
-                  className="relative block overflow-hidden group"
-                  style={{ height: "clamp(120px, 16vw, 170px)", backgroundColor: "#1a0a2e" }}
+                  className="relative block overflow-hidden rounded-xl shadow-sm group"
+                  style={{ height: "clamp(150px, 18vw, 200px)", background: "rgba(43,24,7,0.06)" }}
                 >
-                  <Image
+                  <img
                     src={cldImage(item.imageUrl, 500)}
                     alt={item.name}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
-                    sizes="26vw"
+                    decoding="async"
+                    className="h-full w-auto min-w-[120px] max-w-[70vw] object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div
                     className="absolute bottom-0 left-0 right-0 px-2.5 py-2"
                     style={{ background: "linear-gradient(to top, rgba(0,0,0,0.65), transparent)" }}
                   >
-                    <p className="text-white text-base sm:text-lg truncate" style={{ fontFamily: "Georgia, serif", textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>
+                    <p className="text-white text-sm sm:text-base truncate" style={{ fontFamily: "Georgia, serif", textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>
                       {item.name}
                     </p>
                   </div>

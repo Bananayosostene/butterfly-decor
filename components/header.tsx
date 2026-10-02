@@ -42,7 +42,6 @@ export function Header() {
 
   const navLinks = [
     { href: "/collection", label: "Collections" },
-    { href: "/style-insipiration", label: "Outfit Ideas" },
   ];
 
   const openBookingModal = () => {

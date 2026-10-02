@@ -25,6 +25,10 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       return NextResponse.json({ success: false, message: "Unauthorized", statusCode: 401 }, { status: 401 })
     const { id } = await params
     await prisma.collectionItem.delete({ where: { id } })
+    await Promise.all([
+      prisma.itemLike.deleteMany({ where: { itemId: id } }),
+      prisma.itemComment.deleteMany({ where: { itemId: id } }),
+    ])
     refreshPublicData("collection-items")
     return NextResponse.json({ success: true, message: "Item deleted", statusCode: 200, data: null })
   } catch {

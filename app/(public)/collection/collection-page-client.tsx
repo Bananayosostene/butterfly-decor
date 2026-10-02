@@ -119,10 +119,16 @@ export default function CollectionPageClient({
                   <img
                     src={`/${cat.icon}`}
                     alt={cat.label}
-                    className="w-full h-full object-contain border-2 border-primary/50 rounded-full transition-all group-hover:border-4 group-hover:border-primary"
+                    className={`w-full h-full object-contain rounded-full transition-all group-hover:border-4 group-hover:border-primary ${
+                      activeSlug === cat.slug ? "border-4 border-primary" : "border-2 border-primary/50"
+                    }`}
                   />
                 </div>
-                <span className="text-xs sm:text-sm font-medium text-foreground text-center whitespace-nowrap">
+                <span
+                  className={`text-xs sm:text-sm text-foreground text-center whitespace-nowrap ${
+                    activeSlug === cat.slug ? "font-bold" : "font-medium"
+                  }`}
+                >
                   {cat.label}
                 </span>
               </Link>

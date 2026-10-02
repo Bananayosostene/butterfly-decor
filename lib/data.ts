@@ -126,3 +126,82 @@ export const getHeroVideoUrl = unstable_cache(
   ["hero-video-url"],
   { tags: ["settings"], revalidate: HOUR },
 )
+
+/**
+ * Right-hand feed of the item page: the rest of the item's category first, then the rest of the
+ * collection once the category runs out. Also returns the previous/next item within the category.
+ */
+export const getItemFeed = unstable_cache(
+  async (itemId: string, categoryId: string, take: number) => {
+    const [sameCategory, total] = await Promise.all([
+      prisma.collectionItem.findMany({
+        where: { categoryId },
+        select: itemSelect,
+        orderBy: { createdAt: "desc" },
+        take: take + 1,
+      }),
+      prisma.collectionItem.count(),
+    ])
+
+    const index = sameCategory.findIndex((i) => i.id === itemId)
+    const hasNeighbours = index !== -1 && sameCategory.length > 1
+    const prevId = hasNeighbours ? sameCategory[(index - 1 + sameCategory.length) % sameCategory.length].id : null
+    const nextId = hasNeighbours ? sameCategory[(index + 1) % sameCategory.length].id : null
+
+    const related = sameCategory.filter((i) => i.id !== itemId).slice(0, take)
+    const others =
+      related.length < take
+        ? await prisma.collectionItem.findMany({
+            where: { categoryId: { not: categoryId } },
+            select: itemSelect,
+            orderBy: { createdAt: "desc" },
+            take: take - related.length,
+          })
+        : []
+
+    const feed = [...related, ...others]
+    return { feed, hasMore: feed.length < total - 1, prevId, nextId }
+  },
+  ["item-feed"],
+  { tags: ["collection-items", "categories"], revalidate: HOUR },
+)
+
+/** Newest comments shown on an item page. */
+export const COMMENTS_SHOWN = 50
+
+const socialTag = (itemId: string) => `item-social-${itemId}`
+
+/** Like count and comments of one item. Cached per item and refreshed when someone likes or comments. */
+export function getItemSocial(itemId: string) {
+  return unstable_cache(
+    async () => {
+      const [likeCount, commentCount, comments] = await Promise.all([
+        prisma.itemLike.count({ where: { itemId } }),
+        prisma.itemComment.count({ where: { itemId } }),
+        prisma.itemComment.findMany({
+          where: { itemId },
+          select: { id: true, name: true, text: true, createdAt: true },
+          orderBy: { createdAt: "desc" },
+          take: COMMENTS_SHOWN,
+        }),
+      ])
+      return {
+        likeCount,
+        commentCount,
+        comments: comments.map((c) => ({ ...c, createdAt: c.createdAt.toISOString() })),
+      }
+    },
+    ["item-social", itemId],
+    { tags: [socialTag(itemId)], revalidate: HOUR },
+  )()
+}
+
+export function refreshItemSocial(itemId: string) {
+  revalidateTag(socialTag(itemId), { expire: 0 })
+}
+
+/** Per-visitor, so never cached. */
+export async function hasLiked(itemId: string, visitorId: string | undefined) {
+  if (!visitorId) return false
+  return !!(await prisma.itemLike.findFirst({ where: { itemId, visitorId }, select: { id: true } }))
+}

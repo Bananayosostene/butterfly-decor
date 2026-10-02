@@ -1,6 +1,18 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-import { getCollectionItem, getCollectionItems, isObjectId, parsePage, PAGE_SIZE, MAX_PAGES } from "@/lib/data";
+import { getSessionAdminId } from "@/lib/auth";
+import {
+  getCollectionItem,
+  getItemFeed,
+  getItemSocial,
+  hasLiked,
+  isObjectId,
+  parsePage,
+  PAGE_SIZE,
+  MAX_PAGES,
+} from "@/lib/data";
+import { VISITOR_COOKIE } from "@/lib/visitor";
 import CollectionItemClient from "./collection-item-client";
 
 type Props = {
@@ -15,20 +27,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CollectionItemDetailPage({ params, searchParams }: Props) {
-  const [{ id }, sp] = await Promise.all([params, searchParams]);
+  const [{ id }, sp, cookieStore] = await Promise.all([params, searchParams, cookies()]);
   const page = parsePage(sp.page);
 
   const item = isObjectId(id) ? await getCollectionItem(id) : null;
   if (!item) notFound();
 
-  const { items, total } = await getCollectionItems(item.categoryId, page * PAGE_SIZE);
+  const adminToken = cookieStore.get("admin_session")?.value;
+  const [{ feed, hasMore, prevId, nextId }, social, liked, adminId] = await Promise.all([
+    getItemFeed(item.id, item.categoryId, page * PAGE_SIZE),
+    getItemSocial(item.id),
+    hasLiked(item.id, cookieStore.get(VISITOR_COOKIE)?.value),
+    // Only logged-in admins pay for this lookup; it enables the comment delete buttons.
+    adminToken ? getSessionAdminId(adminToken) : null,
+  ]);
 
   return (
     <CollectionItemClient
+      key={item.id}
       item={item}
-      categoryItems={items}
+      feed={feed}
+      prevId={prevId}
+      nextId={nextId}
       page={page}
-      hasMore={items.length < total && page < MAX_PAGES}
+      hasMore={hasMore && page < MAX_PAGES}
+      social={{ ...social, liked }}
+      canModerate={!!adminId}
     />
   );
 }
