@@ -4,6 +4,7 @@ import type React from "react";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
+import { itemHref } from "@/lib/category-icons";
 import { readSelectedIds, readSelectedLabels, writeSelectedIds as syncStorage } from "@/lib/selection";
 
 interface BookingModalProps {
@@ -143,7 +144,7 @@ export function BookingModal({ open, onClose }: BookingModalProps) {
                   return (
                     <span key={id} className="flex items-center gap-1 px-3 py-1 bg-blue-50 border border-blue-200 text-sm rounded-full">
                       <a
-                        href={`/collection/${id}`}
+                        href={itemHref(id)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-1 text-blue-600 hover:text-blue-800 hover:underline"

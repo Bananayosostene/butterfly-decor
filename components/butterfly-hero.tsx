@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { displaySerif } from "@/lib/fonts";
 
 export function WeddingShopHero({ videoSrc }: { videoSrc: string }) {
   const [videoAvailable, setVideoAvailable] = useState(true);
@@ -79,68 +80,66 @@ export function WeddingShopHero({ videoSrc }: { videoSrc: string }) {
       <div className="relative w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-20 py-14 md:py-0" style={{ zIndex: 3 }}>
         <div className="flex flex-col items-start gap-5 w-full max-w-xl">
           <p
-            className="text-xs font-semibold uppercase tracking-[0.2em]"
-            style={{ color: label }}
+            className="text-xs md:text-sm font-semibold uppercase tracking-[0.22em]"
+            style={{ color: heading, opacity: 0.9 }}
           >
-            Kigali · Rwanda
+            Where beauty meets beauty.
           </p>
           <h1
-            className="text-4xl md:text-5xl lg:text-6xl leading-tight"
+            className={`${displaySerif.className} -mt-2 text-4xl md:text-5xl leading-[1.05] max-w-xl`}
             style={{
               color: heading,
-              fontFamily: "'Playball', cursive",
-              fontWeight: 400,
-              textShadow: videoAvailable ? "0 2px 18px rgba(0,0,0,0.35)" : "none",
+              fontWeight: 500,
+              textShadow: videoAvailable ? "0 1px 12px rgba(0,0,0,0.25)" : "none",
             }}
           >
-            Decor Studio
+            The Free Online Wedding Planner Website
           </h1>
-          <p
-            className="text-base md:text-lg leading-relaxed max-w-sm"
-            style={{
-              color: paragraph,
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontWeight: 300,
-              fontStyle: "italic",
-              letterSpacing: "0.01em",
-              textShadow: videoAvailable ? "0 1px 10px rgba(0,0,0,0.3)" : "none",
-            }}
+
+          {/* Plain GET form: works before JavaScript loads and lands on /wedding-planning?date=… */}
+          <form
+            action="/wedding-planning"
+            className="mt-2 w-full max-w-lg flex items-center gap-2 p-1.5 pl-5 rounded-full shadow-lg"
+            style={{ background: "#f7efe3" }}
           >
-            We create unforgettable moments through elegant décor and refined
-            event styling, including bridal styling and outfits.{" "}
-            <span
-              style={{
-                fontFamily: "'Playball', cursive",
-                fontStyle: "normal",
-                fontWeight: 400,
-                color: highlight,
-                fontSize: "1.05em",
+            {/* Native date field: the browser keeps the mm/dd/yyyy segments and rejects impossible
+                values (month above 12, day above the month's length). Clicking the text only lets
+                the visitor type; the calendar opens only from its icon. */}
+            <input
+              // Date fields can't show a placeholder, so it starts as text and becomes a date field
+              // (mm/dd/yyyy) when clicked; it goes back to the placeholder if left empty.
+              type="text"
+              name="date"
+              placeholder="What's your wedding date?"
+              aria-label="Wedding date"
+              onFocus={(e) => {
+                e.currentTarget.type = "date";
               }}
+              onBlur={(e) => {
+                if (!e.currentTarget.value) e.currentTarget.type = "text";
+              }}
+              className="min-w-0 flex-1 bg-transparent text-sm md:text-base outline-none py-2"
+              style={{ color: "#2b1807" }}
+            />
+            <button
+              type="submit"
+              className="shrink-0 px-5 md:px-7 py-3 rounded-full text-xs md:text-sm font-bold uppercase tracking-[0.12em] transition-opacity hover:opacity-90 cursor-pointer"
+              style={{ background: "#2b1807", color: "#f7efe3" }}
             >
-              Every detail is carefully designed to bring beauty, emotion, and style to your special day.
-            </span>
+              Start planning
+            </button>
+          </form>
+          <p className="pl-5 text-sm" style={{ color: paragraph }}>
+            Already have an account?{" "}
+            <a href="/wedding-planning" className="font-bold underline-offset-4 hover:underline" style={{ color: heading }}>
+              Sign in
+            </a>
+            <span className="mx-2 opacity-60">·</span>
+            New here?{" "}
+            <a href="/wedding-planning" className="font-bold underline-offset-4 hover:underline" style={{ color: heading }}>
+              Create an account
+            </a>
           </p>
-          <div className="flex items-center gap-3 mt-2">
-            <a
-              href="/collection"
-              className="px-6 py-2.5 rounded-full text-sm font-medium transition-opacity hover:opacity-90"
-              style={{ background: "#2b1807", color: "#e8d5b7" }}
-            >
-              Explore Collection
-            </a>
-            <a
-              href="https://wa.me/+250788724867?text=Hello%20Butterfly%20Decor%20%F0%9F%8C%B8"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-medium border transition-opacity hover:opacity-80"
-              style={{ borderColor: secondaryBorder, color: secondaryText }}
-            >
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-              </svg>
-              Let's chat
-            </a>
-          </div>
         </div>
       </div>
     </section>

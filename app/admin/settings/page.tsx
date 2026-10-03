@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { deleteSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { HeroVideoManager } from "@/components/admin/hero-video-manager";
+import { DecorImageManager } from "@/components/admin/decor-image-manager";
 
 export default async function AdminSettingsPage() {
   const cookieStore = await cookies();
@@ -25,6 +26,11 @@ export default async function AdminSettingsPage() {
         <div className="border-t border-border pt-6">
           <h2 className="font-semibold text-foreground mb-2">Homepage Hero Video</h2>
           <HeroVideoManager initialVideoUrl={settings?.heroVideoUrl ?? null} />
+        </div>
+
+        <div className="border-t border-border pt-6">
+          <h2 className="font-semibold text-foreground mb-2">Homepage Decor Background</h2>
+          <DecorImageManager initialImageUrl={settings?.decorImageUrl ?? null} />
         </div>
 
         <div className="border-t border-border pt-6">

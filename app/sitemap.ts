@@ -34,7 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const itemPages = items.map((item) => ({
-    url: `${BASE_URL}/collection/${item.id}`,
+    url: `${BASE_URL}/collection?item=${item.id}`,
     lastModified: item.updatedAt,
     changeFrequency: "monthly" as const,
     priority: 0.6,

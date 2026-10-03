@@ -35,7 +35,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       data: { itemId: id, visitorId, name, text },
       select: { id: true, name: true, text: true, createdAt: true },
     })
-    refreshItemSocial(id)
+    refreshItemSocial()
     return NextResponse.json({ success: true, message: "Comment added", statusCode: 201, data: comment }, { status: 201 })
   } catch {
     return NextResponse.json({ success: false, message: "Failed to add comment", statusCode: 500 }, { status: 500 })
@@ -53,7 +53,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       return NextResponse.json({ success: false, message: "Comment not found", statusCode: 404 }, { status: 404 })
 
     await prisma.itemComment.deleteMany({ where: { id: commentId, itemId: id } })
-    refreshItemSocial(id)
+    refreshItemSocial()
     return NextResponse.json({ success: true, message: "Comment deleted", statusCode: 200, data: null })
   } catch {
     return NextResponse.json({ success: false, message: "Failed to delete comment", statusCode: 500 }, { status: 500 })

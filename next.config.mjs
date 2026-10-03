@@ -6,6 +6,10 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Items used to have their own page; old shared links now open the gallery popup instead.
+  async redirects() {
+    return [{ source: "/collection/:id", destination: "/collection?item=:id", permanent: false }]
+  },
   images: {
     unoptimized: true,
   },

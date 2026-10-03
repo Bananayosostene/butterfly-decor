@@ -41,7 +41,7 @@ export function Header() {
   );
 
   const navLinks = [
-    { href: "/collection", label: "Collections" },
+    { href: "/collection", label: "Wedding" },
   ];
 
   const openBookingModal = () => {
@@ -74,7 +74,7 @@ export function Header() {
             />
             <Link href="/">
               <p className="text-sm font-medium text-primary-foreground">
-                Butterfly Decor <span className="hidden sm:inline">· Kigali</span>
+                Butterfly Decor
               </p>
             </Link>
           </div>

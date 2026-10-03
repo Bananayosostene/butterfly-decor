@@ -3,28 +3,30 @@ import { Footer } from "@/components/footer";
 import { WeddingShopHero } from "@/components/butterfly-hero";
 import { ServiceSections } from "@/components/service-sections";
 import { EntertainmentSection } from "@/components/entertainmentSection";
+import { DecorSection } from "@/components/decor-section";
 import { VisitTracker } from "@/components/visit-tracker";
-import { getCollectionItems, getHeroVideoUrl, getHomeCategories } from "@/lib/data";
+import { getCategoryTabs, getHomeCategories, getHomeSettings, getLatestBridalItems } from "@/lib/data";
 
 const FALLBACK_VIDEO = "/hero-video.mp4";
-/** Newest items shown across the two homepage carousels. */
-const CAROUSEL_ITEMS = 24;
+/** Bridal and groom looks shown in the homepage showcase row. */
+const SHOWCASE_ITEMS = 4;
 
 export default async function Home() {
-  const [heroVideoUrl, categories, { items }] = await Promise.all([
-    getHeroVideoUrl(),
+  const [settings, categories, decorCategories, showcaseItems] = await Promise.all([
+    getHomeSettings(),
     getHomeCategories(),
-    getCollectionItems(null, CAROUSEL_ITEMS),
+    getCategoryTabs("DECOR"),
+    getLatestBridalItems(SHOWCASE_ITEMS),
   ]);
-  const mid = Math.ceil(items.length / 2);
 
   return (
     <>
       <Header />
       <main>
-        <WeddingShopHero videoSrc={heroVideoUrl ?? FALLBACK_VIDEO} />
+        <WeddingShopHero videoSrc={settings.heroVideoUrl ?? FALLBACK_VIDEO} />
+        <DecorSection imageUrl={settings.decorImageUrl} categories={decorCategories} />
         <ServiceSections categories={categories} />
-        <EntertainmentSection topItems={items.slice(0, mid)} bottomItems={items.slice(mid)} />
+        <EntertainmentSection items={showcaseItems} />
       </main>
       <Footer />
       <VisitTracker />

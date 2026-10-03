@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
       const lines = selectedItems.map((id: string) => {
         const item = items.find((i) => i.id === id);
         const name = item?.name ?? "Item";
-        return `• ${name}: ${BASE_URL}/collection/${id}`;
+        return `• ${name}: ${BASE_URL}/collection?item=${id}`;
       });
       itemsText = `\n\nSelected items:\n${lines.join("\n")}`;
     }

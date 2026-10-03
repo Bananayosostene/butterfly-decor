@@ -9,7 +9,25 @@ import { Pagination } from "@/components/pagination";
 import { cldImage } from "@/lib/image";
 import { stripHtmlToText } from "@/lib/text";
 
-type Category = { id: string; name: string };
+type Category = { id: string; name: string; kind?: string | null };
+
+/** Dropdown options split into the main collection and decor. */
+function CategoryOptions({ categories }: { categories: Category[] }) {
+  const decor = categories.filter((c) => c.kind === "DECOR");
+  const collection = categories.filter((c) => c.kind !== "DECOR");
+  return (
+    <>
+      <optgroup label="Collection">
+        {collection.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+      </optgroup>
+      {decor.length > 0 && (
+        <optgroup label="Decor">
+          {decor.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+        </optgroup>
+      )}
+    </>
+  );
+}
 type Item = { id: string; name: string; description: string | null; imageUrl: string; categoryId: string; category: Category };
 
 export default function CollectionItemsClient({
@@ -91,7 +109,7 @@ export default function CollectionItemsClient({
         <div className="flex items-center gap-2">
           <select value={filterCat} onChange={(e) => handleFilterChange(e.target.value)} className="px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground">
             <option value="">All Categories</option>
-            {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            <CategoryOptions categories={categories} />
           </select>
           <p className="text-sm text-muted-foreground">{total} item{total === 1 ? "" : "s"}</p>
         </div>
@@ -201,7 +219,7 @@ export default function CollectionItemsClient({
               <RichTextEditor value={form.description} onChange={(html) => setForm((f) => ({ ...f, description: html }))} placeholder="Description" />
               <select value={form.categoryId} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))} className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground">
                 <option value="">Select Category *</option>
-                {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                <CategoryOptions categories={categories} />
               </select>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">Image *</label>

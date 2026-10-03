@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
+import { itemHref } from "@/lib/category-icons";
 
 export function ShareModal({ item, onClose }: { item: { id: string; name: string }; onClose: () => void }) {
   const [copied, setCopied] = useState(false);
-  const shareLink = `${window.location.origin}/collection/${item.id}`;
+  const shareLink = `${window.location.origin}${itemHref(item.id)}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(shareLink);

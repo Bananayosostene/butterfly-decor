@@ -47,6 +47,10 @@ model Category {
   name        String           @unique
   description String?
   imageUrl    String?
+  /// "DECOR" for decor categories (shown under /decor); missing or "COLLECTION" for the main collection.
+  kind        String?
+  /// File name of the tab icon in /public, chosen from lib/category-icons.ts.
+  icon        String?
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
   items       CollectionItem[]
@@ -67,6 +71,8 @@ model CategoryImage {
 model SiteSettings {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
   heroVideoUrl String?
+  /// Background photo of the homepage decor section.
+  decorImageUrl String?
   updatedAt    DateTime @updatedAt
 }
 

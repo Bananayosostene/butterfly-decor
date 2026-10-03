@@ -21,6 +21,8 @@ export const metadata: Metadata = {
     "butterfly decor rwanda",
     "butterflydec",
     "butterflydec.com",
+    "butterfly decoration",
+    "butterfly decor",
     "butterfly decor Rwanda",
     "butterfly decoration Rwanda",
     "butterfly decor Kigali",

@@ -18,7 +18,7 @@ export async function POST(_: NextRequest, { params }: { params: Promise<{ id: s
     }
 
     const count = await prisma.itemLike.count({ where: { itemId: id } })
-    refreshItemSocial(id)
+    refreshItemSocial()
     return NextResponse.json({ success: true, message: "Like updated", statusCode: 200, data: { liked: !removed, count } })
   } catch {
     return NextResponse.json({ success: false, message: "Failed to update like", statusCode: 500 }, { status: 500 })

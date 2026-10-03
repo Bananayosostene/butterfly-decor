@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
+import { itemHref } from "@/lib/category-icons";
 
 export default async function BookingDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -57,7 +58,7 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
                 return (
                   <Link
                     key={id}
-                    href={`/collection/${id}`}
+                    href={itemHref(id)}
                     target="_blank"
                     className="text-xs px-3 py-1 rounded-full font-medium hover:opacity-80 transition-opacity"
                     style={{ background: "#fdf6ee", color: "#835105", border: "1px solid #c9a96e" }}

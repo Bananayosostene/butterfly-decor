@@ -35,7 +35,7 @@ export default async function CollectionItemsPage({
       take: PAGE_SIZE,
     }),
     prisma.collectionItem.count({ where }),
-    prisma.category.findMany({ orderBy: { createdAt: "asc" }, select: { id: true, name: true } }),
+    prisma.category.findMany({ orderBy: { createdAt: "asc" }, select: { id: true, name: true, kind: true } }),
   ]);
 
   return (

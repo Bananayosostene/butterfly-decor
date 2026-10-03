@@ -1,5 +1,6 @@
 import { unstable_cache, revalidateTag } from "next/cache"
 import { prisma } from "@/lib/db"
+import { kindOf, type CategoryKind } from "@/lib/category-icons"
 
 /**
  * Cached reads for the public pages. Every read is tagged, and the admin API routes call
@@ -32,46 +33,85 @@ const itemSelect = {
   name: true,
   imageUrl: true,
   categoryId: true,
-  category: { select: { id: true, name: true } },
+  category: { select: { id: true, name: true, kind: true } },
 } as const
+
+export { kindOf }
+
+/** Ids of every category of one kind (collection or decor). */
+async function categoryIdsOf(kind: CategoryKind) {
+  const categories = await prisma.category.findMany({ select: { id: true, name: true, kind: true } })
+  return categories.filter((c) => kindOf(c) === kind).map((c) => c.id)
+}
 
 const ideaSelect = { id: true, title: true, imageUrl: true } as const
 
-/** Category names for the collection filter tabs. */
+/** Categories for the filter tabs of /collection or /decor. */
 export const getCategoryTabs = unstable_cache(
-  () => prisma.category.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } }),
-  ["category-tabs"],
+  async (kind: CategoryKind) => {
+    const categories = await prisma.category.findMany({
+      orderBy: { name: "asc" },
+      select: { id: true, name: true, icon: true, kind: true, description: true },
+    })
+    // The old "Decor" category is the parent of the decor categories: its items count as decor,
+    // but it is not a decor filter of its own.
+    return categories
+      .filter((c) => kindOf(c) === kind && !(kind === "DECOR" && !c.kind))
+      .map(({ id, name, icon, description }) => ({ id, name, icon, description }))
+  },
+  ["category-tabs-v4"],
   { tags: ["categories"], revalidate: HOUR },
 )
 
 /** Categories with their gallery, for the homepage services section. */
 export const getHomeCategories = unstable_cache(
-  () =>
-    prisma.category.findMany({
+  async () => {
+    const categories = await prisma.category.findMany({
       orderBy: { createdAt: "asc" },
       select: {
         id: true,
         name: true,
         description: true,
         imageUrl: true,
+        kind: true,
         images: { orderBy: { order: "asc" }, take: 2, select: { id: true, imageUrl: true } },
       },
-    }),
-  ["home-categories"],
+    })
+    return categories.filter((c) => kindOf(c) === "COLLECTION")
+  },
+  ["home-categories-v2"],
   { tags: ["categories"], revalidate: HOUR },
 )
 
-/** The newest `take` items (optionally within one category) plus the total count. */
+/** The newest `take` items of one category, or of every category of `kind`, plus the total count. */
 export const getCollectionItems = unstable_cache(
-  async (categoryId: string | null, take: number) => {
-    const where = categoryId ? { categoryId } : undefined
+  async (categoryId: string | null, take: number, kind: CategoryKind = "COLLECTION") => {
+    const where = categoryId ? { categoryId } : { categoryId: { in: await categoryIdsOf(kind) } }
     const [items, total] = await Promise.all([
-      prisma.collectionItem.findMany({ where, select: itemSelect, orderBy: { createdAt: "desc" }, take }),
+      // Descriptions come along so the gallery popup can open without another request.
+      prisma.collectionItem.findMany({ where, select: { ...itemSelect, description: true }, orderBy: { createdAt: "desc" }, take }),
       prisma.collectionItem.count({ where }),
     ])
     return { items, total }
   },
-  ["collection-items"],
+  ["collection-items-v3"],
+  { tags: ["collection-items", "categories"], revalidate: HOUR },
+)
+
+/** Newest items from the bridal and groom categories, for the homepage showcase. */
+export const getLatestBridalItems = unstable_cache(
+  async (take: number) => {
+    const categories = await prisma.category.findMany({ select: { id: true, name: true } })
+    const ids = categories.filter((c) => /bridal|bride|groom|suit/i.test(c.name)).map((c) => c.id)
+    if (!ids.length) return []
+    return prisma.collectionItem.findMany({
+      where: { categoryId: { in: ids } },
+      select: itemSelect,
+      orderBy: { createdAt: "desc" },
+      take,
+    })
+  },
+  ["latest-bridal-items"],
   { tags: ["collection-items", "categories"], revalidate: HOUR },
 )
 
@@ -121,87 +161,68 @@ export const getStyleIdea = unstable_cache(
   { tags: ["style-ideas"], revalidate: HOUR },
 )
 
-export const getHeroVideoUrl = unstable_cache(
-  async () => (await prisma.siteSettings.findFirst())?.heroVideoUrl ?? null,
-  ["hero-video-url"],
+/** Admin-managed homepage media: hero video and decor section background. */
+export const getHomeSettings = unstable_cache(
+  async () => {
+    const settings = await prisma.siteSettings.findFirst()
+    return {
+      heroVideoUrl: settings?.heroVideoUrl ?? null,
+      decorImageUrl: settings?.decorImageUrl ?? null,
+    }
+  },
+  ["home-settings"],
   { tags: ["settings"], revalidate: HOUR },
 )
 
+/** Newest comments sent with each gallery item; the popup says when there are more. */
+export const COMMENTS_SHOWN = 20
+
+const SOCIAL_TAG = "item-social"
+
+export type ItemComment = { id: string; name: string; text: string; createdAt: string }
+export type ItemSocial = { likeCount: number; commentCount: number; comments: ItemComment[] }
+
 /**
- * Right-hand feed of the item page: the rest of the item's category first, then the rest of the
- * collection once the category runs out. Also returns the previous/next item within the category.
+ * Likes and comments for every item on a gallery page, in three queries instead of three per
+ * item. Cached, and refreshed whenever someone likes or comments.
  */
-export const getItemFeed = unstable_cache(
-  async (itemId: string, categoryId: string, take: number) => {
-    const [sameCategory, total] = await Promise.all([
-      prisma.collectionItem.findMany({
-        where: { categoryId },
-        select: itemSelect,
+export const getGallerySocial = unstable_cache(
+  async (itemIds: string[]): Promise<Record<string, ItemSocial>> => {
+    if (!itemIds.length) return {}
+    const where = { itemId: { in: itemIds } }
+    const [likeCounts, commentCounts, comments] = await Promise.all([
+      prisma.itemLike.groupBy({ by: ["itemId"], where, _count: { _all: true } }),
+      prisma.itemComment.groupBy({ by: ["itemId"], where, _count: { _all: true } }),
+      prisma.itemComment.findMany({
+        where,
+        select: { id: true, itemId: true, name: true, text: true, createdAt: true },
         orderBy: { createdAt: "desc" },
-        take: take + 1,
+        // Upper bound for the whole page; each item keeps its newest COMMENTS_SHOWN below.
+        take: itemIds.length * COMMENTS_SHOWN,
       }),
-      prisma.collectionItem.count(),
     ])
 
-    const index = sameCategory.findIndex((i) => i.id === itemId)
-    const hasNeighbours = index !== -1 && sameCategory.length > 1
-    const prevId = hasNeighbours ? sameCategory[(index - 1 + sameCategory.length) % sameCategory.length].id : null
-    const nextId = hasNeighbours ? sameCategory[(index + 1) % sameCategory.length].id : null
-
-    const related = sameCategory.filter((i) => i.id !== itemId).slice(0, take)
-    const others =
-      related.length < take
-        ? await prisma.collectionItem.findMany({
-            where: { categoryId: { not: categoryId } },
-            select: itemSelect,
-            orderBy: { createdAt: "desc" },
-            take: take - related.length,
-          })
-        : []
-
-    const feed = [...related, ...others]
-    return { feed, hasMore: feed.length < total - 1, prevId, nextId }
+    const social: Record<string, ItemSocial> = {}
+    for (const id of itemIds) social[id] = { likeCount: 0, commentCount: 0, comments: [] }
+    for (const row of likeCounts) social[row.itemId].likeCount = row._count._all
+    for (const row of commentCounts) social[row.itemId].commentCount = row._count._all
+    for (const c of comments) {
+      const list = social[c.itemId].comments
+      if (list.length < COMMENTS_SHOWN) list.push({ id: c.id, name: c.name, text: c.text, createdAt: c.createdAt.toISOString() })
+    }
+    return social
   },
-  ["item-feed"],
-  { tags: ["collection-items", "categories"], revalidate: HOUR },
+  ["gallery-social"],
+  { tags: [SOCIAL_TAG], revalidate: HOUR },
 )
 
-/** Newest comments shown on an item page. */
-export const COMMENTS_SHOWN = 50
-
-const socialTag = (itemId: string) => `item-social-${itemId}`
-
-/** Like count and comments of one item. Cached per item and refreshed when someone likes or comments. */
-export function getItemSocial(itemId: string) {
-  return unstable_cache(
-    async () => {
-      const [likeCount, commentCount, comments] = await Promise.all([
-        prisma.itemLike.count({ where: { itemId } }),
-        prisma.itemComment.count({ where: { itemId } }),
-        prisma.itemComment.findMany({
-          where: { itemId },
-          select: { id: true, name: true, text: true, createdAt: true },
-          orderBy: { createdAt: "desc" },
-          take: COMMENTS_SHOWN,
-        }),
-      ])
-      return {
-        likeCount,
-        commentCount,
-        comments: comments.map((c) => ({ ...c, createdAt: c.createdAt.toISOString() })),
-      }
-    },
-    ["item-social", itemId],
-    { tags: [socialTag(itemId)], revalidate: HOUR },
-  )()
+export function refreshItemSocial() {
+  revalidateTag(SOCIAL_TAG, { expire: 0 })
 }
 
-export function refreshItemSocial(itemId: string) {
-  revalidateTag(socialTag(itemId), { expire: 0 })
-}
-
-/** Per-visitor, so never cached. */
-export async function hasLiked(itemId: string, visitorId: string | undefined) {
-  if (!visitorId) return false
-  return !!(await prisma.itemLike.findFirst({ where: { itemId, visitorId }, select: { id: true } }))
+/** Which of these items the visitor has liked. Per visitor, so never cached. */
+export async function getLikedIds(itemIds: string[], visitorId: string | undefined) {
+  if (!visitorId || !itemIds.length) return []
+  const likes = await prisma.itemLike.findMany({ where: { visitorId, itemId: { in: itemIds } }, select: { itemId: true } })
+  return likes.map((l) => l.itemId)
 }

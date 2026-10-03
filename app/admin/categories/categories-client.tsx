@@ -9,17 +9,32 @@ import { CategoryImagesManager } from "@/components/admin/category-images-manage
 import { Pagination } from "@/components/pagination";
 import { cldImage } from "@/lib/image";
 import { stripHtmlToText } from "@/lib/text";
+import Link from "next/link";
+import { CATEGORY_ICONS, iconForCategory, type CategoryKind } from "@/lib/category-icons";
 
 type CategoryImage = { id: string; imageUrl: string; order: number };
-type Category = { id: string; name: string; description: string | null; imageUrl: string | null; images: CategoryImage[] };
+type Category = {
+  id: string;
+  name: string;
+  description: string | null;
+  imageUrl: string | null;
+  kind: string | null;
+  icon: string | null;
+  images: CategoryImage[];
+};
+
+const EMPTY_FORM = { name: "", description: "", imageUrl: "", icon: "", kind: "COLLECTION" as CategoryKind };
 
 export default function CategoriesClient({
   categories,
+  kind,
   page,
   totalPages,
   total,
 }: {
   categories: Category[];
+  /** Which tab is open: main collection categories or decor categories. */
+  kind: CategoryKind;
   page: number;
   totalPages: number;
   total: number;
@@ -28,7 +43,7 @@ export default function CategoriesClient({
   const [loading, startTransition] = useTransition();
   const [view, setView] = useState<"table" | "cards">("table");
   const [modal, setModal] = useState<{ open: boolean; editing: Category | null }>({ open: false, editing: null });
-  const [form, setForm] = useState({ name: "", description: "", imageUrl: "" });
+  const [form, setForm] = useState(EMPTY_FORM);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [imagesManagerFor, setImagesManagerFor] = useState<Category | null>(null);
@@ -37,14 +52,23 @@ export default function CategoriesClient({
   const load = (pageNum: number) => {
     startTransition(() => {
       if (pageNum === page) router.refresh();
-      else router.push(`/admin/categories?page=${pageNum}`);
+      else router.push(`/admin/categories?page=${pageNum}${kind === "DECOR" ? "&kind=decor" : ""}`);
     });
   };
 
   const goToPage = (p: number) => load(p);
 
-  const openAdd = () => { setForm({ name: "", description: "", imageUrl: "" }); setModal({ open: true, editing: null }); };
-  const openEdit = (c: Category) => { setForm({ name: c.name, description: c.description ?? "", imageUrl: c.imageUrl ?? "" }); setModal({ open: true, editing: c }); };
+  const openAdd = () => { setForm({ ...EMPTY_FORM, kind }); setModal({ open: true, editing: null }); };
+  const openEdit = (c: Category) => {
+    setForm({
+      name: c.name,
+      description: c.description ?? "",
+      imageUrl: c.imageUrl ?? "",
+      icon: c.icon ?? "",
+      kind: c.kind === "DECOR" ? "DECOR" : "COLLECTION",
+    });
+    setModal({ open: true, editing: c });
+  };
   const closeModal = () => setModal({ open: false, editing: null });
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,8 +106,22 @@ export default function CategoriesClient({
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center gap-1 p-1 rounded-lg border border-border w-fit">
+        {([["COLLECTION", "Collection", "/admin/categories"], ["DECOR", "Decor", "/admin/categories?kind=decor"]] as const).map(([value, label, href]) => (
+          <Link
+            key={value}
+            href={href}
+            className="px-4 py-1.5 rounded-md text-sm font-medium transition-colors"
+            style={kind === value ? { background: "#2b1807", color: "#e8d5b7" } : { color: "var(--muted-foreground)" }}
+          >
+            {label}
+          </Link>
+        ))}
+      </div>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">{total} categor{total === 1 ? "y" : "ies"}</p>
+        <p className="text-sm text-muted-foreground">
+          {total} {kind === "DECOR" ? "decor " : ""}categor{total === 1 ? "y" : "ies"}
+        </p>
         <div className="flex items-center gap-2">
           <div className="flex items-center rounded-lg border border-border overflow-hidden">
             <button
@@ -102,7 +140,7 @@ export default function CategoriesClient({
             </button>
           </div>
           <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "#2b1807", color: "#e8d5b7" }}>
-            <Plus className="w-4 h-4" /> Add Category
+            <Plus className="w-4 h-4" /> {kind === "DECOR" ? "Add Decor Category" : "Add Category"}
           </button>
         </div>
       </div>
@@ -135,7 +173,12 @@ export default function CategoriesClient({
                       <div className="w-12 h-12 rounded-lg bg-muted shrink-0" />
                     )}
                   </td>
-                  <td className="px-4 py-3 font-semibold text-foreground whitespace-nowrap">{c.name}</td>
+                  <td className="px-4 py-3 font-semibold text-foreground whitespace-nowrap">
+                    <span className="inline-flex items-center gap-2">
+                      <img src={`/${iconForCategory(c.name, c.icon)}`} alt="" className="w-7 h-7 object-contain rounded-full border border-border" />
+                      {c.name}
+                    </span>
+                  </td>
                   <td className="px-4 py-3 text-muted-foreground max-w-xs truncate">{c.description ? stripHtmlToText(c.description) : "—"}</td>
                   <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{c.images?.length ?? 0} photo{c.images?.length === 1 ? "" : "s"}</td>
                   <td className="px-4 py-3">
@@ -166,7 +209,10 @@ export default function CategoriesClient({
                 </div>
               )}
               <div className="p-4">
-                <h3 className="font-semibold text-foreground">{c.name}</h3>
+                <h3 className="font-semibold text-foreground inline-flex items-center gap-2">
+                  <img src={`/${iconForCategory(c.name, c.icon)}`} alt="" className="w-7 h-7 object-contain rounded-full border border-border" />
+                  {c.name}
+                </h3>
                 {c.description && (
                   <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{stripHtmlToText(c.description)}</p>
                 )}
@@ -193,13 +239,41 @@ export default function CategoriesClient({
       {/* Modal */}
       {modal.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="bg-card border border-border rounded-2xl p-6 w-full max-w-md space-y-4">
+          <div className="bg-card border border-border rounded-2xl p-6 w-full max-w-md space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold text-foreground">{modal.editing ? "Edit Category" : "Add Category"}</h2>
               <button onClick={closeModal}><X className="w-4 h-4 text-muted-foreground" /></button>
             </div>
             <div className="space-y-3">
               <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Name *" className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground" />
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Icon</label>
+                <div className="grid grid-cols-6 gap-2">
+                  {CATEGORY_ICONS.map((ic) => {
+                    const selected = form.icon === ic.file;
+                    return (
+                      <button
+                        key={ic.file}
+                        type="button"
+                        title={ic.label}
+                        aria-label={ic.label}
+                        aria-pressed={selected}
+                        onClick={() => setForm((f) => ({ ...f, icon: selected ? "" : ic.file }))}
+                        className="aspect-square rounded-full flex items-center justify-center transition-all"
+                        style={{
+                          border: selected ? "2px solid #2b1807" : "1px solid var(--border)",
+                          background: selected ? "#fdf6ee" : "transparent",
+                        }}
+                      >
+                        <img src={`/${ic.file}`} alt="" className="w-3/4 h-3/4 object-contain" />
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-1">
+                  {form.icon ? CATEGORY_ICONS.find((i) => i.file === form.icon)?.label : "No icon picked — one is chosen from the name."}
+                </p>
+              </div>
               <RichTextEditor value={form.description} onChange={(html) => setForm((f) => ({ ...f, description: html }))} placeholder="Description" />
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">Cover Image (used on cards)</label>

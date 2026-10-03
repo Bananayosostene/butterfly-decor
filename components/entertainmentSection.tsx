@@ -1,109 +1,54 @@
-"use client";
-
 import Link from "next/link";
-import { useRef } from "react";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
+import { ArrowRight } from "lucide-react";
 import { cldImage } from "@/lib/image";
+import { itemHref } from "@/lib/category-icons";
+import { displaySerif } from "@/lib/fonts";
 
 type CollectionItem = { id: string; name: string; imageUrl: string };
 
-export function EntertainmentSection({
-  topItems,
-  bottomItems,
-}: {
-  topItems: CollectionItem[];
-  bottomItems: CollectionItem[];
-}) {
-  const topAutoplay = useRef(Autoplay({ delay: 5000, stopOnInteraction: false }));
-  const bottomAutoplay = useRef(Autoplay({ delay: 5000, stopOnInteraction: false }));
+const INK = "#2b1807";
+
+/** Homepage showcase: the newest bridal and groom looks in one edge-to-edge row. */
+export function EntertainmentSection({ items }: { items: CollectionItem[] }) {
+  if (items.length === 0) return null;
 
   return (
-    <section className="w-full overflow-hidden py-10" style={{ background: "#F5F5F7" }}>
-      <div className="w-full 2xl:max-w-7xl 2xl:mx-auto">
-        <h1
-          className="text-3xl md:text-4xl mb-2 text-center"
-          style={{ fontFamily: "'Playball', cursive", color: "var(--primary)" }}
+    <section className="w-full pt-10 md:pt-14 pb-12" style={{ background: "#fbf7f2" }}>
+      <div className=" px-4 md:px-12 lg:px-20 mb-6 md:mb-8 flex flex-wrap items-end justify-between gap-4">
+        <h2 className={`${displaySerif.className} text-2xl md:text-3xl leading-tight`} style={{ color: INK }}>
+          Browse Latest Real Wedding Albums
+        </h2>
+        <Link
+          href="/collection"
+          className="group flex items-center gap-3 text-xs md:text-sm font-semibold uppercase tracking-[0.2em] pb-1"
+          style={{ color: INK }}
         >
-          Decor Collection
-        </h1>
+          Browse all looks
+          <ArrowRight size={18} strokeWidth={1.5} className="transition-transform group-hover:translate-x-1" />
+        </Link>
+      </div>
 
-        {/* TOP ROW */}
-        <div className="mb-3">
-          <Carousel opts={{ align: "center", loop: true }} plugins={[topAutoplay.current]}>
-            <CarouselContent className="-ml-3">
-              {topItems.map((item) => (
-                // Each card is as wide as its own image at the row height, so nothing is cropped and no gaps appear.
-                <CarouselItem key={item.id} className="pl-3 basis-auto">
-                  <Link
-                    href={`/collection/${item.id}`}
-                    className="relative block overflow-hidden rounded-xl shadow-sm group"
-                    style={{ height: "clamp(200px, 28vw, 300px)", background: "rgba(43,24,7,0.06)" }}
-                  >
-                    <img
-                      src={cldImage(item.imageUrl, 900)}
-                      alt={item.name}
-                      decoding="async"
-                      className="h-full w-auto min-w-[150px] max-w-[85vw] object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div
-                      className="absolute bottom-0 left-0 right-0 px-3 py-3"
-                      style={{ background: "linear-gradient(to top, rgba(0,0,0,0.65), transparent)" }}
-                    >
-                      <p className="text-white text-base sm:text-lg truncate" style={{ fontFamily: "Georgia, serif", textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>
-                        {item.name}
-                      </p>
-                    </div>
-                  </Link>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
-        </div>
-
-        {/* BOTTOM ROW */}
-        <Carousel opts={{ align: "center", loop: true }} plugins={[bottomAutoplay.current]}>
-          <CarouselContent className="-ml-3">
-            {bottomItems.map((item) => (
-              <CarouselItem key={item.id} className="pl-3 basis-auto">
-                <Link
-                  href={`/collection/${item.id}`}
-                  className="relative block overflow-hidden rounded-xl shadow-sm group"
-                  style={{ height: "clamp(150px, 18vw, 200px)", background: "rgba(43,24,7,0.06)" }}
-                >
-                  <img
-                    src={cldImage(item.imageUrl, 500)}
-                    alt={item.name}
-                    decoding="async"
-                    className="h-full w-auto min-w-[120px] max-w-[70vw] object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div
-                    className="absolute bottom-0 left-0 right-0 px-2.5 py-2"
-                    style={{ background: "linear-gradient(to top, rgba(0,0,0,0.65), transparent)" }}
-                  >
-                    <p className="text-white text-sm sm:text-base truncate" style={{ fontFamily: "Georgia, serif", textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>
-                      {item.name}
-                    </p>
-                  </div>
-                </Link>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
-
-        <div className="text-center mt-6">
-          <Link
-            href="/collection"
-            className="text-sm font-medium px-6 py-2 rounded-full inline-block bg-primary"
-            style={{ color: "white" }}
-          >
-            more...
+      {/* Edge to edge, no gaps: 2 per row on phones, 4 on desktop. */}
+      <div className="grid grid-cols-2 lg:grid-cols-4">
+        {items.map((item, i) => (
+          <Link key={item.id} href={itemHref(item.id)} className="group block">
+            <div className="relative overflow-hidden aspect-[4/5]" style={{ background: "rgba(43,24,7,0.06)" }}>
+              <img
+                src={cldImage(item.imageUrl, 800)}
+                alt={item.name}
+                loading={i < 2 ? "eager" : "lazy"}
+                decoding="async"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+            </div>
+            <p
+              className={`${displaySerif.className} px-4 md:px-6 pt-4 md:pt-6 text-lg md:text-xl leading-snug transition-opacity group-hover:opacity-70`}
+              style={{ color: INK }}
+            >
+              {item.name}
+            </p>
           </Link>
-        </div>
+        ))}
       </div>
     </section>
   );

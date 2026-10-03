@@ -19,13 +19,14 @@ export function ItemComments({
   initialComments,
   initialCount,
   canModerate,
-  onCountChange,
+  onChange,
 }: {
   itemId: string;
   initialComments: ItemComment[];
   initialCount: number;
   canModerate: boolean;
-  onCountChange: (count: number) => void;
+  /** Reports the new list and total after a post or delete, so the gallery remembers them. */
+  onChange: (comments: ItemComment[], count: number) => void;
 }) {
   const [comments, setComments] = useState(initialComments);
   const [count, setCount] = useState(initialCount);
@@ -34,9 +35,10 @@ export function ItemComments({
   const [posting, setPosting] = useState(false);
   const [error, setError] = useState("");
 
-  const updateCount = (next: number) => {
-    setCount(next);
-    onCountChange(next);
+  const update = (nextComments: ItemComment[], nextCount: number) => {
+    setComments(nextComments);
+    setCount(nextCount);
+    onChange(nextComments, nextCount);
   };
 
   // Remember the visitor's name between comments so they only type it once.
@@ -61,8 +63,7 @@ export function ItemComments({
         return;
       }
       localStorage.setItem(NAME_KEY, name.trim());
-      setComments((prev) => [json.data, ...prev]);
-      updateCount(count + 1);
+      update([json.data, ...comments], count + 1);
       setText("");
     } catch {
       setError("Could not post your comment. Please try again.");
@@ -75,8 +76,7 @@ export function ItemComments({
     if (!confirm("Delete this comment?")) return;
     const res = await fetch(`/api/collection-items/${itemId}/comments?commentId=${commentId}`, { method: "DELETE" });
     if (!res.ok) return;
-    setComments((prev) => prev.filter((c) => c.id !== commentId));
-    updateCount(Math.max(0, count - 1));
+    update(comments.filter((c) => c.id !== commentId), Math.max(0, count - 1));
   };
 
   return (

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db"
 import { refreshPublicData } from "@/lib/data"
 import { requireAdmin } from "@/lib/auth"
+import { CATEGORY_ICON_FILES } from "@/lib/category-icons"
 import { sanitizeRichText } from "@/lib/sanitize"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -10,10 +11,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       return NextResponse.json({ success: false, message: "Unauthorized", statusCode: 401 }, { status: 401 })
     const { id } = await params
     const body = await req.json()
-    const data: { name?: string; description?: string; imageUrl?: string } = {}
+    const data: { name?: string; description?: string; imageUrl?: string; kind?: string; icon?: string | null } = {}
     if (body.name !== undefined) data.name = body.name
     if (body.description !== undefined) data.description = body.description ? sanitizeRichText(body.description) : body.description
     if (body.imageUrl !== undefined) data.imageUrl = body.imageUrl
+    if (body.kind !== undefined) data.kind = body.kind === "DECOR" ? "DECOR" : "COLLECTION"
+    if (body.icon !== undefined) data.icon = CATEGORY_ICON_FILES.has(body.icon) ? body.icon : null
     const category = await prisma.category.update({ where: { id }, data })
     refreshPublicData("categories")
     return NextResponse.json({ success: true, message: "Category updated", statusCode: 200, data: category })

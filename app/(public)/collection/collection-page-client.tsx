@@ -1,214 +1,309 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, Share2 } from "lucide-react";
-import { ShareModal } from "@/components/share-modal";
+import ItemModal, { type ModalSocial } from "./item-modal";
+import { categoryHref } from "@/lib/category-icons";
+import type { ItemSocial } from "@/lib/data";
 import { useLoadMore } from "@/hooks/use-load-more";
 import { cldImage } from "@/lib/image";
-import { readSelectedIds, writeSelectedIds, rememberSelectedLabel } from "@/lib/selection";
+import { displaySerif } from "@/lib/fonts";
 
 type CollectionItem = {
   id: string;
   name: string;
   imageUrl: string;
   categoryId: string;
-  category: { id: string; name: string };
+  description: string | null;
+  category: { id: string; name: string; kind: string | null };
 };
 
-type Category = { id: string; name: string };
+/** One filter tab, built by the server page (label, icon file and where it links to). */
+export type FilterTab = { key: string; label: string; icon: string; href: string; active: boolean };
 
-function slugify(name: string) {
-  return name.toLowerCase().replace(/\s+/g, "-");
-}
+export type Crumb = { label: string; href?: string };
 
-function getIconForCategory(name: string): string {
-  const lower = name.toLowerCase();
-  if (lower.includes("suit") || lower.includes("groom")) return "suits.svg";
-  if (lower.includes("bridal") || lower.includes("bride")) return "bridal.svg";
-  if (lower.includes("decor")) return "decor.svg";
-  if (lower.includes("gift") || lower.includes("wrap")) return "gift-box.svg";
-  if (lower.includes("invitation") || lower.includes("invite")) return "invitation.svg";
-  return "cake.svg";
-}
+const INK = "#2b1807";
+/** Images shown before the visitor opens the whole gallery with the "+N" tile. */
+const PREVIEW_COUNT = 5;
 
-function SkeletonCard() {
+function TabRow({ tabs }: { tabs: FilterTab[] }) {
   return (
-    <div
-      className="w-full animate-pulse rounded-md overflow-hidden"
-      style={{ background: "#e8d5b7", marginBottom: "6px", breakInside: "avoid" }}
-    >
-      <div style={{ paddingBottom: "130%", background: "linear-gradient(110deg, #e8d5b7 30%, #f5ead8 50%, #e8d5b7 70%)", backgroundSize: "200% 100%", animation: "shimmer 1.4s infinite" }} />
+    <div className="max-w-6xl mx-auto overflow-x-auto scrollbar-hide">
+      <div className="flex gap-6 w-max px-2 lg:w-full lg:justify-center">
+        {tabs.map((tab) => (
+          <Link
+            key={tab.key}
+            href={tab.href}
+            className={`group flex flex-col items-center gap-2 shrink-0 transition-all ${
+              tab.active ? "opacity-100" : "opacity-60 hover:opacity-100"
+            }`}
+          >
+            <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 flex items-center justify-center">
+              <img
+                src={`/${tab.icon}`}
+                alt={tab.label}
+                className={`w-full h-full object-contain rounded-full transition-all group-hover:border-4 group-hover:border-primary ${
+                  tab.active ? "border-4 border-primary" : "border-2 border-primary/50"
+                }`}
+              />
+            </div>
+            <span
+              className={`text-xs sm:text-sm text-foreground text-center whitespace-nowrap ${
+                tab.active ? "font-bold" : "font-medium"
+              }`}
+            >
+              {tab.label}
+            </span>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Album-style gallery: images come in blocks of five — one large photo with four smaller ones
+ * beside it (under it on phones). Clicking a tile opens it in the popup.
+ */
+function GalleryBlocks({
+  items,
+  moreCount,
+  onShowAll,
+  onOpen,
+}: {
+  items: CollectionItem[];
+  onOpen: (itemId: string) => void;
+  /** When set, the last tile shows "+N" and opens the full gallery instead of the image. */
+  moreCount?: number;
+  onShowAll?: () => void;
+}) {
+  const blocks: CollectionItem[][] = [];
+  for (let i = 0; i < items.length; i += PREVIEW_COUNT) blocks.push(items.slice(i, i + PREVIEW_COUNT));
+
+  return (
+    <div className="space-y-2">
+      {blocks.map((block, b) => (
+        <div key={block[0].id} className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          {block.map((item, i) => {
+            const big = i === 0;
+            const isMoreTile = moreCount !== undefined && b === blocks.length - 1 && i === block.length - 1;
+            const image = (
+              <>
+                <img
+                  src={cldImage(item.imageUrl, big ? 1100 : 550)}
+                  alt={item.name}
+                  loading={b === 0 ? "eager" : "lazy"}
+                  decoding="async"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                />
+                {isMoreTile ? (
+                  <span
+                    className={`${displaySerif.className} absolute inset-0 flex items-center justify-center text-4xl md:text-5xl text-white`}
+                    style={{ background: "rgba(43,24,7,0.55)" }}
+                  >
+                    +{moreCount}
+                  </span>
+                ) : (
+                  <span className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                )}
+              </>
+            );
+            // The big tile takes its height from the two rows of small tiles next to it; on phones
+            // nothing sits beside it, so it keeps a square shape of its own.
+            const tileClass = `group relative block overflow-hidden rounded-md ${
+              big ? "col-span-2 row-span-2 aspect-square md:aspect-auto" : "aspect-square"
+            }`;
+            const tileStyle = { background: "rgba(43,24,7,0.06)" };
+
+            return isMoreTile ? (
+              <button
+                key={item.id}
+                type="button"
+                onClick={onShowAll}
+                className={`${tileClass} cursor-pointer`}
+                style={tileStyle}
+                aria-label={`Show ${moreCount} more images`}
+              >
+                {image}
+              </button>
+            ) : (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => onOpen(item.id)}
+                className={`${tileClass} cursor-pointer`}
+                style={tileStyle}
+                aria-label={item.name}
+              >
+                {image}
+              </button>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }
 
 export default function CollectionPageClient({
+  social,
+  likedIds,
+  canModerate,
+  sharedItem,
+  initialItemId,
   items,
-  categories,
-  activeSlug,
+  total,
+  tabs,
+  breadcrumb,
+  title,
+  description,
+  inDecor = false,
   page,
   hasMore,
 }: {
+  /** Likes and comments of every item below, loaded by the server page with the gallery. */
+  social: Record<string, ItemSocial>;
+  /** Items this visitor has liked. */
+  likedIds: string[];
+  canModerate: boolean;
+  /** Item from a shared `?item=` link that is not among `items`. */
+  sharedItem: CollectionItem | null;
+  /** Item to show in the popup on arrival (from a shared link). */
+  initialItemId: string | null;
   items: CollectionItem[];
-  categories: Category[];
-  activeSlug: string;
+  /** Number of images in this view, including those not loaded yet. */
+  total: number;
+  tabs: FilterTab[];
+  breadcrumb: Crumb[];
+  title: string;
+  description: string;
+  /** True on /collection?cat=decor: shows a way back to the full collection. */
+  inDecor?: boolean;
   page: number;
   hasMore: boolean;
 }) {
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [shareItem, setShareItem] = useState<{ id: string; name: string } | null>(null);
-  const { sentinelRef, loadingMore } = useLoadMore(page, hasMore);
+  // Coming back with ?page=2+ means the visitor had already opened the full gallery.
+  const [showAll, setShowAll] = useState(page > 1);
+  const { sentinelRef, loadingMore } = useLoadMore(page, showAll && hasMore);
 
-  useEffect(() => {
-    setSelectedItems(readSelectedIds());
-  }, []);
+  // The popup is plain page state: everything it shows was sent with the gallery, so opening,
+  // moving between and closing images makes no request and the address stays the same.
+  const [openId, setOpenId] = useState<string | null>(initialItemId);
+  // Likes and comments made in the popup, so reopening an image shows them.
+  const [socialChanges, setSocialChanges] = useState<Record<string, Partial<ModalSocial>>>({});
 
-  const toggleSelection = (item: CollectionItem) => {
-    const next = selectedItems.includes(item.id)
-      ? selectedItems.filter((i) => i !== item.id)
-      : [...selectedItems, item.id];
-    rememberSelectedLabel(item.id, item.category.name);
-    setSelectedItems(next);
-    writeSelectedIds(next);
+  const showItem = (itemId: string | null) => {
+    setOpenId(itemId);
+    // A shared link arrived with ?item=…; once closed, tidy the address without reloading.
+    if (!itemId && window.location.search.includes("item=")) {
+      const params = new URLSearchParams(window.location.search);
+      params.delete("item");
+      const query = params.toString();
+      window.history.replaceState(null, "", query ? `/collection?${query}` : "/collection");
+    }
   };
 
-  const filterTabs = [
-    { slug: "all", label: "All", icon: "all.svg" },
-    ...categories.map((cat) => ({
-      slug: slugify(cat.name),
-      label: cat.name,
-      icon: getIconForCategory(cat.name),
-    })),
-  ];
+  const updateSocial = (itemId: string, patch: Partial<ModalSocial>) =>
+    setSocialChanges((prev) => ({ ...prev, [itemId]: { ...prev[itemId], ...patch } }));
 
-  const activeCategoryLabel = filterTabs.find((t) => t.slug === activeSlug)?.label ?? activeSlug;
+  // Prev/next walk through the images of this view (wrapping at the ends).
+  const viewItems = sharedItem ? [...items, sharedItem] : items;
+  const openIndex = openId ? viewItems.findIndex((i) => i.id === openId) : -1;
+  const openItem = openIndex === -1 ? null : viewItems[openIndex];
+  const neighbour = (step: number) =>
+    viewItems.length > 1 ? viewItems[(openIndex + step + viewItems.length) % viewItems.length].id : null;
+
+  const preview = items.slice(0, PREVIEW_COUNT);
+  const hiddenCount = total - preview.length;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center">
-      <style>{`
-        @keyframes shimmer {
-          0% { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
-        }
-      `}</style>
-
-      <section className="pt-8 pb-0 md:pb-4 px-4 w-full">
-        <div className="text-left sm:text-center">
-          <h1
-            className="text-3xl md:text-4xl mb-2"
-            style={{ fontFamily: "'Playball', cursive", color: "var(--primary)" }}
-          >
-            Butterfly Collections
-          </h1>
-        </div>
-      </section>
-
-      <section className="pb-2 px-4 w-full">
-        <div className="max-w-6xl mx-auto overflow-x-auto scrollbar-hide">
-          <div className="flex gap-6 w-max px-2 lg:w-full lg:justify-center">
-            {filterTabs.map((cat) => (
-              <Link
-                key={cat.slug}
-                href={cat.slug === "all" ? "/collection" : `/collection?cat=${cat.slug}`}
-                className={`group flex flex-col items-center gap-2 shrink-0 transition-all ${
-                  activeSlug === cat.slug ? "opacity-100" : "opacity-60 hover:opacity-100"
-                }`}
-              >
-                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 flex items-center justify-center">
-                  <img
-                    src={`/${cat.icon}`}
-                    alt={cat.label}
-                    className={`w-full h-full object-contain rounded-full transition-all group-hover:border-4 group-hover:border-primary ${
-                      activeSlug === cat.slug ? "border-4 border-primary" : "border-2 border-primary/50"
-                    }`}
-                  />
-                </div>
-                <span
-                  className={`text-xs sm:text-sm text-foreground text-center whitespace-nowrap ${
-                    activeSlug === cat.slug ? "font-bold" : "font-medium"
-                  }`}
-                >
-                  {cat.label}
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-4 sm:py-5 md:py-6 lg:py-8 px-1 pb-16 w-full">
-        {items.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-lg font-medium" style={{ color: "var(--muted-foreground)" }}>
-              No items found in{" "}
-              <span style={{ color: "var(--primary)" }}>{activeCategoryLabel}</span>.
-            </p>
-            <Link
-              href="/collection"
-              className="mt-4 text-sm underline inline-block"
-              style={{ color: "var(--primary)" }}
-            >
-              View all collections
+    <div className="min-h-screen pb-16" style={{ background: "#fbf7f2" }}>
+      <section className="pt-8 pb-2 px-4 w-full space-y-4">
+        {inDecor && (
+          <div className="max-w-6xl mx-auto flex justify-center">
+            <Link href="/collection" className="text-xs font-semibold uppercase tracking-[0.15em] hover:underline" style={{ color: "var(--muted-foreground)" }}>
+              ← All wedding collections
             </Link>
           </div>
-        ) : (
-          <div className="columns-2 sm:columns-3 lg:columns-4 gap-1.5">
-            {items.map((item, i) => {
-              const selected = selectedItems.includes(item.id);
-              return (
-                <div key={item.id} style={{ breakInside: "avoid", marginBottom: "6px" }}>
-                  <Link
-                    href={`/collection/${item.id}`}
-                    className="relative overflow-hidden group cursor-pointer w-full block"
-                  >
-                    <img
-                      src={cldImage(item.imageUrl, 600)}
-                      alt={item.name}
-                      className="w-full h-auto block"
-                      loading={i < 4 ? "eager" : "lazy"}
-                      decoding="async"
-                    />
-                    <div className="absolute top-2 right-2 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-                      <button
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleSelection(item); }}
-                        className={`w-7 h-7 rounded-full flex items-center justify-center shadow-md cursor-pointer ${
-                          selected ? "bg-primary" : "bg-black/60"
-                        }`}
-                      >
-                        <CheckCircle2 className={`h-4 w-4 ${selected ? "text-primary-foreground" : "text-white"}`} />
-                      </button>
-                      <button
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShareItem({ id: item.id, name: item.name }); }}
-                        className="w-7 h-7 rounded-full flex items-center justify-center cursor-pointer shadow-md bg-black/60"
-                      >
-                        <Share2 className="w-3.5 h-3.5 text-white" />
-                      </button>
-                    </div>
-                    <div
-                      className="absolute bottom-0 left-0 right-0 px-2.5 py-2"
-                      style={{ background: "linear-gradient(to top, rgba(0,0,0,0.65), transparent)" }}
-                    >
-                      <p className="text-white text-base sm:text-lg truncate" style={{ fontFamily: "Georgia, serif", textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>{item.name}</p>
-                    </div>
-                  </Link>
-                </div>
-              );
-            })}
+        )}
+        <TabRow tabs={tabs} />
+      </section>
 
-            {/* Skeleton cards while loading more */}
-            {loadingMore &&
-              Array.from({ length: 8 }).map((_, i) => (
-                <SkeletonCard key={`sk-${i}`} />
-              ))}
-          </div>
+      <div className="max-w-6xl mx-auto px-4 pt-6">
+        {/* Where we are, e.g. Wedding / Decor / Bridal Shower */}
+        <nav aria-label="Breadcrumb" className="text-sm">
+          <ol className="flex flex-wrap items-center gap-1.5">
+            {breadcrumb.map((crumb, i) => (
+              <li key={crumb.label} className="flex items-center gap-1.5">
+                {i > 0 && <span style={{ color: "var(--muted-foreground)" }}>/</span>}
+                {crumb.href ? (
+                  <Link href={crumb.href} className="hover:underline" style={{ color: "#a0566c" }}>{crumb.label}</Link>
+                ) : (
+                  <span style={{ color: INK }}>{crumb.label}</span>
+                )}
+              </li>
+            ))}
+          </ol>
+        </nav>
+        <h1 className={`${displaySerif.className} mt-3 text-4xl md:text-5xl leading-[1.08] max-w-2xl`} style={{ color: INK }}>
+          {title}
+        </h1>
+        {description && (
+          <p className="mt-3 max-w-2xl text-sm md:text-base leading-relaxed" style={{ color: "#57422C" }}>{description}</p>
         )}
 
-        {/* Sentinel for IntersectionObserver */}
-        {hasMore && <div ref={sentinelRef} className="h-4" />}
+        <div className="mt-6">
+          {items.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-lg font-medium" style={{ color: "var(--muted-foreground)" }}>
+                No images in <span style={{ color: INK }}>{title}</span> yet.
+              </p>
+              <Link href="/collection" className="mt-4 text-sm underline inline-block" style={{ color: INK }}>
+                View all wedding collections
+              </Link>
+            </div>
+          ) : showAll ? (
+            <>
+              <GalleryBlocks items={items} onOpen={showItem} />
+              {hasMore && <div ref={sentinelRef} className="h-4" />}
+              {loadingMore && (
+                <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="aspect-square rounded-md animate-pulse" style={{ background: "rgba(43,24,7,0.08)" }} />
+                  ))}
+                </div>
+              )}
+            </>
+          ) : (
+            <GalleryBlocks
+              items={preview}
+              moreCount={hiddenCount > 0 ? hiddenCount : undefined}
+              onShowAll={() => setShowAll(true)}
+              onOpen={showItem}
+            />
+          )}
+        </div>
+      </div>
 
-        {shareItem && <ShareModal item={shareItem} onClose={() => setShareItem(null)} />}
-      </section>
+      {openItem && (
+        <ItemModal
+          key={openItem.id}
+          item={openItem}
+          prevId={neighbour(-1)}
+          nextId={neighbour(1)}
+          social={{
+            // The server page sends an entry for every item in the view.
+            ...social[openItem.id],
+            liked: likedIds.includes(openItem.id),
+            ...socialChanges[openItem.id],
+          }}
+          canModerate={canModerate}
+          categoryHref={categoryHref(openItem.category)}
+          onNavigate={showItem}
+          onSocialChange={updateSocial}
+        />
+      )}
     </div>
   );
 }
