@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { v2 as cloudinary } from "cloudinary"
-import { requireAdmin } from "@/lib/auth"
+import { getDashboardUser } from "@/lib/user-auth"
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -9,7 +9,8 @@ cloudinary.config({
 })
 
 export async function POST(req: NextRequest) {
-  if (!(await requireAdmin(req)))
+  // The admin and vendors (for their own gallery) may upload.
+  if (!(await getDashboardUser(req)))
     return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 })
 
   const { folder } = await req.json()

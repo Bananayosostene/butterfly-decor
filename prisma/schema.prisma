@@ -133,3 +133,71 @@ model ItemComment {
   @@index([itemId, createdAt])
   @@index([visitorId, createdAt])
 }
+
+// ── Vendors and site accounts (separate from AdminUser) ──────────────────────────────
+
+model VendorCategory {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique
+  /// File name of the icon in /public, chosen from lib/category-icons.ts.
+  icon      String?
+  createdAt DateTime @default(now())
+  vendors   User[]
+}
+
+model User {
+  id               String          @id @default(auto()) @map("_id") @db.ObjectId
+  email            String          @unique
+  name             String
+  phone            String?
+  password         String?
+  googleId         String?
+  /// null until the "Are you a vendor?" question is answered, then "CLIENT" or "VENDOR".
+  role             String?
+  // Vendor profile (only used when role is VENDOR)
+  businessName     String?
+  location         String?
+  about            String?
+  coverUrl         String?
+  vendorCategoryId String?         @db.ObjectId
+  vendorCategory   VendorCategory? @relation(fields: [vendorCategoryId], references: [id])
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  sessions         UserSession[]
+  items            VendorItem[]
+
+  @@index([role, vendorCategoryId])
+}
+
+model UserSession {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  token     String   @unique
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model VendorItem {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  vendorId    String   @db.ObjectId
+  vendor      User     @relation(fields: [vendorId], references: [id])
+  imageUrl    String
+  description String?
+  /// Admin can switch an item off; inactive items are hidden from the public pages.
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([vendorId, createdAt])
+}
+
+/// One step of the homepage butterfly animation: two photos (left and right wing) and a title.
+model ButterflySlide {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  leftImageUrl  String
+  rightImageUrl String
+  createdAt     DateTime @default(now())
+}

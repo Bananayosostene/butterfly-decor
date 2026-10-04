@@ -11,6 +11,18 @@ export const CATEGORY_ICONS = [
   { file: "cake.svg", label: "Cake" },
   { file: "gift-box.svg", label: "Gift" },
   { file: "invitation.svg", label: "Invitation" },
+  // Vendor categories
+  { file: "camera.svg", label: "Photographer" },
+  { file: "tent.svg", label: "Venue / tent" },
+  { file: "catering.svg", label: "Caterer" },
+  { file: "microphone.svg", label: "MC" },
+  { file: "umutahira.svg", label: "Umutahira" },
+  { file: "makeup.svg", label: "Hair & makeup" },
+  { file: "wedding-cake.svg", label: "Cakes" },
+  { file: "tailor.svg", label: "Tailor" },
+  { file: "music.svg", label: "Musician" },
+  { file: "speaker.svg", label: "Sound" },
+  { file: "intore.svg", label: "Intore dancers" },
 ] as const;
 
 export const CATEGORY_ICON_FILES = new Set<string>(CATEGORY_ICONS.map((i) => i.file));
@@ -27,6 +39,17 @@ export function iconForCategory(name: string, icon?: string | null): string {
   if (lower.includes("decor")) return "decor.svg";
   if (lower.includes("gift") || lower.includes("wrap")) return "gift-box.svg";
   if (lower.includes("invitation") || lower.includes("invite")) return "invitation.svg";
+  if (lower.includes("photo") || lower.includes("video")) return "camera.svg";
+  if (lower.includes("venue") || lower.includes("tent")) return "tent.svg";
+  if (lower.includes("cater") || lower.includes("food")) return "catering.svg";
+  if (lower.includes("umutahira")) return "umutahira.svg";
+  if (lower.includes("intore") || lower.includes("dancer")) return "intore.svg";
+  if (lower.includes("hair") || lower.includes("makeup") || lower.includes("make-up") || lower.includes("beauty")) return "makeup.svg";
+  if (lower.includes("tailor") || lower.includes("sew")) return "tailor.svg";
+  if (lower.includes("sound") || lower.includes("speaker")) return "speaker.svg";
+  if (lower.includes("music") || lower.includes("band") || lower.includes("singer")) return "music.svg";
+  if (lower === "mc" || lower.startsWith("mc ") || lower.includes("master of ceremon")) return "microphone.svg";
+  if (lower.includes("flower") || lower.includes("florist")) return "flowers.svg";
   return "cake.svg";
 }
 

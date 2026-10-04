@@ -8,7 +8,7 @@ async function sendResetEmail(email: string, resetToken: string, origin: string)
     service: "gmail",
     auth: { user: process.env.NODEMAILER_USER, pass: process.env.NODEMAILER_PASS },
   })
-  const resetLink = `${origin}/admin/reset-password?token=${resetToken}`
+  const resetLink = `${origin}/account/reset-password?token=${resetToken}`
   await transporter.sendMail({
     from: process.env.NODEMAILER_USER,
     to: email,
