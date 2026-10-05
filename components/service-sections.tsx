@@ -4,36 +4,47 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { cldImage } from "@/lib/image";
-import { stripHtmlToText } from "@/lib/text";
+import { ArrowRight, ChevronDown, Search } from "lucide-react";
+import { iconForCategory } from "@/lib/category-icons";
+import { displaySerif } from "@/lib/fonts";
 
-type CategoryImage = { id: string; imageUrl: string };
-type Category = { id: string; name: string; description: string | null; imageUrl: string | null; images: CategoryImage[] };
+/** One step of the butterfly animation: a photo for each wing and the title shown under them. */
+export type ButterflySlide = { id: string; title: string; leftImageUrl: string; rightImageUrl: string };
+type VendorCategory = { id: string; name: string; icon: string | null };
 
 const CHOCOLATE = "#2b1807";
 const BORDER = "#e8d5b7";
 const GOLD = "#835105";
 
-function slugify(name: string) {
-  return name.toLowerCase().replace(/\s+/g, "-");
-}
-
-export function ServiceSections({ categories }: { categories: Category[] }) {
+/**
+ * Homepage vendors section: on the left, a search into the vendor directory; on the right, the
+ * butterfly wings that flip through the slides the admin manages under "Butterfly Slides".
+ */
+export function ServiceSections({
+  slides,
+  vendorCategories,
+}: {
+  /** Photo pairs for the butterfly animation. */
+  slides: ButterflySlide[];
+  /** Categories of the vendor directory, managed by the admin. */
+  vendorCategories: VendorCategory[];
+}) {
   const [active, setActive] = useState(0);
   const [visible, setVisible] = useState(true);
   const pausedRef = useRef(false);
 
   useEffect(() => {
-    if (categories.length < 2) return;
+    if (slides.length < 2) return;
     const interval = setInterval(() => {
       if (pausedRef.current) return;
       setVisible(false);
       setTimeout(() => {
-        setActive((prev) => (prev + 1) % categories.length);
+        setActive((prev) => (prev + 1) % slides.length);
         setVisible(true);
       }, 350);
     }, 4000);
     return () => clearInterval(interval);
-  }, [categories.length]);
+  }, [slides.length]);
 
   const goTo = (i: number) => {
     setActive((prev) => {
@@ -44,82 +55,86 @@ export function ServiceSections({ categories }: { categories: Category[] }) {
     });
   };
 
-  if (categories.length === 0) return null;
-
-  const activeCategory = categories[active];
-  const gallery = activeCategory.images.map((img) => img.imageUrl);
-  const candidateImages = [activeCategory.imageUrl, ...gallery].filter(Boolean) as string[];
-  const leftImage = candidateImages[0];
-  const rightImage = candidateImages[1] ?? candidateImages[0];
+  // Without any slides there is no butterfly; the vendor search still shows.
+  const activeSlide = slides[active] as ButterflySlide | undefined;
 
   return (
     <section className="w-full py-10 md:py-14 px-4 md:px-8 lg:px-12" style={{ background: "#F5F5F7" }}>
-      <div className="max-w-6xl mx-auto mb-8 md:mb-12 text-center">
-        <h2 className="text-xl md:text-3xl font-light mb-2 font-playball" style={{ color: CHOCOLATE }}>
-          Our Signature Services
-        </h2>
-        <p className="text-sm md:text-base" style={{ color: "rgba(43,24,7,0.65)" }}>
-          Hover a service to preview it, tap to explore the full collection.
-        </p>
-      </div>
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-10 md:gap-14">
+        {/* LEFT — find a vendor */}
+        <div className="flex-1 w-full">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
+            Discover your wedding dream team
+          </p>
+          <h2 className={`${displaySerif.className} mt-3 text-3xl md:text-[2.75rem] leading-[1.1]`} style={{ color: CHOCOLATE }}>
+            Find the Best Wedding Vendors Near You
+          </h2>
+          <p className="mt-3 max-w-lg text-sm md:text-base leading-relaxed" style={{ color: "rgba(43,24,7,0.65)" }}>
+            Looking for trusted wedding professionals? Browse photographers, venues, caterers and more from our vendor
+            community.
+          </p>
 
-      <div className="max-w-6xl mx-auto flex flex-col-reverse md:flex-row items-center md:items-stretch gap-10 md:gap-14">
-        {/* LEFT — service list, text only */}
-        <div
-          className="flex-1 w-full flex flex-col"
-          onMouseEnter={() => { pausedRef.current = true; }}
-          onMouseLeave={() => { pausedRef.current = false; }}
-        >
-          {categories.map((cat, i) => {
-            const isActive = i === active;
-            return (
-              <Link
-                key={cat.id}
-                href={`/collection?cat=${slugify(cat.name)}`}
-                onMouseEnter={() => goTo(i)}
-                className="group relative flex items-center gap-4 pl-4 border-b transition-all duration-300 overflow-hidden"
-                style={{ borderColor: BORDER, paddingTop: isActive ? "1.1rem" : "0.6rem", paddingBottom: isActive ? "1.1rem" : "0.6rem" }}
+          {/* Plain GET form to /vendors?cat=<id> — works without JavaScript. */}
+          <form
+            action="/vendors"
+            className="mt-6 max-w-lg flex items-center gap-2 p-1.5 pl-5 rounded-full shadow-md"
+            style={{ background: "#f7efe3" }}
+          >
+            <div className="relative min-w-0 flex-1">
+              <select
+                name="cat"
+                defaultValue=""
+                aria-label="Vendor category"
+                className="w-full appearance-none bg-transparent text-sm md:text-base outline-none py-2.5 pr-8 cursor-pointer"
+                style={{ color: CHOCOLATE }}
               >
-                <span
-                  className="absolute left-0 top-2 bottom-2 rounded-full transition-all duration-300"
-                  style={{ width: isActive ? 3 : 0, background: GOLD }}
-                />
-                <span
-                  className="shrink-0 font-playball transition-colors duration-300"
-                  style={{ fontSize: "1.1rem", color: isActive ? GOLD : "rgba(43,24,7,0.35)" }}
-                >
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <div className="flex flex-col gap-1 min-w-0">
-                  <span
-                    className="font-playball leading-tight transition-all duration-300"
-                    style={{ color: CHOCOLATE, fontSize: isActive ? "1.5rem" : "1rem", opacity: isActive ? 1 : 0.6 }}
-                  >
-                    {cat.name}
-                  </span>
-                  <div
-                    className="grid transition-all duration-300"
-                    style={{ gridTemplateRows: isActive ? "1fr" : "0fr", opacity: isActive ? 1 : 0 }}
-                  >
-                    <div className="overflow-hidden min-h-0">
-                      {cat.description && (
-                        <p className="text-sm leading-relaxed line-clamp-2" style={{ color: "rgba(43,24,7,0.6)" }}>
-                          {stripHtmlToText(cat.description)}
-                        </p>
-                      )}
-                      <span className="text-xs font-medium mt-0.5 inline-block" style={{ color: GOLD }}>
-                        Explore this collection →
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+                <option value="">All vendor categories</option>
+                {vendorCategories.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+              <ChevronDown size={16} className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" style={{ color: CHOCOLATE }} />
+            </div>
+            <button
+              type="submit"
+              className="shrink-0 flex items-center gap-2 px-5 md:px-7 py-3 rounded-full text-xs md:text-sm font-bold uppercase tracking-[0.12em] transition-opacity hover:opacity-90 cursor-pointer"
+              style={{ background: CHOCOLATE, color: "#f7efe3" }}
+            >
+              <Search size={14} /> Search
+            </button>
+          </form>
+
+          {vendorCategories.length > 0 && (
+            <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm" style={{ color: CHOCOLATE }}>
+              <span className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: "#57422C" }}>
+                Or browse:
+              </span>
+              {vendorCategories.map((c) => (
+                <Link key={c.id} href={`/vendors?cat=${c.id}`} className="inline-flex items-center gap-1.5 underline-offset-4 hover:underline">
+                  <img src={`/${iconForCategory(c.name, c.icon)}`} alt="" aria-hidden className="w-5 h-5 object-contain" />
+                  {c.name}
+                </Link> 
+              ))}
+            </div>
+          )}
+
+          <Link
+            href="/vendors"
+            className="group mt-6 inline-flex items-center gap-3 px-7 py-3 rounded-full text-xs md:text-sm font-bold uppercase tracking-[0.15em] transition-opacity hover:opacity-90"
+            style={{ background: CHOCOLATE, color: "#f7efe3" }}
+          >
+            See all vendors
+            <ArrowRight size={18} strokeWidth={1.5} className="transition-transform group-hover:translate-x-1" />
+          </Link>
         </div>
 
         {/* RIGHT — butterfly wings revealing the active service */}
-        <div className="flex-1 w-full flex flex-col items-center gap-5">
+        {activeSlide && (
+        <div
+          className="flex-1 w-full flex flex-col items-center gap-5"
+          onMouseEnter={() => { pausedRef.current = true; }}
+          onMouseLeave={() => { pausedRef.current = false; }}
+        >
           <div className="flex items-center justify-center gap-1" style={{ perspective: "900px" }}>
             {/* LEFT WING */}
             <div
@@ -135,19 +150,17 @@ export function ServiceSections({ categories }: { categories: Category[] }) {
                 transition: "transform 0.7s cubic-bezier(0.34, 1.3, 0.64, 1) 0ms, opacity 0.5s ease 0ms",
               }}
             >
-              {leftImage && (
-                <Image
-                  src={cldImage(leftImage, 420)}
-                  alt={activeCategory.name}
-                  fill
-                  unoptimized
-                  className="object-cover"
-                  sizes="210px"
-                />
-              )}
+              <Image
+                src={cldImage(activeSlide.leftImageUrl, 420)}
+                alt={activeSlide.title}
+                fill
+                unoptimized
+                className="object-cover"
+                sizes="210px"
+              />
             </div>
 
-            {/* RIGHT WING — a second, different photo of the same active service when one is available */}
+            {/* RIGHT WING */}
             <div
               className="relative overflow-hidden shadow-lg"
               style={{
@@ -161,26 +174,24 @@ export function ServiceSections({ categories }: { categories: Category[] }) {
                 transition: "transform 0.7s cubic-bezier(0.34, 1.3, 0.64, 1) 80ms, opacity 0.5s ease 80ms",
               }}
             >
-              {rightImage && (
-                <Image
-                  src={cldImage(rightImage, 420)}
-                  alt={activeCategory.name}
-                  fill
-                  unoptimized
-                  className="object-cover"
-                  sizes="210px"
-                />
-              )}
+              <Image
+                src={cldImage(activeSlide.rightImageUrl, 420)}
+                alt={activeSlide.title}
+                fill
+                unoptimized
+                className="object-cover"
+                sizes="210px"
+              />
             </div>
           </div>
 
           <p className="font-playball text-lg" style={{ color: CHOCOLATE }}>
-            {activeCategory.name}
+            {activeSlide.title}
           </p>
 
-          {categories.length > 1 && (
+          {slides.length > 1 && (
             <div className="flex gap-2 flex-wrap justify-center max-w-xs">
-              {categories.map((_, i) => (
+              {slides.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => goTo(i)}
@@ -195,6 +206,7 @@ export function ServiceSections({ categories }: { categories: Category[] }) {
             </div>
           )}
         </div>
+        )}
       </div>
     </section>
   );

@@ -42,6 +42,8 @@ export function Header() {
 
   const navLinks = [
     { href: "/collection", label: "Wedding" },
+    { href: "/vendors", label: "Vendors" },
+    { href: "/login", label: "Sign in" },
   ];
 
   const openBookingModal = () => {

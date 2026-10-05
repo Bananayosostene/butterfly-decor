@@ -63,24 +63,15 @@ export const getCategoryTabs = unstable_cache(
   { tags: ["categories"], revalidate: HOUR },
 )
 
-/** Categories with their gallery, for the homepage services section. */
-export const getHomeCategories = unstable_cache(
-  async () => {
-    const categories = await prisma.category.findMany({
+/** Photo pairs of the homepage butterfly animation, in the order they were added. */
+export const getButterflySlides = unstable_cache(
+  () =>
+    prisma.butterflySlide.findMany({
       orderBy: { createdAt: "asc" },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        imageUrl: true,
-        kind: true,
-        images: { orderBy: { order: "asc" }, take: 2, select: { id: true, imageUrl: true } },
-      },
-    })
-    return categories.filter((c) => kindOf(c) === "COLLECTION")
-  },
-  ["home-categories-v2"],
-  { tags: ["categories"], revalidate: HOUR },
+      select: { id: true, title: true, leftImageUrl: true, rightImageUrl: true },
+    }),
+  ["butterfly-slides"],
+  { tags: ["settings"], revalidate: HOUR },
 )
 
 /** The newest `take` items of one category, or of every category of `kind`, plus the total count. */

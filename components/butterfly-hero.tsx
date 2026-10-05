@@ -131,12 +131,12 @@ export function WeddingShopHero({ videoSrc }: { videoSrc: string }) {
           </form>
           <p className="pl-5 text-sm" style={{ color: paragraph }}>
             Already have an account?{" "}
-            <a href="/wedding-planning" className="font-bold underline-offset-4 hover:underline" style={{ color: heading }}>
+            <a href="/login" className="font-bold underline-offset-4 hover:underline" style={{ color: heading }}>
               Sign in
             </a>
             <span className="mx-2 opacity-60">·</span>
             New here?{" "}
-            <a href="/wedding-planning" className="font-bold underline-offset-4 hover:underline" style={{ color: heading }}>
+            <a href="/login?tab=register" className="font-bold underline-offset-4 hover:underline" style={{ color: heading }}>
               Create an account
             </a>
           </p>
