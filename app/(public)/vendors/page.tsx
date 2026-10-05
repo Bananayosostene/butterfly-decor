@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Search } from "lucide-react";
+import { HoverPrefetchLink } from "@/components/hover-prefetch-link";
 import { decorHref, iconForCategory, slugify } from "@/lib/category-icons";
 import { getCategoryTabs, isObjectId, parsePage } from "@/lib/data";
 import { displaySerif } from "@/lib/fonts";
@@ -79,14 +80,14 @@ export default async function VendorsPage({
               })),
               { key: "collection-decor", name: "Decor", icon: "decor.svg", href: decorHref(), isActive: false },
             ].map((c) => (
-              <Link
+              <HoverPrefetchLink
                 key={c.key}
                 href={c.href}
                 className={`group flex flex-col items-center gap-2 shrink-0 transition-opacity ${c.isActive ? "opacity-100" : "opacity-70 hover:opacity-100"}`}
               >
                 <img src={`/${c.icon}`} alt="" className="w-10 h-10 object-contain" />
                 <span className="text-xs font-semibold whitespace-nowrap" style={{ color: c.isActive ? ROSE : INK }}>{c.name}</span>
-              </Link>
+              </HoverPrefetchLink>
             ))}
           </div>
         </nav>

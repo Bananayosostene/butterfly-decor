@@ -45,7 +45,7 @@ export function InquireForm({ vendorName, whatsappNumber }: { vendorName: string
           required
           maxLength={600}
           rows={4}
-          placeholder={`Hi ${vendorName}, we're getting married and…`}
+          placeholder={`Hi ${vendorName}, .....`}
           className={`${inputClass} resize-y`}
           style={inputStyle}
         />
@@ -57,7 +57,6 @@ export function InquireForm({ vendorName, whatsappNumber }: { vendorName: string
       >
         Send inquiry
       </button>
-      <p className="text-[11px] text-center" style={{ color: "#57422C" }}>Opens WhatsApp with your message ready to send.</p>
     </form>
   );
 }

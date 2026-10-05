@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-import { getSessionAdminId } from "@/lib/auth";
 import { DECOR_SLUG, decorHref, iconForCategory, slugify } from "@/lib/category-icons";
 import {
   getCategoryTabs,
@@ -107,19 +106,19 @@ export async function CollectionListing({
   const ids = [...items.map((i) => i.id), ...(sharedItem ? [sharedItem.id] : [])];
 
   const cookieStore = await cookies();
-  const adminToken = cookieStore.get("admin_session")?.value;
-  const [social, likedIds, adminId] = await Promise.all([
+  const [social, likedIds] = await Promise.all([
     getGallerySocial(ids),
-    getLikedIds(ids, cookieStore.get(VISITOR_COOKIE)?.value),
-    // Only logged-in admins pay for this lookup; it enables the comment delete buttons.
-    adminToken ? getSessionAdminId(adminToken) : null,
+    getLikedIds(cookieStore.get(VISITOR_COOKIE)?.value),
   ]);
+  // Only decides whether the comment delete buttons are drawn; the delete API checks the real
+  // session, so no database lookup is needed here.
+  const canModerate = !!cookieStore.get("admin_session")?.value;
 
   return (
     <CollectionPageClient
       social={social}
       likedIds={likedIds}
-      canModerate={!!adminId}
+      canModerate={canModerate}
       sharedItem={sharedItem}
       initialItemId={sharedItem || items.some((i) => i.id === sharedId) ? sharedId : null}
       // A new filter starts again from the five-image preview.

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import Link, { useLinkStatus } from "next/link";
+import { HoverPrefetchLink } from "@/components/hover-prefetch-link";
 import ItemModal, { type ModalSocial } from "./item-modal";
 import { categoryHref } from "@/lib/category-icons";
 import type { ItemSocial } from "@/lib/data";
@@ -27,19 +28,30 @@ const INK = "#2b1807";
 /** Images shown before the visitor opens the whole gallery with the "+N" tile. */
 const PREVIEW_COUNT = 5;
 
+/** Likes and comments made in the popup. Kept outside the component so they survive switching filters. */
+const socialMemory: Record<string, Partial<ModalSocial>> = {};
+
+/** A ring around the filter icon while its page is on the way. */
+function TabPending() {
+  const { pending } = useLinkStatus();
+  if (!pending) return null;
+  return <span className="absolute inset-0 rounded-full border-2 border-primary/20 border-t-primary animate-spin" aria-label="Loading" />;
+}
+
 function TabRow({ tabs }: { tabs: FilterTab[] }) {
   return (
     <div className="max-w-6xl mx-auto overflow-x-auto scrollbar-hide">
       <div className="flex gap-6 w-max px-2 lg:w-full lg:justify-center">
         {tabs.map((tab) => (
-          <Link
+          <HoverPrefetchLink
             key={tab.key}
             href={tab.href}
             className={`group flex flex-col items-center gap-2 shrink-0 transition-all ${
               tab.active ? "opacity-100" : "opacity-60 hover:opacity-100"
             }`}
           >
-            <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 flex items-center justify-center">
+            <div className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 flex items-center justify-center">
+              <TabPending />
               <img
                 src={`/${tab.icon}`}
                 alt={tab.label}
@@ -55,7 +67,7 @@ function TabRow({ tabs }: { tabs: FilterTab[] }) {
             >
               {tab.label}
             </span>
-          </Link>
+          </HoverPrefetchLink>
         ))}
       </div>
     </div>
@@ -191,7 +203,7 @@ export default function CollectionPageClient({
   // moving between and closing images makes no request and the address stays the same.
   const [openId, setOpenId] = useState<string | null>(initialItemId);
   // Likes and comments made in the popup, so reopening an image shows them.
-  const [socialChanges, setSocialChanges] = useState<Record<string, Partial<ModalSocial>>>({});
+  const [socialChanges, setSocialChanges] = useState<Record<string, Partial<ModalSocial>>>(() => ({ ...socialMemory }));
 
   const showItem = (itemId: string | null) => {
     setOpenId(itemId);
@@ -204,8 +216,10 @@ export default function CollectionPageClient({
     }
   };
 
-  const updateSocial = (itemId: string, patch: Partial<ModalSocial>) =>
-    setSocialChanges((prev) => ({ ...prev, [itemId]: { ...prev[itemId], ...patch } }));
+  const updateSocial = (itemId: string, patch: Partial<ModalSocial>) => {
+    socialMemory[itemId] = { ...socialMemory[itemId], ...patch };
+    setSocialChanges({ ...socialMemory });
+  };
 
   // Prev/next walk through the images of this view (wrapping at the ends).
   const viewItems = sharedItem ? [...items, sharedItem] : items;

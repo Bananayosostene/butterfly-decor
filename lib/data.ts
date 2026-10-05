@@ -211,9 +211,24 @@ export function refreshItemSocial() {
   revalidateTag(SOCIAL_TAG, { expire: 0 })
 }
 
-/** Which of these items the visitor has liked. Per visitor, so never cached. */
-export async function getLikedIds(itemIds: string[], visitorId: string | undefined) {
-  if (!visitorId || !itemIds.length) return []
-  const likes = await prisma.itemLike.findMany({ where: { visitorId, itemId: { in: itemIds } }, select: { itemId: true } })
-  return likes.map((l) => l.itemId)
+const likesTag = (visitorId: string) => `visitor-likes-${visitorId}`
+
+/**
+ * Every item this visitor has liked. Cached per visitor and refreshed when they like or unlike,
+ * so browsing the gallery does not query the database for it.
+ */
+export function getLikedIds(visitorId: string | undefined): Promise<string[]> {
+  if (!visitorId) return Promise.resolve([])
+  return unstable_cache(
+    async () => {
+      const likes = await prisma.itemLike.findMany({ where: { visitorId }, select: { itemId: true }, take: 2000 })
+      return likes.map((l) => l.itemId)
+    },
+    ["visitor-likes", visitorId],
+    { tags: [likesTag(visitorId)], revalidate: HOUR },
+  )()
+}
+
+export function refreshVisitorLikes(visitorId: string) {
+  revalidateTag(likesTag(visitorId), { expire: 0 })
 }
