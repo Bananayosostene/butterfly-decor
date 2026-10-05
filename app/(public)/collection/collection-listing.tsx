@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-import { getSessionAdminId } from "@/lib/auth";
 import { DECOR_SLUG, decorHref, iconForCategory, slugify } from "@/lib/category-icons";
 import {
   getCategoryTabs,
@@ -12,6 +11,7 @@ import {
   PAGE_SIZE,
   MAX_PAGES,
 } from "@/lib/data";
+import { getVendorCategories } from "@/lib/vendors";
 import { VISITOR_COOKIE } from "@/lib/visitor";
 import { stripHtmlToText } from "@/lib/text";
 import CollectionPageClient, { type Crumb, type FilterTab } from "./collection-page-client";
@@ -40,7 +40,11 @@ export async function CollectionListing({
   const activeSlug = searchParams.cat ?? "all";
   const inDecor = activeSlug === DECOR_SLUG;
 
-  const [categories, decorCategories] = await Promise.all([getCategoryTabs("COLLECTION"), getCategoryTabs("DECOR")]);
+  const [categories, decorCategories, vendorCategories] = await Promise.all([
+    getCategoryTabs("COLLECTION"),
+    getCategoryTabs("DECOR"),
+    getVendorCategories(),
+  ]);
   const activeCategory = inDecor ? undefined : categories.find((c) => slugify(c.name) === activeSlug);
   const activeDecor = inDecor ? decorCategories.find((c) => c.id === searchParams.decor) : undefined;
 
@@ -70,6 +74,14 @@ export async function CollectionListing({
       active: c.id === activeCategory?.id,
     })),
     { key: DECOR_SLUG, label: "Decor", icon: "decor.svg", href: decorHref(), active: false },
+    // Vendor categories (cakes, photographers…) open the vendors page.
+    ...vendorCategories.map((c) => ({
+      key: `vendor-${c.id}`,
+      label: c.name,
+      icon: iconForCategory(c.name, c.icon),
+      href: `/vendors?cat=${c.id}`,
+      active: false,
+    })),
   ];
 
   // Wedding / Decor / Bridal Shower — the last crumb is the page we are on, so it is not a link.
@@ -94,19 +106,19 @@ export async function CollectionListing({
   const ids = [...items.map((i) => i.id), ...(sharedItem ? [sharedItem.id] : [])];
 
   const cookieStore = await cookies();
-  const adminToken = cookieStore.get("admin_session")?.value;
-  const [social, likedIds, adminId] = await Promise.all([
+  const [social, likedIds] = await Promise.all([
     getGallerySocial(ids),
-    getLikedIds(ids, cookieStore.get(VISITOR_COOKIE)?.value),
-    // Only logged-in admins pay for this lookup; it enables the comment delete buttons.
-    adminToken ? getSessionAdminId(adminToken) : null,
+    getLikedIds(cookieStore.get(VISITOR_COOKIE)?.value),
   ]);
+  // Only decides whether the comment delete buttons are drawn; the delete API checks the real
+  // session, so no database lookup is needed here.
+  const canModerate = !!cookieStore.get("admin_session")?.value;
 
   return (
     <CollectionPageClient
       social={social}
       likedIds={likedIds}
-      canModerate={!!adminId}
+      canModerate={canModerate}
       sharedItem={sharedItem}
       initialItemId={sharedItem || items.some((i) => i.id === sharedId) ? sharedId : null}
       // A new filter starts again from the five-image preview.

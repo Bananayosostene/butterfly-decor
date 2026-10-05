@@ -3,14 +3,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { cldImage } from "@/lib/image";
-import { ArrowRight, ChevronDown, Search } from "lucide-react";
-import { iconForCategory } from "@/lib/category-icons";
+import { ArrowRight, ChevronDown, Search, ListFilter } from "lucide-react";
+import { decorHref, iconForCategory, slugify } from "@/lib/category-icons";
 import { displaySerif } from "@/lib/fonts";
 
 /** One step of the butterfly animation: a photo for each wing and the title shown under them. */
 export type ButterflySlide = { id: string; title: string; leftImageUrl: string; rightImageUrl: string };
 type VendorCategory = { id: string; name: string; icon: string | null };
+type CollectionCategory = { id: string; name: string };
 
 const CHOCOLATE = "#2b1807";
 const BORDER = "#e8d5b7";
@@ -20,15 +22,21 @@ const GOLD = "#835105";
  * Homepage vendors section: on the left, a search into the vendor directory; on the right, the
  * butterfly wings that flip through the slides the admin manages under "Butterfly Slides".
  */
-export function ServiceSections({
+export function VendorsSection({
   slides,
   vendorCategories,
+  collectionCategories,
 }: {
+  /** Our own decor and outfit categories; choosing one opens the collection page. */
+  collectionCategories: CollectionCategory[];
   /** Photo pairs for the butterfly animation. */
   slides: ButterflySlide[];
   /** Categories of the vendor directory, managed by the admin. */
   vendorCategories: VendorCategory[];
 }) {
+  const router = useRouter();
+  // The dropdown holds the address to open: a collection page or a vendors page.
+  const [destination, setDestination] = useState("/vendors");
   const [active, setActive] = useState(0);
   const [visible, setVisible] = useState(true);
   const pausedRef = useRef(false);
@@ -74,24 +82,38 @@ export function ServiceSections({
             community.
           </p>
 
-          {/* Plain GET form to /vendors?cat=<id> — works without JavaScript. */}
+          {/* Our own categories lead to /collection, vendor categories to /vendors. */}
           <form
             action="/vendors"
+            onSubmit={(e) => {
+              e.preventDefault();
+              router.push(destination);
+            }}
             className="mt-6 max-w-lg flex items-center gap-2 p-1.5 pl-5 rounded-full shadow-md"
             style={{ background: "#f7efe3" }}
           >
+            <ListFilter size={18} strokeWidth={1.75} className="shrink-0" style={{ color: CHOCOLATE }} aria-hidden />
             <div className="relative min-w-0 flex-1">
               <select
-                name="cat"
-                defaultValue=""
-                aria-label="Vendor category"
+                value={destination}
+                onChange={(e) => setDestination(e.target.value)}
+                aria-label="Category"
                 className="w-full appearance-none bg-transparent text-sm md:text-base outline-none py-2.5 pr-8 cursor-pointer"
                 style={{ color: CHOCOLATE }}
               >
-                <option value="">All vendor categories</option>
-                {vendorCategories.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
+                <option value="/vendors">All vendor categories</option>
+                <optgroup label="Vendors">
+                  {vendorCategories.map((c) => (
+                    <option key={c.id} value={`/vendors?cat=${c.id}`}>{c.name}</option>
+                  ))}
+                </optgroup>
+                <optgroup label="Butterfly decor & outfits">
+                  <option value="/collection">All collections</option>
+                  {collectionCategories.map((c) => (
+                    <option key={c.id} value={`/collection?cat=${slugify(c.name)}`}>{c.name}</option>
+                  ))}
+                  <option value={decorHref()}>Decor</option>
+                </optgroup>
               </select>
               <ChevronDown size={16} className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" style={{ color: CHOCOLATE }} />
             </div>
@@ -117,12 +139,12 @@ export function ServiceSections({
               ))}
             </div>
           )}
-
           <Link
             href="/vendors"
             className="group mt-6 inline-flex items-center gap-3 px-7 py-3 rounded-full text-xs md:text-sm font-bold uppercase tracking-[0.15em] transition-opacity hover:opacity-90"
             style={{ background: CHOCOLATE, color: "#f7efe3" }}
           >
+            <ListFilter size={18} strokeWidth={2} className="shrink-0" aria-hidden />
             See all vendors
             <ArrowRight size={18} strokeWidth={1.5} className="transition-transform group-hover:translate-x-1" />
           </Link>

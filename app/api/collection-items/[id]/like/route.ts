@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db"
-import { isObjectId, refreshItemSocial } from "@/lib/data"
+import { isObjectId, refreshItemSocial, refreshVisitorLikes } from "@/lib/data"
 import { ensureVisitorId } from "@/lib/visitor"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -19,6 +19,7 @@ export async function POST(_: NextRequest, { params }: { params: Promise<{ id: s
 
     const count = await prisma.itemLike.count({ where: { itemId: id } })
     refreshItemSocial()
+    refreshVisitorLikes(visitorId)
     return NextResponse.json({ success: true, message: "Like updated", statusCode: 200, data: { liked: !removed, count } })
   } catch {
     return NextResponse.json({ success: false, message: "Failed to update like", statusCode: 500 }, { status: 500 })

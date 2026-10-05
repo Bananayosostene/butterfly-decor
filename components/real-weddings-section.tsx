@@ -9,7 +9,7 @@ type CollectionItem = { id: string; name: string; imageUrl: string };
 const INK = "#2b1807";
 
 /** Homepage showcase: the newest bridal and groom looks in one edge-to-edge row. */
-export function EntertainmentSection({ items }: { items: CollectionItem[] }) {
+export function RealWeddingSection({ items }: { items: CollectionItem[] }) {
   if (items.length === 0) return null;
 
   return (

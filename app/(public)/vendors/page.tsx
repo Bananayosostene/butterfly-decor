@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Search } from "lucide-react";
-import { iconForCategory } from "@/lib/category-icons";
-import { isObjectId, parsePage } from "@/lib/data";
+import { HoverPrefetchLink } from "@/components/hover-prefetch-link";
+import { decorHref, iconForCategory, slugify } from "@/lib/category-icons";
+import { getCategoryTabs, isObjectId, parsePage } from "@/lib/data";
 import { displaySerif } from "@/lib/fonts";
 import { cldImage } from "@/lib/image";
 import { getVendorCategories, getVendors, VENDORS_PAGE_SIZE } from "@/lib/vendors";
@@ -25,7 +26,7 @@ export default async function VendorsPage({
   const page = parsePage(sp.page);
   const q = (sp.q ?? "").trim().slice(0, 60);
 
-  const categories = await getVendorCategories();
+  const [categories, collectionCategories] = await Promise.all([getVendorCategories(), getCategoryTabs("COLLECTION")]);
   const active = sp.cat && isObjectId(sp.cat) ? categories.find((c) => c.id === sp.cat) : undefined;
   const { vendors, total } = await getVendors(active?.id ?? null, q, page * VENDORS_PAGE_SIZE);
 
@@ -60,19 +61,34 @@ export default async function VendorsPage({
         </div>
         <nav aria-label="Vendor categories" className="mt-4 overflow-x-auto scrollbar-hide border-b pb-5" style={{ borderColor: "#e8d5b7" }}>
           <div className="flex gap-7 w-max mx-auto px-2">
-            {[{ id: "", name: "All", icon: "all.svg" }, ...categories.map((c) => ({ id: c.id, name: c.name, icon: iconForCategory(c.name, c.icon) }))].map((c) => {
-              const isActive = (active?.id ?? "") === c.id;
-              return (
-                <Link
-                  key={c.id || "all"}
-                  href={hrefWith({ cat: c.id || undefined })}
-                  className={`group flex flex-col items-center gap-2 shrink-0 transition-opacity ${isActive ? "opacity-100" : "opacity-70 hover:opacity-100"}`}
-                >
-                  <img src={`/${c.icon}`} alt="" className="w-10 h-10 object-contain" />
-                  <span className="text-xs font-semibold whitespace-nowrap" style={{ color: isActive ? ROSE : INK }}>{c.name}</span>
-                </Link>
-              );
-            })}
+            {[
+              { key: "all", name: "All", icon: "all.svg", href: hrefWith({ cat: undefined }), isActive: !active },
+              ...categories.map((c) => ({
+                key: c.id,
+                name: c.name,
+                icon: iconForCategory(c.name, c.icon),
+                href: hrefWith({ cat: c.id }),
+                isActive: active?.id === c.id,
+              })),
+              // Our own decor and outfit categories open the collection page.
+              ...collectionCategories.map((c) => ({
+                key: `collection-${c.id}`,
+                name: c.name,
+                icon: iconForCategory(c.name, c.icon),
+                href: `/collection?cat=${slugify(c.name)}`,
+                isActive: false,
+              })),
+              { key: "collection-decor", name: "Decor", icon: "decor.svg", href: decorHref(), isActive: false },
+            ].map((c) => (
+              <HoverPrefetchLink
+                key={c.key}
+                href={c.href}
+                className={`group flex flex-col items-center gap-2 shrink-0 transition-opacity ${c.isActive ? "opacity-100" : "opacity-70 hover:opacity-100"}`}
+              >
+                <img src={`/${c.icon}`} alt="" className="w-10 h-10 object-contain" />
+                <span className="text-xs font-semibold whitespace-nowrap" style={{ color: c.isActive ? ROSE : INK }}>{c.name}</span>
+              </HoverPrefetchLink>
+            ))}
           </div>
         </nav>
 
