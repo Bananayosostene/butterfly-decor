@@ -12,6 +12,7 @@ import {
   PAGE_SIZE,
   MAX_PAGES,
 } from "@/lib/data";
+import { getVendorCategories } from "@/lib/vendors";
 import { VISITOR_COOKIE } from "@/lib/visitor";
 import { stripHtmlToText } from "@/lib/text";
 import CollectionPageClient, { type Crumb, type FilterTab } from "./collection-page-client";
@@ -40,7 +41,11 @@ export async function CollectionListing({
   const activeSlug = searchParams.cat ?? "all";
   const inDecor = activeSlug === DECOR_SLUG;
 
-  const [categories, decorCategories] = await Promise.all([getCategoryTabs("COLLECTION"), getCategoryTabs("DECOR")]);
+  const [categories, decorCategories, vendorCategories] = await Promise.all([
+    getCategoryTabs("COLLECTION"),
+    getCategoryTabs("DECOR"),
+    getVendorCategories(),
+  ]);
   const activeCategory = inDecor ? undefined : categories.find((c) => slugify(c.name) === activeSlug);
   const activeDecor = inDecor ? decorCategories.find((c) => c.id === searchParams.decor) : undefined;
 
@@ -70,6 +75,14 @@ export async function CollectionListing({
       active: c.id === activeCategory?.id,
     })),
     { key: DECOR_SLUG, label: "Decor", icon: "decor.svg", href: decorHref(), active: false },
+    // Vendor categories (cakes, photographers…) open the vendors page.
+    ...vendorCategories.map((c) => ({
+      key: `vendor-${c.id}`,
+      label: c.name,
+      icon: iconForCategory(c.name, c.icon),
+      href: `/vendors?cat=${c.id}`,
+      active: false,
+    })),
   ];
 
   // Wedding / Decor / Bridal Shower — the last crumb is the page we are on, so it is not a link.

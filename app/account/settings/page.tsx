@@ -60,7 +60,7 @@ export default async function AdminSettingsPage() {
             const store = await getCookies();
             await deleteSession(store.get("admin_session")?.value);
             store.delete("admin_session");
-            redirect("/login");
+            redirect("/");
           }}>
             <button type="submit" className="px-4 py-2 text-sm rounded-lg border border-border text-foreground hover:bg-muted font-medium">
               Logout
