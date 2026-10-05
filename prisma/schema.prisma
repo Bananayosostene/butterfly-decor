@@ -152,6 +152,8 @@ model User {
   phone            String?
   password         String?
   googleId         String?
+  /// Profile photo from Google sign-in, shown in the header account button.
+  avatarUrl        String?
   /// null until the "Are you a vendor?" question is answered, then "CLIENT" or "VENDOR".
   role             String?
   // Vendor profile (only used when role is VENDOR)

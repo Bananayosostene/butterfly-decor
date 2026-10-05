@@ -6,11 +6,16 @@ import { type NextRequest, NextResponse } from "next/server"
 
 /** Google sends the visitor back here after they approve sign-in. */
 export async function GET(req: NextRequest) {
-  const failed = NextResponse.redirect(new URL("/login?error=google", req.url))
+  // The visitor only sees "did not complete"; the reason goes to the server log.
+  const fail = (reason: string, detail?: unknown) => {
+    console.error("Google sign-in failed:", reason, detail ?? "")
+    return NextResponse.redirect(new URL("/login?error=google", req.url))
+  }
   try {
     const code = req.nextUrl.searchParams.get("code")
     const state = req.nextUrl.searchParams.get("state")
-    if (!code || !state || state !== req.cookies.get(GOOGLE_STATE_COOKIE)?.value) return failed
+    if (!code || !state || state !== req.cookies.get(GOOGLE_STATE_COOKIE)?.value)
+      return fail("missing code or state mismatch", req.nextUrl.searchParams.get("error"))
 
     const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
@@ -23,35 +28,45 @@ export async function GET(req: NextRequest) {
         grant_type: "authorization_code",
       }),
     })
-    const { access_token } = await tokenRes.json()
-    if (!tokenRes.ok || !access_token) return failed
+    const token = await tokenRes.json()
+    const access_token = token.access_token
+    // "invalid_client" here means CLIENT_SECRET does not belong to CLIENT_ID.
+    if (!tokenRes.ok || !access_token) return fail("token exchange rejected", token.error_description ?? token.error)
 
     const profileRes = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
       headers: { Authorization: `Bearer ${access_token}` },
     })
     const profile = await profileRes.json()
     // Only a Google-verified email may claim (or link to) an account with that address.
-    if (!profileRes.ok || !profile.email || !profile.email_verified) return failed
+    if (!profileRes.ok || !profile.email || !profile.email_verified) return fail("no verified email in Google profile")
 
     const email = String(profile.email).toLowerCase()
+    // Google's profile photo; only its own image host is accepted.
+    const avatarUrl =
+      typeof profile.picture === "string" && /^https:\/\/[a-z0-9-]+\.googleusercontent\.com\//i.test(profile.picture)
+        ? profile.picture
+        : null
     let user = await prisma.user.findUnique({ where: { email }, select: { id: true, googleId: true, role: true } })
     if (!user) {
       user = await prisma.user.create({
-        data: { email, name: profile.name || email.split("@")[0], googleId: profile.sub },
+        data: { email, name: profile.name || email.split("@")[0], googleId: profile.sub, avatarUrl },
         select: { id: true, googleId: true, role: true },
       })
     } else if (!user.googleId) {
       // The address was registered with a password but never proven. Google has now proven who owns
       // it, so drop the old password and sessions in case someone else created that account first.
       await prisma.userSession.deleteMany({ where: { userId: user.id } })
-      await prisma.user.update({ where: { id: user.id }, data: { googleId: profile.sub, password: null } })
+      await prisma.user.update({ where: { id: user.id }, data: { googleId: profile.sub, password: null, avatarUrl } })
+    } else if (avatarUrl) {
+      // Keep the photo current for returning Google users (and add it for older accounts).
+      await prisma.user.update({ where: { id: user.id }, data: { avatarUrl } })
     }
     await startUserSession(user.id)
 
     const res = NextResponse.redirect(new URL(homeFor(user.role), req.url))
     res.cookies.delete(GOOGLE_STATE_COOKIE)
     return res
-  } catch {
-    return failed
+  } catch (error) {
+    return fail("unexpected error", error)
   }
 }

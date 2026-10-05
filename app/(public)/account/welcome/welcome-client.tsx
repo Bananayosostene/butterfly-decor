@@ -11,7 +11,10 @@ const inputClass =
   "w-full px-3.5 py-2.5 rounded-lg text-sm bg-background text-foreground border border-border outline-none focus:border-primary";
 
 export default function WelcomeClient({ name, categories }: { name: string; categories: Category[] }) {
-  const [isVendor, setIsVendor] = useState(false);
+  // null until the visitor picks Yes or No.
+  const [isVendor, setIsVendor] = useState<boolean | null>(null);
+  // Step 1 asks the question; step 2 (vendors only) collects the business details.
+  const [step, setStep] = useState<1 | 2>(1);
   const [businessName, setBusinessName] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [location, setLocation] = useState("");
@@ -19,14 +22,23 @@ export default function WelcomeClient({ name, categories }: { name: string; cate
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const save = async (body: Record<string, unknown>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isVendor === null) return;
+    // "Next" on the question: vendors continue to their details, clients are done.
+    if (isVendor && step === 1) {
+      setStep(2);
+      return;
+    }
     setSaving(true);
     setError("");
     try {
       const res = await fetch("/api/account", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        body: JSON.stringify(
+          isVendor ? { vendor: true, businessName, vendorCategoryId: categoryId, location, about } : { vendor: false },
+        ),
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -42,53 +54,46 @@ export default function WelcomeClient({ name, categories }: { name: string; cate
     }
   };
 
-  const submitVendor = (e: React.FormEvent) => {
-    e.preventDefault();
-    save({ vendor: true, businessName, vendorCategoryId: categoryId, location, about });
-  };
+  const noCategories = isVendor === true && categories.length === 0;
+
+  const radio = (value: boolean, label: string) => (
+    <label className="flex items-center gap-3 cursor-pointer text-base" style={{ color: INK }}>
+      <input
+        type="radio"
+        name="isVendor"
+        checked={isVendor === value}
+        onChange={() => setIsVendor(value)}
+        className="w-4 h-4 cursor-pointer"
+        style={{ accentColor: INK }}
+      />
+      {label}
+    </label>
+  );
 
   return (
     <div className="min-h-[80vh] px-4 py-12" style={{ background: "#fbf7f2" }}>
-      <div className="max-w-xl mx-auto text-center">
+      <form onSubmit={handleSubmit} className="max-w-md mx-auto">
         <p className="text-xs font-semibold uppercase tracking-[0.22em]" style={{ color: "#835105" }}>One last step</p>
         <h1 className={`${displaySerif.className} mt-2 text-4xl`} style={{ color: INK }}>
           Welcome, {name}
         </h1>
-        <p className="mt-2 text-base" style={{ color: "#57422C" }}>Are you a wedding vendor?</p>
 
         {error && <p className="mt-4 text-sm py-2 px-3 rounded-lg" style={{ background: "#fde8e8", color: "#991b1b" }}>{error}</p>}
 
-        {!isVendor ? (
-          <div className="mt-8 grid sm:grid-cols-2 gap-4 text-left">
-            <button
-              onClick={() => save({ vendor: false })}
-              disabled={saving}
-              className="rounded-2xl p-5 transition-all hover:shadow-md hover:-translate-y-0.5 disabled:opacity-60 cursor-pointer"
-              style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}
-            >
-              <p className={`${displaySerif.className} text-2xl`} style={{ color: INK }}>No</p>
-              <p className="mt-1 text-sm" style={{ color: "var(--muted-foreground)" }}>
-                I am planning or attending a wedding. I want to browse, like and comment.
-              </p>
-            </button>
-            <button
-              onClick={() => setIsVendor(true)}
-              disabled={saving}
-              className="rounded-2xl p-5 transition-all hover:shadow-md hover:-translate-y-0.5 disabled:opacity-60 cursor-pointer"
-              style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}
-            >
-              <p className={`${displaySerif.className} text-2xl`} style={{ color: INK }}>Yes</p>
-              <p className="mt-1 text-sm" style={{ color: "var(--muted-foreground)" }}>
-                I offer a wedding service and want my own gallery on the vendors page.
-              </p>
-            </button>
-          </div>
-        ) : (
-          <form
-            onSubmit={submitVendor}
-            className="mt-8 rounded-2xl p-6 space-y-3 text-left"
-            style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}
-          >
+        {step === 1 && (
+          <fieldset className="mt-8">
+            <legend className="text-base font-semibold" style={{ color: INK }}>Are you a wedding vendor?</legend>
+            <div className="mt-3 space-y-2.5">
+              {radio(true, "Yes")}
+              {radio(false, "No")}
+            </div>
+          </fieldset>
+        )}
+
+        {/* Vendors tell us about their business before finishing. */}
+        {step === 2 && (
+          <div className="mt-6 space-y-3">
+            <p className="text-base font-semibold" style={{ color: INK }}>Tell couples about your business</p>
             <label className="block">
               <span className="text-xs mb-1 block" style={{ color: "var(--muted-foreground)" }}>Business name</span>
               <input value={businessName} onChange={(e) => setBusinessName(e.target.value)} required maxLength={80} className={inputClass} />
@@ -106,7 +111,7 @@ export default function WelcomeClient({ name, categories }: { name: string; cate
             </label>
             <label className="block">
               <span className="text-xs mb-1 block" style={{ color: "var(--muted-foreground)" }}>
-                About your business — shown on your page under &ldquo;About this vendor&rdquo;
+                About your business 
               </span>
               <textarea
                 value={about}
@@ -118,27 +123,36 @@ export default function WelcomeClient({ name, categories }: { name: string; cate
                 className={`${inputClass} resize-y`}
               />
             </label>
-            {categories.length === 0 && (
+            {noCategories && (
               <p className="text-xs" style={{ color: "#991b1b" }}>
-                No vendor categories are available yet. Please try again later or continue as a client.
+                No vendor categories are available yet. Please try again later, or go back and choose No to continue as a client.
               </p>
             )}
-            <div className="flex items-center justify-between gap-3 pt-2">
-              <button type="button" onClick={() => setIsVendor(false)} className="text-sm underline cursor-pointer" style={{ color: "var(--muted-foreground)" }}>
-                ← Back
-              </button>
-              <button
-                type="submit"
-                disabled={saving || categories.length === 0}
-                className="px-6 py-2.5 rounded-full text-sm font-semibold disabled:opacity-50 cursor-pointer"
-                style={{ background: INK, color: "#f7efe3" }}
-              >
-                {saving ? "Saving…" : "Create my vendor account"}
-              </button>
-            </div>
-          </form>
+          </div>
         )}
-      </div>
+
+        <div className="mt-8 flex items-center gap-3">
+          {step === 2 && (
+            <button
+              type="button"
+              onClick={() => setStep(1)}
+              disabled={saving}
+              className="px-6 py-3 rounded-full text-sm font-semibold cursor-pointer"
+              style={{ border: `1px solid ${INK}`, color: INK }}
+            >
+              Back
+            </button>
+          )}
+          <button
+            type="submit"
+            disabled={saving || isVendor === null || (step === 2 && noCategories)}
+            className="flex-1 py-3 rounded-full text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
+            style={{ background: INK, color: "#f7efe3" }}
+          >
+            {saving ? "Saving…" : step === 1 ? "Next" : "Complete signup"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
