@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { Palette } from "lucide-react";
 import React, { useState, useEffect } from "react";
+import { AccountMenu } from "@/components/account-menu";
 
 export function Header() {
   const pathname = usePathname();
@@ -96,10 +97,12 @@ export function Header() {
                 </span>
               )}
             </button>
+            <AccountMenu />
           </nav>
 
-          {/* Mobile WhatsApp */}
+          {/* Mobile: account and WhatsApp */}
           <div className="md:hidden flex items-center gap-2">
+            <AccountMenu />
             <button
               onClick={openWhatsApp}
               className="p-1.5 rounded-full bg-green-500 hover:bg-green-600 text-white hover:scale-110 transition-transform"

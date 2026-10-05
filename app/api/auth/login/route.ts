@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db"
 import { verifyPassword } from "@/lib/auth"
 import { loginAdmin } from "@/lib/admin-login"
 import { homeFor } from "@/lib/account-paths"
-import { endUserSession, startUserSession } from "@/lib/user-auth"
+import { endUserSession, setAccountHint, startUserSession } from "@/lib/user-auth"
 import { type NextRequest, NextResponse } from "next/server"
 
 /** The one sign-in for everyone: the site admin, vendors and clients. */
@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, message: admin.message, statusCode: admin.status }, { status: admin.status })
       // One identity at a time: leave any client/vendor session behind.
       await endUserSession()
+      await setAccountHint({ name: "Admin", email, kind: "ADMIN" })
       return NextResponse.json({ success: true, message: "Signed in", statusCode: 200, data: { next: "/account" } })
     }
 

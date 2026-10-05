@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db"
 import { homeFor } from "@/lib/account-paths"
 import { isObjectId } from "@/lib/data"
-import { getCurrentUser } from "@/lib/user-auth"
+import { getCurrentUser, setAccountHint } from "@/lib/user-auth"
 import { refreshVendors } from "@/lib/vendors"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -18,6 +18,7 @@ export async function PATCH(req: NextRequest) {
     const body = await req.json().catch(() => ({}))
     if (!body.vendor) {
       await prisma.user.update({ where: { id: user.id }, data: { role: "CLIENT" } })
+      await setAccountHint({ name: user.name, email: user.email, kind: "CLIENT", avatarUrl: user.avatarUrl })
       return NextResponse.json({ success: true, message: "Saved", statusCode: 200, data: { next: homeFor("CLIENT") } })
     }
 
@@ -35,6 +36,7 @@ export async function PATCH(req: NextRequest) {
       where: { id: user.id },
       data: { role: "VENDOR", businessName, vendorCategoryId: categoryId, about, location: location || null },
     })
+    await setAccountHint({ name: businessName, email: user.email, kind: "VENDOR", avatarUrl: user.avatarUrl })
     refreshVendors()
     return NextResponse.json({ success: true, message: "Saved", statusCode: 200, data: { next: homeFor("VENDOR") } })
   } catch {
