@@ -13,7 +13,7 @@ export function RealWeddingSection({ items }: { items: CollectionItem[] }) {
   if (items.length === 0) return null;
 
   return (
-    <section className="w-full pt-10 md:pt-14 pb-12" style={{ background: "#fbf7f2" }}>
+    <section id="latest-weddings" className="w-full pt-10 md:pt-14 pb-12" style={{ background: "#fbf7f2" }}>
       <div className=" px-4 md:px-12 lg:px-20 mb-6 md:mb-8 flex flex-wrap items-end justify-between gap-4">
         <h2 className={`${displaySerif.className} text-2xl md:text-3xl leading-tight`} style={{ color: INK }}>
           Browse Latest Real Wedding Albums

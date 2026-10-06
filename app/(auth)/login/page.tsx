@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { homeFor } from "@/lib/account-paths";
-import { displaySerif } from "@/lib/fonts";
 import { getCurrentUser, getDashboardUser } from "@/lib/user-auth";
 import AuthPanel from "./auth-panel";
 import SignedInCard from "./signed-in-card";
@@ -16,19 +15,21 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   if (user && user.role !== "CLIENT") redirect(homeFor(user.role));
 
   return (
-    <div className="min-h-[80vh] px-4 py-12" style={{ background: "#fbf7f2" }}>
-      <div className="max-w-md mx-auto text-center mb-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em]" style={{ color: "#835105" }}>Butterfly Decor</p>
-        <h1 className={`${displaySerif.className} mt-2 text-4xl`} style={{ color: "#2b1807" }}>
-          {user ? "Your account" : "Welcome"}
-        </h1>
-        {!user && (
-          <p className="mt-2 text-sm" style={{ color: "#57422C" }}>
-            Sign in to your account or create one with Butterfly Decor.
-          </p>
+    // Fills the rest of the screen under the header (the layout stretches it), so the photo
+    // always reaches the bottom of the window.
+    <div
+      className="relative flex-1 flex items-center justify-center px-4 py-6 overflow-hidden"
+      style={{ background: "#fbf7f2" }}
+    >
+      {/* Faded photo behind the sign-in card: mostly cream, with the picture only hinted at. */}
+      <img src="/login-img1.png" alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover opacity-5" />
+      <div className="relative w-full">
+        {user ? (
+          <SignedInCard name={user.name} email={user.email} />
+        ) : (
+          <AuthPanel googleFailed={sp.error === "google"} initialMode={sp.tab === "register" ? "register" : "login"} />
         )}
       </div>
-      {user ? <SignedInCard name={user.name} email={user.email} /> : <AuthPanel googleFailed={sp.error === "google"} initialMode={sp.tab === "register" ? "register" : "login"} />}
     </div>
   );
 }

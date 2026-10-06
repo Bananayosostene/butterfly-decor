@@ -3,7 +3,7 @@ export default function CollectionLoading() {
   const block = { background: "rgba(43,24,7,0.07)" };
 
   return (
-    <div className="min-h-screen pb-16" style={{ background: "#fbf7f2" }} aria-busy="true" aria-label="Loading collection">
+    <div className="min-h-screen pb-20" style={{ background: "#fbf7f2" }} aria-busy="true" aria-label="Loading collection">
       <div className="pt-8 px-4 flex justify-center gap-6 overflow-hidden">
         {Array.from({ length: 7 }).map((_, i) => (
           <div key={i} className="flex flex-col items-center gap-2 shrink-0">

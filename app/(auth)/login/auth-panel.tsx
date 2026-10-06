@@ -4,9 +4,10 @@ import type React from "react";
 import { useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
+import { displaySerif } from "@/lib/fonts";
 
 const inputClass =
-  "w-full px-3.5 py-2.5 rounded-lg text-sm bg-background text-foreground border border-border outline-none focus:border-primary";
+  "w-full px-3.5 py-2 rounded-lg text-sm bg-background text-foreground border border-border outline-none focus:border-primary";
 
 export default function AuthPanel({
   googleFailed,
@@ -53,28 +54,29 @@ export default function AuthPanel({
     }
   };
 
-  const tab = (value: "login" | "register", label: string) => (
-    <button
-      type="button"
-      onClick={() => { setMode(value); setError(""); }}
-      className="flex-1 py-2 rounded-full text-sm font-semibold transition-colors cursor-pointer"
-      style={mode === value ? { background: "var(--primary)", color: "var(--primary-foreground)" } : { color: "var(--muted-foreground)" }}
-    >
-      {label}
-    </button>
-  );
+  const switchMode = (value: "login" | "register") => {
+    setMode(value);
+    setError("");
+    setLocked(false);
+  };
 
   return (
-    <div className="w-full max-w-md mx-auto rounded-2xl p-6 shadow-lg" style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}>
-      <div className="flex p-1 rounded-full" style={{ background: "var(--muted)" }}>
-        {tab("login", "Sign in")}
-        {tab("register", "Create account")}
+    <div
+      className="w-full max-w-md mx-auto rounded-2xl px-6 py-5 md:px-8 md:py-6 shadow-xl border-t-4"
+      style={{ background: "rgba(253,250,246,0.94)", borderTopColor: "#2b1807", backdropFilter: "blur(6px)" }}
+    >
+      <div className="text-center">
+        <p className={`${displaySerif.className} text-base`} style={{ color: "#2b1807" }}>Butterfly Decor</p>
+        <h1 className={`${displaySerif.className} mt-1.5 text-3xl md:text-2xl leading-tight`} style={{ color: "#2b1807" }}>
+          {mode === "login" ? "Welcome back" : "Create your account"}
+        </h1>
+  
       </div>
 
       {/* A plain link: Google sign-in is a full-page redirect, not a background request. */}
       <a
         href="/api/auth/google"
-        className="mt-5 flex items-center justify-center gap-2.5 w-full py-2.5 rounded-lg text-sm font-semibold border border-border hover:bg-muted transition-colors"
+        className="mt-4 flex items-center justify-center gap-2.5 w-full py-2 rounded-lg text-sm font-semibold border border-border hover:bg-muted transition-colors"
         style={{ color: "var(--foreground)" }}
       >
         <svg className="w-4 h-4" viewBox="0 0 24 24" aria-hidden>
@@ -86,13 +88,13 @@ export default function AuthPanel({
         Continue with Google
       </a>
 
-      <div className="my-5 flex items-center gap-3 text-xs" style={{ color: "var(--muted-foreground)" }}>
+      <div className="my-3 flex items-center gap-3 text-xs" style={{ color: "var(--muted-foreground)" }}>
         <span className="flex-1 h-px bg-border" />
         or with email
         <span className="flex-1 h-px bg-border" />
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-3">
+      <form onSubmit={handleSubmit} className="space-y-2.5">
         {error && (
           <div className="text-sm py-2 px-3 rounded-lg space-y-1" style={{ background: "#fde8e8", color: "#991b1b" }}>
             <p>{error}</p>
@@ -135,12 +137,24 @@ export default function AuthPanel({
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2.5 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-60 cursor-pointer"
-          style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+          className="w-full py-3 rounded-full text-xs font-bold uppercase tracking-[0.15em] transition-opacity hover:opacity-90 disabled:opacity-60 cursor-pointer"
+          style={{ background: "#2b1807", color: "#f7efe3" }}
         >
           {loading ? "Please wait…" : mode === "register" ? "Create my account" : "Sign in"}
         </button>
       </form>
+
+      <p className="mt-4 text-center text-sm" style={{ color: "#57422C" }}>
+        {mode === "login" ? "New here? " : "Already have an account? "}
+        <button
+          type="button"
+          onClick={() => switchMode(mode === "login" ? "register" : "login")}
+          className="font-semibold underline underline-offset-4 cursor-pointer"
+          style={{ color: "#2b1807" }}
+        >
+          {mode === "login" ? "Create an account" : "Sign in"}
+        </button>
+      </p>
     </div>
   );
 }

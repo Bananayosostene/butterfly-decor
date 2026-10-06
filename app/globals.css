@@ -13,6 +13,10 @@
   --popover-foreground: oklch(0.2 0.01 0);
   --primary: #1e1008;
   --primary-foreground: oklch(0.85 0.1 90);
+  /* The warm off-white used as the page background across the site (collection, vendors,
+     planning, home sections). Registers the Tailwind utilities bg-paper / text-paper. */
+  --paper: #fbf7f2;
+  --paper-foreground: #2b1807;
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.5 0.01 0);
   --muted: oklch(0.94 0.01 0);
@@ -91,6 +95,8 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-paper: var(--paper);
+  --color-paper-foreground: var(--paper-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);

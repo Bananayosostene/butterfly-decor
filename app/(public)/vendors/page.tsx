@@ -41,7 +41,7 @@ export default async function VendorsPage({
   };
 
   return (
-    <div className="min-h-screen pb-16" style={{ background: "#fbf7f2" }}>
+    <div className="min-h-screen pb-20" style={{ background: "#fbf7f2" }}>
       <div className="max-w-6xl mx-auto px-4 pt-10">
         <header className="text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em]" style={{ color: ROSE }}>Vendor directory</p>

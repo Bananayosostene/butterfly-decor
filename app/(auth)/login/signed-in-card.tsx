@@ -13,7 +13,7 @@ export default function SignedInCard({ name, email }: { name: string; email: str
   };
 
   return (
-    <div className="w-full max-w-md mx-auto rounded-2xl p-6 shadow-lg text-center" style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}>
+    <div className="w-full max-w-md mx-auto rounded-2xl px-6 py-6 shadow-xl text-center border-t-4" style={{ background: "rgba(253,250,246,0.94)", borderTopColor: "#2b1807", backdropFilter: "blur(6px)" }}>
       <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>Signed in as</p>
       <p className="text-lg font-semibold" style={{ color: "var(--foreground)" }}>{name}</p>
       <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>{email}</p>

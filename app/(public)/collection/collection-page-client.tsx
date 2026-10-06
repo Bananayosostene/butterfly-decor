@@ -232,7 +232,7 @@ export default function CollectionPageClient({
   const hiddenCount = total - preview.length;
 
   return (
-    <div className="min-h-screen pb-16" style={{ background: "#fbf7f2" }}>
+    <div className="min-h-screen pb-20" style={{ background: "#fbf7f2" }}>
       <section className="pt-8 pb-2 px-4 w-full space-y-4">
         {inDecor && (
           <div className="max-w-6xl mx-auto flex justify-center">

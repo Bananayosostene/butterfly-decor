@@ -3,7 +3,7 @@ export default function VendorsLoading() {
   const block = { background: "rgba(43,24,7,0.07)" };
 
   return (
-    <div className="min-h-screen pb-16" style={{ background: "#fbf7f2" }} aria-busy="true" aria-label="Loading vendors">
+    <div className="min-h-screen pb-20" style={{ background: "#fbf7f2" }} aria-busy="true" aria-label="Loading vendors">
       <div className="max-w-6xl mx-auto px-4 pt-10">
         <div className="mx-auto w-32 h-3 rounded animate-pulse" style={block} />
         <div className="mx-auto mt-4 w-72 max-w-full h-10 rounded animate-pulse" style={block} />

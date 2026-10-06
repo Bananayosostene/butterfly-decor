@@ -74,7 +74,7 @@ export function VendorsSection({
           <p className="text-xs font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
             Discover your wedding dream team
           </p>
-          <h2 className={`${displaySerif.className} mt-3 text-3xl md:text-[2.75rem] leading-[1.1]`} style={{ color: CHOCOLATE }}>
+          <h2 className={`${displaySerif.className} mt-3 text-2xl md:text-3xl leading-[1.1]`} style={{ color: CHOCOLATE }}>
             Find the Best Wedding Vendors Near You
           </h2>
           <p className="mt-3 max-w-lg text-sm md:text-base leading-relaxed" style={{ color: "rgba(43,24,7,0.65)" }}>

@@ -1,7 +1,7 @@
 /** Where an account goes after signing in. Clients never see the dashboard. */
 export function homeFor(role: string | null | undefined) {
   if (role === "VENDOR") return "/account/my-gallery";
-  if (role === "CLIENT") return "/vendors";
+  if (role === "CLIENT") return "/collection";
   // New accounts first answer "Are you a vendor?".
   return "/account/welcome";
 }

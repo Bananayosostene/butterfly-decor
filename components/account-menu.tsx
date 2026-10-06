@@ -61,10 +61,9 @@ export function AccountMenu() {
     return (
       <Link
         href="/login"
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-primary-foreground/80 hover:text-primary-foreground transition-colors"
       >
-        <UserRound size={16} />
-        <span className="hidden sm:inline">Sign in</span>
+        <span>SIGN IN</span>
       </Link>
     );
   }

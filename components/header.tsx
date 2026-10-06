@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { Palette } from "lucide-react";
+import { CalendarCheck, ClipboardList, Heart, Store } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { AccountMenu } from "@/components/account-menu";
 
@@ -28,112 +28,119 @@ export function Header() {
     };
   }, []);
 
-  const openWhatsApp = () => {
-    window.open(
-      "https://wa.me/+250788724867?text=Hello%20Butterfly%20Decor%20%F0%9F%8C%B8%E2%9C%A8",
-      "_blank",
-    );
-  };
-
-  const whatsappSvg = (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488" />
-    </svg>
-  );
-
   const navLinks = [
-    { href: "/collection", label: "Wedding" },
-    { href: "/vendors", label: "Vendors" },
-    { href: "/wedding-planning", label: "Wedding planning" },
+    { href: "/collection", label: "WEDDING", icon: Heart },
+    { href: "/vendors", label: "VENDORS", icon: Store },
+    { href: "/wedding-planning", label: "PLANNING", icon: ClipboardList },
   ];
 
   const openBookingModal = () => {
     window.dispatchEvent(new CustomEvent("openBookingModal"));
   };
 
+  const isActive = (href: string) =>
+    pathname === href || pathname.startsWith(`${href}/`);
+
+  /** Bottom-bar labels: first letter capital, the rest lowercase. */
+  const sentenceCase = (label: string) =>
+    label.charAt(0) + label.slice(1).toLowerCase();
+
   const navClass = (href: string) =>
-    `px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
-      pathname === href || pathname.startsWith(`${href}/`)
+    `px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+      isActive(href)
         ? "bg-accent text-primary-foreground"
         : "text-primary-foreground/80 hover:text-primary-foreground"
     }`;
 
+  const tabClass = (href: string) => {
+    const active = isActive(href);
+    return `flex-1 min-w-0 flex flex-col items-center gap-1 px-0.5 py-2 rounded-lg transition-colors ${
+      active ? "text-primary-foreground" : "text-primary-foreground/70"
+    }`;
+  };
 
+  const badge =
+    selectedCount > 0 ? (
+      <span className="ml-1 inline-flex items-center justify-center w-4 h-4 align-middle text-[10px] font-bold rounded-full bg-primary-foreground text-primary">
+        {selectedCount}
+      </span>
+    ) : null;
 
   return (
-    <header className="sticky top-0 z-50 bg-primary border-b border-accent">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+    <>
+      <header className="sticky top-0 z-50 bg-primary border-b border-accent">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
 
-          {/* Brand */}
-          <div className="flex items-center gap-2">
-            <Image
-              src="/butterfly_logo.png"
-              alt="Butterfly Ltd logo"
-              width={38}
-              height={38}
-              className="object-contain"
-              priority
-            />
-            <Link href="/">
-              <p className="text-sm font-medium text-primary-foreground">
-                Butterfly Decor
-              </p>
-            </Link>
-          </div>
-
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-2">
-            {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className={navClass(link.href)}>
-                {link.label}
+            {/* Brand */}
+            <div className="flex items-center gap-2">
+              <Link href="/" className="flex items-center">
+                <span className="text-[16px] font-medium text-primary-foreground">Butterfly</span>
+                <Image
+                  src="/butterfly_logo.png"
+                  alt=""
+                  width={25}
+                  height={25}
+                  className="object-contain"
+                />
+                <span className="text-sm font-medium text-primary-foreground">Decor</span>
               </Link>
-            ))}
-            <button onClick={openBookingModal} className={navClass("/request")}>
-              Book Now
-              {selectedCount > 0 && (
-                <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded-full bg-primary-foreground text-primary">
-                  {selectedCount}
-                </span>
-              )}
-            </button>
-            <AccountMenu />
-          </nav>
+            </div>
 
-          {/* Mobile: account and WhatsApp */}
-          <div className="md:hidden flex items-center gap-2">
-            <AccountMenu />
-            <button
-              onClick={openWhatsApp}
-              className="p-1.5 rounded-full bg-green-500 hover:bg-green-600 text-white hover:scale-110 transition-transform"
-              aria-label="WhatsApp"
-            >
-              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488" />
-              </svg>
-            </button>
+            {/* Desktop Nav */}
+            <nav className="hidden md:flex items-center gap-2">
+              {navLinks.map((link) => (
+                <Link key={link.href} href={link.href} className={navClass(link.href)}>
+                  {link.label}
+                </Link>
+              ))}
+              <button onClick={openBookingModal} className={navClass("/request")}>
+                BOOK NOW
+                {badge}
+              </button>
+              <AccountMenu />
+            </nav>
+
+            {/* Mobile: account / sign in only */}
+            <div className="md:hidden flex items-center">
+              <AccountMenu /> 
+            </div>
           </div>
         </div>
+      </header>
 
-        {/* Mobile Second Row Nav */}
-        <nav className="md:hidden pb-3 flex items-center justify-center">
-          <div className="flex items-center gap-2">
-            {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className={navClass(link.href)}>
-                {link.label}
-              </Link>
-            ))}
-            <button onClick={openBookingModal} className={navClass("/request")}>
-              Book Now
-              {selectedCount > 0 && (
-                <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded-full bg-primary-foreground text-primary">
-                  {selectedCount}
+      {/* Mobile: app-style bottom tab bar */}
+      <nav className="md:hidden fixed inset-x-0 bottom-0 z-40 bg-primary border-t border-accent">
+        <div
+          className="flex items-stretch justify-around px-1 pt-1.5"
+          style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
+        >
+          {navLinks.map((link) => {
+            const Icon = link.icon;
+            const active = isActive(link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={tabClass(link.href)}
+                aria-current={active ? "page" : undefined}
+              >
+                <Icon className="h-6 w-6" strokeWidth={active ? 2.25 : 1.75} />
+                <span className="text-[10px] font-medium tracking-wide text-center leading-[1.1]">
+                  {sentenceCase(link.label)}
                 </span>
-              )}
-            </button>
-          </div>
-        </nav>
-      </div>
-    </header>
+              </Link>
+            );
+          })}
+          <button onClick={openBookingModal} className={tabClass("/request")}>
+            <CalendarCheck className="h-6 w-6" strokeWidth={isActive("/request") ? 2.25 : 1.75} />
+            <span className="text-[10px] font-medium tracking-wide text-center leading-[1.1]">
+              {sentenceCase("BOOK NOW")}
+              {badge}
+            </span>
+          </button>
+        </div>
+      </nav>
+    </>
   );
 }

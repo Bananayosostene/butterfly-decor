@@ -7,6 +7,7 @@ import { getButterflySlides, getCategoryTabs, getHomeSettings, getLatestBridalIt
 import { getVendorCategories } from "@/lib/vendors";
 import { RealWeddingSection } from "@/components/real-weddings-section";
 import { VendorsSection } from "@/components/vendors-section";
+import { PlanningSection } from "@/components/planning-section";
 
 const FALLBACK_VIDEO = "/hero-video.mp4";
 /** Bridal and groom looks shown in the homepage showcase row. */
@@ -27,9 +28,10 @@ export default async function Home() {
       <Header />
       <main>
         <WeddingShopHero videoSrc={settings.heroVideoUrl ?? FALLBACK_VIDEO} />
-        <DecorSection imageUrl={settings.decorImageUrl} categories={decorCategories} />
         <VendorsSection slides={slides} vendorCategories={vendorCategories} collectionCategories={collectionCategories} />
+        <DecorSection imageUrl={settings.decorImageUrl} categories={decorCategories} />
         <RealWeddingSection items={showcaseItems} />
+        <PlanningSection />
       </main>
       <Footer />
       <VisitTracker />

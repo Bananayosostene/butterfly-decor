@@ -32,7 +32,7 @@ export default async function VendorPage({ params }: Props) {
   const whatsappNumber = digits ? (digits.startsWith("0") ? `250${digits.slice(1)}` : digits) : SITE_WHATSAPP;
 
   return (
-    <div className="min-h-screen pb-16" style={{ background: "#fbf7f2" }}>
+    <div className="min-h-screen pb-20" style={{ background: "#fbf7f2" }}>
       <div className="max-w-6xl mx-auto px-4 pt-8">
         <nav aria-label="Breadcrumb" className="text-sm">
           <ol className="flex flex-wrap items-center gap-1.5">

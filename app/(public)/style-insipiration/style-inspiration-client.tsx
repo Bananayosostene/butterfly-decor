@@ -87,7 +87,7 @@ export default function StyleInspirationClient({
       </div>
 
       {/* Masonry grid */}
-      <div className="px-3 md:px-6 max-w-7xl mx-auto pb-16">
+      <div className="px-3 md:px-6 max-w-7xl mx-auto pb-20">
         {searching ? (
           <div className="columns-2 sm:columns-3 lg:columns-4 gap-3">
             {Array.from({ length: 8 }).map((_, i) => (

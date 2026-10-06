@@ -86,7 +86,7 @@ export function WeddingShopHero({ videoSrc }: { videoSrc: string }) {
             Where beauty meets beauty.
           </p>
           <h1
-            className={`${displaySerif.className} -mt-2 text-4xl md:text-5xl leading-[1.05] max-w-xl`}
+            className={`${displaySerif.className} -mt-2 text-2xl md:text-4xl leading-[1.05] max-w-xl`}
             style={{
               color: heading,
               fontWeight: 500,

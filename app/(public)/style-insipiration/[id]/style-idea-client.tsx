@@ -32,7 +32,7 @@ export default function StyleIdeaClient({
   const hrefFor = (target: StyleIdea) => `/style-insipiration/${target.id}${page > 1 ? `?page=${page}` : ""}`;
 
   return (
-    <div className="min-h-screen pb-16" style={{ background: "var(--background)" }}>
+    <div className="min-h-screen pb-20" style={{ background: "var(--background)" }}>
       {/* Pin card — Pinterest style */}
       <div className="max-w-4xl mx-auto pt-4 px-4 md:px-8">
         <div
