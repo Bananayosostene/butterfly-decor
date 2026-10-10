@@ -10,9 +10,9 @@ export default async function BookingsPage() {
   const bookings = await prisma.booking.findMany({ orderBy: { createdAt: "desc" } });
 
   const statusColor = (s: string) =>
-    s === "NEW" ? { background: "#fdf6ee", color: "#835105" } :
-    s === "CONFIRMED" ? { background: "#f0fdf4", color: "#166534" } :
-    { background: "#f1f5f9", color: "#475569" };
+    s === "NEW" ? { background: "var(--dash-soft)", color: "var(--dash-accent)" } :
+    s === "CONFIRMED" ? { background: "var(--dash-ok-bg)", color: "var(--dash-ok)" } :
+    { background: "var(--muted)", color: "var(--muted-foreground)" };
 
   return (
     <div className="space-y-6">
@@ -21,7 +21,7 @@ export default async function BookingsPage() {
       {bookings.length === 0 ? (
         <p className="text-muted-foreground text-sm">No bookings yet.</p>
       ) : (
-        <div className="bg-card border border-border rounded-xl overflow-hidden">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-muted">
@@ -45,7 +45,7 @@ export default async function BookingsPage() {
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">{new Date(b.createdAt).toLocaleDateString()}</td>
                     <td className="px-4 py-3">
-                      <Link href={`/account/bookings/${b.id}`} className="text-xs font-medium" style={{ color: "#3d230c" }}>View</Link>
+                      <Link href={`/account/bookings/${b.id}`} className="text-xs font-medium" style={{ color: "var(--dash-accent)" }}>View</Link>
                     </td>
                   </tr>
                 ))}

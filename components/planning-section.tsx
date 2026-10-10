@@ -1,55 +1,49 @@
 import Link from "next/link";
-import { ArrowRight, CalendarDays, ClipboardCheck, Store, Users, Wallet, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { displaySerif } from "@/lib/fonts";
-import { WEDDING_PLANS } from "@/lib/wedding-plans";
+import { getPlanningSections } from "@/lib/planning-data";
 
-const INK = "#2b1807";
+const INK = "var(--ink)";
 const GOLD = "#835105";
 const SOFT = "#57422C";
 const LINE = "#e8d5b7";
 
-/** Sample tiles of the "at a glance" preview card (illustration only, not live data). */
-const GLANCE = [
-  { icon: ClipboardCheck, title: "Checklist", note: "4 tasks · 2 this week", progress: 62 },
-  { icon: Users, title: "Guests", note: "180 guests listed" },
-  { icon: Store, title: "Vendors", note: "5 booked · 2 to confirm" },
-  { icon: Wallet, title: "Budget", note: "67% allocated", progress: 67 },
-  { icon: CalendarDays, title: "Ceremonies", note: "Gusaba · Civil · Church" },
-  { icon: Sparkles, title: "Decor", note: "Theme chosen" },
-];
+/** Made-up answers for the example table (illustration only, not anyone's data). */
+const SAMPLE = ["1", "1", "1", "1", "6"];
 
 const STATS = [
-  { value: `${WEDDING_PLANS.length}`, label: "Planning timelines" },
-  { value: `${WEDDING_PLANS.reduce((n, p) => n + p.phases.length, 0)}`, label: "Guided phases" },
+  { value: "2", label: "Parts: Gusaba & Reception" },
+  { value: "PDF", label: "Download and print" },
   { value: "100%", label: "Free to use" },
 ];
 
 /** Homepage section under the hero that introduces the wedding planner. */
-export function PlanningSection() {
+export async function PlanningSection() {
+  const [sheet] = await getPlanningSections();
+  const column = sheet.columns[0];
+
   return (
     <section className="w-full px-4 md:px-8 lg:px-12 py-12 md:py-16 border-b" style={{ background: "#fbf7f2", borderColor: LINE }}>
       <div className="max-w-6xl mx-auto grid md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] gap-10 md:gap-14 items-center">
-        {/* Preview card */}
-        <div className="rounded-3xl p-6 md:p-8" style={{ background: "#f3e9da" }} aria-hidden>
+        {/* Example of the planning sheet */}
+        <div className="rounded-3xl p-5 md:p-8" style={{ background: "#f3e9da" }} aria-hidden>
           <p className={`${displaySerif.className} text-2xl md:text-3xl text-center`} style={{ color: INK }}>
-            Your Wedding at a Glance
+            wedding planning sheet
           </p>
           <p className="mx-auto mt-3 w-fit px-5 py-1.5 rounded-full text-sm" style={{ background: "rgba(43,24,7,0.07)", color: INK }}>
-            120 days to go until the big day
+            1. {sheet.title}
           </p>
-          <div className="mt-6 grid grid-cols-3 gap-2.5">
-            {GLANCE.map((tile) => (
-              <div key={tile.title} className="rounded-2xl p-3 bg-white shadow-sm min-h-[104px]">
-                <span className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "#f7efe3", color: GOLD }}>
-                  <tile.icon size={14} />
-                </span>
-                <p className={`${displaySerif.className} mt-2 text-sm`} style={{ color: INK }}>{tile.title}</p>
-                <p className="text-[10px] leading-snug" style={{ color: SOFT }}>{tile.note}</p>
-                {tile.progress !== undefined && (
-                  <div className="mt-2 h-1 rounded-full overflow-hidden" style={{ background: "#f0e6d6" }}>
-                    <div className="h-full rounded-full" style={{ width: `${tile.progress}%`, background: GOLD }} />
-                  </div>
-                )}
+          <div className="mt-5 rounded-xl overflow-hidden bg-white shadow-sm text-xs md:text-sm" style={{ border: "1px solid #e0c896" }}>
+            <div className="flex items-center gap-2 px-3 py-2 font-semibold" style={{ background: INK, color: "#fff" }}>
+              <span className="w-6 text-center">No</span>
+              <span className="flex-1 truncate">{sheet.rowsLabel}</span>
+              <span className="w-24 text-center truncate">{column.label}</span>
+            </div>
+            {sheet.rows.slice(0, SAMPLE.length).map((row, i) => (
+              <div key={row.id} className="flex items-center gap-2 px-3 py-2.5" style={{ borderTop: "1px solid #eadcbd", background: i % 2 ? "#fff" : "#fffcf4", color: INK }}>
+                <span className="w-6 text-center font-bold">{i + 1}</span>
+                <span className="flex-1 truncate">{row.label}</span>
+                <span className="w-24 text-center font-semibold" style={{ color: GOLD }}>{SAMPLE[i]}</span>
               </div>
             ))}
           </div>
@@ -58,17 +52,17 @@ export function PlanningSection() {
         {/* Pitch */}
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.22em]" style={{ color: INK }}>Why Butterfly</p>
-          <h2 className={`${displaySerif.className} mt-3 text-2xl md:text-4xl leading-[1.1]`} style={{ color: INK }}>
+          <h2 className={`${displaySerif.className} mt-3 text-2xl md:text-3xl leading-[1.1]`} style={{ color: INK }}>
             The Free Online Wedding Planner
           </h2>
           <p className="mt-4 max-w-xl text-sm md:text-base leading-relaxed" style={{ color: SOFT }}>
-            Plan your wedding with a guide at your side. Tell us how much time you have, and we walk you through it
-            phase by phase, what to decide, what to book and when, from the first family visit to the wedding day.
+            Choose who will be dressed for your Introduction and your Reception, and how many.
+            Send us the list, get the prices, and download it as a PDF.
           </p>
           <Link
             href="/wedding-planning"
             className="group mt-6 inline-flex items-center gap-4 pl-7 pr-2 py-2 rounded-full text-xs md:text-sm font-bold uppercase tracking-[0.15em] transition-opacity hover:opacity-90"
-            style={{ background: INK, color: "#f7efe3" }}
+            style={{ background: INK, color: "var(--cream)" }}
           >
             Let&apos;s plan your wedding
             <span className="w-9 h-9 rounded-full flex items-center justify-center border transition-transform group-hover:translate-x-0.5" style={{ borderColor: "rgba(247,239,227,0.6)" }}>

@@ -72,7 +72,7 @@ export default function MyGalleryClient({ items, vendorId }: { items: Item[]; ve
             View my public page <ExternalLink className="w-3 h-3" />
           </Link>
         </p>
-        <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "#2b1807", color: "#e8d5b7" }}>
+        <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
           <Plus className="w-4 h-4" /> Add Photo
         </button>
       </div>
@@ -82,7 +82,7 @@ export default function MyGalleryClient({ items, vendorId }: { items: Item[]; ve
       ) : (
         <div className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 ${loading ? "opacity-60" : ""}`}>
           {items.map((item) => (
-            <div key={item.id} className="bg-card border border-border rounded-xl overflow-hidden">
+            <div key={item.id} className="bg-card border border-border rounded-2xl overflow-hidden">
               <div className="relative aspect-square">
                 <img
                   src={cldImage(item.imageUrl, 500)}
@@ -91,7 +91,7 @@ export default function MyGalleryClient({ items, vendorId }: { items: Item[]; ve
                   className={`absolute inset-0 w-full h-full object-cover ${item.active ? "" : "opacity-40 grayscale"}`}
                 />
                 {!item.active && (
-                  <span className="absolute top-2 left-2 text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "#fee2e2", color: "#991b1b" }}>
+                  <span className="absolute top-2 left-2 text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "var(--dash-danger-bg)", color: "var(--dash-danger)" }}>
                     Hidden by admin
                   </span>
                 )}
@@ -102,7 +102,7 @@ export default function MyGalleryClient({ items, vendorId }: { items: Item[]; ve
                   <button onClick={() => openEdit(item)} aria-label="Edit" className="text-xs px-2.5 py-1.5 rounded-lg border border-border text-foreground hover:bg-muted">
                     <Pencil className="w-3 h-3" />
                   </button>
-                  <button onClick={() => handleDelete(item)} aria-label="Delete" className="text-xs px-2.5 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50">
+                  <button onClick={() => handleDelete(item)} aria-label="Delete" className="text-xs px-2.5 py-1.5 rounded-lg border dash-danger-btn">
                     <Trash2 className="w-3 h-3" />
                   </button>
                 </div>
@@ -119,7 +119,7 @@ export default function MyGalleryClient({ items, vendorId }: { items: Item[]; ve
               <h2 className="font-semibold text-foreground">{modal.editing ? "Edit Photo" : "Add Photo"}</h2>
               <button onClick={closeModal}><X className="w-4 h-4 text-muted-foreground" /></button>
             </div>
-            {error && <p className="text-sm py-2 px-3 rounded-lg" style={{ background: "#fde8e8", color: "#991b1b" }}>{error}</p>}
+            {error && <p className="text-sm py-2 px-3 rounded-lg" style={{ background: "var(--dash-danger-bg)", color: "var(--dash-danger)" }}>{error}</p>}
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">Image * (max 10MB)</label>
               <input type="file" accept="image/*" onChange={handleUpload} className="text-sm text-muted-foreground" />
@@ -136,7 +136,7 @@ export default function MyGalleryClient({ items, vendorId }: { items: Item[]; ve
             />
             <div className="flex gap-2 justify-end">
               <button onClick={closeModal} className="px-4 py-2 text-sm rounded-lg border border-border text-foreground">Cancel</button>
-              <button onClick={handleSave} disabled={saving || uploading || !form.imageUrl} className="px-4 py-2 text-sm rounded-lg font-medium disabled:opacity-50" style={{ background: "#2b1807", color: "#e8d5b7" }}>
+              <button onClick={handleSave} disabled={saving || uploading || !form.imageUrl} className="px-4 py-2 text-sm rounded-lg font-medium disabled:opacity-50" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
                 {saving ? "Saving..." : "Save"}
               </button>
             </div>

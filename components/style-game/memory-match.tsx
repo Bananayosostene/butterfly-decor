@@ -122,7 +122,7 @@ export function MemoryMatch() {
       <div className="w-full max-w-2xl rounded-3xl shadow-xl overflow-hidden" style={{ background: CREAM, border: `1.5px solid ${BORDER}` }}>
         {phase === "intro" && (
           <div className="p-8 sm:p-10 flex flex-col items-center text-center gap-5">
-            <h1 className="text-3xl font-playball" style={{ color: CHOCOLATE }}>Memory Match</h1>
+            <h1 className="text-2xl md:text-3xl font-playball" style={{ color: CHOCOLATE }}>Memory Match</h1>
             <p className="text-sm max-w-md" style={{ color: "rgba(43,24,7,0.75)" }}>
               Flip two cards at a time. Every decor piece has a perfect complementary color hiding
               somewhere on the board — remember where you saw it and pair them all before your

@@ -90,7 +90,7 @@ export default function CategoriesClient({
             key={value}
             href={href}
             className="px-4 py-1.5 rounded-md text-sm font-medium transition-colors"
-            style={kind === value ? { background: "#2b1807", color: "#e8d5b7" } : { color: "var(--muted-foreground)" }}
+            style={kind === value ? { background: "var(--primary)", color: "var(--primary-foreground)" } : { color: "var(--muted-foreground)" }}
           >
             {label}
           </Link>
@@ -105,19 +105,19 @@ export default function CategoriesClient({
             <button
               onClick={() => setView("table")}
               className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors"
-              style={view === "table" ? { background: "#2b1807", color: "#e8d5b7" } : { color: "var(--muted-foreground)" }}
+              style={view === "table" ? { background: "var(--primary)", color: "var(--primary-foreground)" } : { color: "var(--muted-foreground)" }}
             >
               <TableIcon className="w-3.5 h-3.5" /> Table
             </button>
             <button
               onClick={() => setView("cards")}
               className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors border-l border-border"
-              style={view === "cards" ? { background: "#2b1807", color: "#e8d5b7" } : { color: "var(--muted-foreground)" }}
+              style={view === "cards" ? { background: "var(--primary)", color: "var(--primary-foreground)" } : { color: "var(--muted-foreground)" }}
             >
               <LayoutGrid className="w-3.5 h-3.5" /> Cards
             </button>
           </div>
-          <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "#2b1807", color: "#e8d5b7" }}>
+          <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
             <Plus className="w-4 h-4" /> {kind === "DECOR" ? "Add Decor Category" : "Add Category"}
           </button>
         </div>
@@ -128,7 +128,7 @@ export default function CategoriesClient({
       ) : categories.length === 0 ? (
         <p className="text-muted-foreground text-sm">No categories yet.</p>
       ) : view === "table" ? (
-        <div className="bg-card border border-border rounded-xl overflow-hidden overflow-x-auto">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden overflow-x-auto">
           <table className="w-full text-sm min-w-[480px]">
             <thead className="bg-muted">
               <tr>
@@ -152,7 +152,7 @@ export default function CategoriesClient({
                       <button onClick={() => openEdit(c)} className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg border border-border text-foreground hover:bg-muted">
                         <Pencil className="w-3 h-3" />
                       </button>
-                      <button onClick={() => handleDelete(c.id)} className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50">
+                      <button onClick={() => handleDelete(c.id)} className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg border dash-danger-btn">
                         <Trash2 className="w-3 h-3" />
                       </button>
                     </div>
@@ -165,7 +165,7 @@ export default function CategoriesClient({
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {categories.map((c) => (
-            <div key={c.id} className="bg-card border border-border rounded-xl overflow-hidden">
+            <div key={c.id} className="bg-card border border-border rounded-2xl overflow-hidden">
               <div className="p-4">
                 <h3 className="font-semibold text-foreground inline-flex items-center gap-2">
                   <img src={`/${iconForCategory(c.name, c.icon)}`} alt="" className="w-7 h-7 object-contain rounded-full border border-border" />
@@ -178,7 +178,7 @@ export default function CategoriesClient({
                   <button onClick={() => openEdit(c)} className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg border border-border text-foreground hover:bg-muted">
                     <Pencil className="w-3 h-3" /> Edit
                   </button>
-                  <button onClick={() => handleDelete(c.id)} className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50">
+                  <button onClick={() => handleDelete(c.id)} className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg border dash-danger-btn">
                     <Trash2 className="w-3 h-3" /> Delete
                   </button>
                 </div>
@@ -215,8 +215,8 @@ export default function CategoriesClient({
                         onClick={() => setForm((f) => ({ ...f, icon: selected ? "" : ic.file }))}
                         className="aspect-square rounded-full flex items-center justify-center transition-all"
                         style={{
-                          border: selected ? "2px solid #2b1807" : "1px solid var(--border)",
-                          background: selected ? "#fdf6ee" : "transparent",
+                          border: selected ? "2px solid var(--primary)" : "1px solid var(--border)",
+                          background: selected ? "var(--dash-soft)" : "transparent",
                         }}
                       >
                         <img src={`/${ic.file}`} alt="" className="w-3/4 h-3/4 object-contain" />
@@ -232,7 +232,7 @@ export default function CategoriesClient({
             </div>
             <div className="flex gap-2 justify-end">
               <button onClick={closeModal} className="px-4 py-2 text-sm rounded-lg border border-border text-foreground">Cancel</button>
-              <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm rounded-lg font-medium disabled:opacity-50" style={{ background: "#2b1807", color: "#e8d5b7" }}>
+              <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm rounded-lg font-medium disabled:opacity-50" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
                 {saving ? "Saving..." : "Save"}
               </button>
             </div>

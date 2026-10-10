@@ -52,7 +52,7 @@ export default async function VendorPage({ params }: Props) {
           </ol>
         </nav>
 
-        <h1 className={`${displaySerif.className} mt-3 text-4xl md:text-5xl`} style={{ color: INK }}>{vendor.name}</h1>
+        <h1 className={`${displaySerif.className} mt-3 text-2xl md:text-3xl`} style={{ color: INK }}>{vendor.name}</h1>
         <p className="mt-2 text-xs" style={{ color: "#57422C" }}>
           {vendor.vendorCategory && <span className="font-semibold uppercase tracking-[0.18em]">{vendor.vendorCategory.name}</span>}
           {vendor.vendorCategory && vendor.location && " in "}

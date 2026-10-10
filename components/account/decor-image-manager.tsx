@@ -90,25 +90,25 @@ export function DecorImageManager({ initialImageUrl }: { initialImageUrl: string
       <div className="flex flex-wrap items-center gap-2">
         <label
           className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium cursor-pointer ${uploading ? "opacity-60 pointer-events-none" : ""}`}
-          style={{ background: "#2b1807", color: "#e8d5b7" }}
+          style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
         >
           <Upload className="w-4 h-4" />
           {uploading ? "Uploading..." : imageUrl ? "Replace image" : "Upload image"}
           <input type="file" accept="image/*" className="hidden" onChange={handleUpload} disabled={uploading} />
         </label>
         {imageUrl && !uploading && (
-          <button onClick={handleRemove} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm border border-red-200 text-red-600 hover:bg-red-50">
+          <button onClick={handleRemove} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm border dash-danger-btn">
             <Trash2 className="w-4 h-4" /> Remove
           </button>
         )}
       </div>
 
       {saved && (
-        <p className="flex items-center gap-1 text-xs text-green-700">
+        <p className="flex items-center gap-1 text-xs dash-ok-text">
           <Check className="w-3.5 h-3.5" /> Saved — live on the homepage now.
         </p>
       )}
-      {error && <p className="text-xs text-red-600">{error}</p>}
+      {error && <p className="text-xs dash-danger-text">{error}</p>}
     </div>
   );
 }

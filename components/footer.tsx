@@ -60,7 +60,7 @@ export async function Footer() {
 
           {/* Social — icon only on mobile, icon + label on md and up */}
           <div className="flex-1 flex justify-center md:justify-start">
-            <div className="flex flex-wrap items-center justify-center gap-6 md:gap-4">
+            <div className="flex flex-wrap items-center justify-center gap-5 md:gap-4">
 
               {/* WhatsApp */}
               <a
@@ -70,9 +70,9 @@ export async function Footer() {
                 className="flex items-center gap-1 hover:scale-110 transition-transform"
                 aria-label="WhatsApp"
               >
-                <div className="inline-flex items-center justify-center w-9 h-9 md:w-5 md:h-5 bg-green-500 hover:bg-green-600 text-white rounded-full">
+                <div className="inline-flex items-center justify-center w-7 h-7 md:w-5 md:h-5 bg-green-500 hover:bg-green-600 text-white rounded-full">
                   <svg
-                    className="w-5 h-5 md:w-3 md:h-3"
+                    className="w-4 h-4 md:w-3 md:h-3"
                     viewBox="0 0 24 24"
                     fill="currentColor"
                   >
@@ -98,7 +98,7 @@ export async function Footer() {
                   alt="Instagram"
                   width={36}
                   height={36}
-                  className="rounded-full md:w-5 md:h-5"
+                  className="rounded-full w-7 h-7 md:w-5 md:h-5"
                 />
                 <span className={`hidden md:inline text-xs ${SOFT}`}>
                   Instagram
@@ -118,7 +118,7 @@ export async function Footer() {
                   alt="TikTok"
                   width={36}
                   height={36}
-                  className="rounded-full md:w-5 md:h-5"
+                  className="rounded-full w-7 h-7 md:w-5 md:h-5"
                 />
                 <span className={`hidden md:inline text-xs ${SOFT}`}>
                   TikTok
@@ -134,8 +134,8 @@ export async function Footer() {
                 aria-label="YouTube"
               >
                 {/* Drawn inline (red circle with the white play triangle), so no image file is needed. */}
-                <div className="inline-flex items-center justify-center w-9 h-9 md:w-5 md:h-5 rounded-full text-white" style={{ background: "#ff0000" }}>
-                  <svg className="w-5 h-5 md:w-3 md:h-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                <div className="inline-flex items-center justify-center w-7 h-7 md:w-5 md:h-5 rounded-full text-white" style={{ background: "#ff0000" }}>
+                  <svg className="w-4 h-4 md:w-3 md:h-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                     <path d="M9 6.5v11l9-5.5z" />
                   </svg>
                 </div>

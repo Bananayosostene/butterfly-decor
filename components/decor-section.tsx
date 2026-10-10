@@ -6,7 +6,7 @@ import { DECOR_SLUG, decorHref, iconForCategory } from "@/lib/category-icons";
 
 type Category = { id: string; name: string; icon: string | null };
 
-const INK = "#2b1807";
+const INK = "var(--ink)";
 const GOLD = "#835105";
 
 /**
@@ -38,7 +38,7 @@ export function DecorSection({ imageUrl, categories }: { imageUrl: string | null
       />
 
       <div className="relative max-w-4xl mx-auto px-4 py-15 md:py-20 text-center">
-        <h2 className={`${displaySerif.className} mt-3 text-3xl md:text-4xl leading-[1.1]`} style={{ color: INK }}>
+        <h2 className={`${displaySerif.className} mt-3 text-2xl md:text-3xl leading-[1.1]`} style={{ color: INK }}>
           Transform Your Venue
           <br />
           Into an Unforgettable Celebration
@@ -52,7 +52,7 @@ export function DecorSection({ imageUrl, categories }: { imageUrl: string | null
         <form
           action="/collection"
           className="mt-6 mx-auto max-w-2xl flex items-center gap-2 p-1.5 pl-5 rounded-full shadow-lg"
-          style={{ background: "#f7efe3" }}
+          style={{ background: "var(--cream)" }}
         >
           <input type="hidden" name="cat" value={DECOR_SLUG} />
           <div className="relative min-w-0 flex-1">
@@ -73,7 +73,7 @@ export function DecorSection({ imageUrl, categories }: { imageUrl: string | null
           <button
             type="submit"
             className="shrink-0 px-5 md:px-8 py-3 rounded-full text-xs md:text-sm font-bold uppercase tracking-[0.12em] transition-opacity hover:opacity-90 cursor-pointer"
-            style={{ background: INK, color: "#f7efe3" }}
+            style={{ background: INK, color: "var(--cream)" }}
           >
             Explore
           </button>

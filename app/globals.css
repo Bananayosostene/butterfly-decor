@@ -17,6 +17,8 @@
      planning, home sections). Registers the Tailwind utilities bg-paper / text-paper. */
   --paper: #fbf7f2;
   --paper-foreground: #2b1807;
+  --ink: #2b1807;
+  --cream: #f7efe3;
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.5 0.01 0);
   --muted: oklch(0.94 0.01 0);
@@ -97,6 +99,8 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-paper: var(--paper);
   --color-paper-foreground: var(--paper-foreground);
+  --color-ink: var(--ink);
+  --color-cream: var(--cream);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -165,4 +169,115 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+}
+
+/* ── Dashboard theme ────────────────────────────────────────────────────────────────────
+   Scoped to the dashboard wrapper (.dash), so no other page is affected. Dark is the default;
+   the wrapper gets the "dark" class for dark mode and loses it for light mode. The pages inside
+   use the normal tokens (bg-card, text-foreground, border-border…), which resolve to these. */
+.dash {
+  --background: #faf6f0;
+  --foreground: #2b1807;
+  --card: #ffffff;
+  --card-foreground: #2b1807;
+  --popover: #ffffff;
+  --popover-foreground: #2b1807;
+  --primary: #2b1807;
+  --primary-foreground: #f7efe3;
+  --secondary: #f3ebdf;
+  --secondary-foreground: #2b1807;
+  --muted: #f3ebdf;
+  --muted-foreground: #7a6654;
+  --accent: #f3e9da;
+  --accent-foreground: #2b1807;
+  --border: #eadfce;
+  --input: #e3d5c0;
+  --ring: #835105;
+  --card-border: #eadfce;
+  --sidebar: #fffdf9;
+  --sidebar-foreground: #2b1807;
+  --sidebar-border: #eadfce;
+  /* Gold used for small highlights, and its very light tint for notice boxes. */
+  --dash-accent: #835105;
+  --dash-soft: #fdf6ee;
+  background: var(--background);
+  color: var(--foreground);
+  color-scheme: light;
+}
+
+.dash.dark {
+  --background: #140c06;
+  --foreground: #f3e7d6;
+  --card: #1d120a;
+  --card-foreground: #f3e7d6;
+  --popover: #1d120a;
+  --popover-foreground: #f3e7d6;
+  --primary: #e8c078;
+  --primary-foreground: #1a0f06;
+  --secondary: #2a1b10;
+  --secondary-foreground: #f3e7d6;
+  --muted: #2a1b10;
+  --muted-foreground: #b9a48b;
+  --accent: #2f1e11;
+  --accent-foreground: #f3e7d6;
+  --border: rgba(232, 213, 183, 0.13);
+  --input: rgba(232, 213, 183, 0.2);
+  --ring: #e8c078;
+  --card-border: rgba(232, 213, 183, 0.13);
+  --sidebar: #1a1009;
+  --sidebar-foreground: #f3e7d6;
+  --sidebar-border: rgba(232, 213, 183, 0.13);
+  --dash-accent: #e8c078;
+  --dash-soft: rgba(232, 192, 120, 0.1);
+  color-scheme: dark;
+}
+
+/* Page content rises in gently on each dashboard navigation. */
+@keyframes dash-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+.dash-rise {
+  animation: dash-rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dash-rise {
+    animation: none;
+  }
+}
+
+/* Status colours for the dashboard (success, danger), tuned for each mode. */
+.dash {
+  --dash-ok: #166534;
+  --dash-ok-bg: #dcfce7;
+  --dash-danger: #b91c1c;
+  --dash-danger-bg: #fee2e2;
+}
+.dash.dark {
+  --dash-ok: #86efac;
+  --dash-ok-bg: rgba(34, 197, 94, 0.14);
+  --dash-danger: #fca5a5;
+  --dash-danger-bg: rgba(239, 68, 68, 0.15);
+}
+.dash .dash-ok-text {
+  color: var(--dash-ok);
+}
+.dash .dash-danger-text {
+  color: var(--dash-danger);
+}
+.dash .dash-danger-btn {
+  color: var(--dash-danger);
+  border-color: color-mix(in srgb, var(--dash-danger) 35%, transparent);
+  transition: background-color 0.15s;
+}
+.dash .dash-danger-btn:hover {
+  background: var(--dash-danger-bg);
+}
+
+/* Category icons are dark line drawings: give them a light disc so they stay visible in dark mode. */
+.dash.dark img[src$=".svg"] {
+  background: #f3e7d6;
+  border-radius: 9999px;
 }

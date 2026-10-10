@@ -20,15 +20,15 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
     : [];
 
   const statusColor = (s: string) =>
-    s === "NEW" ? { background: "#fdf6ee", color: "#835105" } :
-    s === "CONFIRMED" ? { background: "#f0fdf4", color: "#166534" } :
-    { background: "#f1f5f9", color: "#475569" };
+    s === "NEW" ? { background: "var(--dash-soft)", color: "var(--dash-accent)" } :
+    s === "CONFIRMED" ? { background: "var(--dash-ok-bg)", color: "var(--dash-ok)" } :
+    { background: "var(--muted)", color: "var(--muted-foreground)" };
 
   return (
     <div className="max-w-2xl space-y-6">
       <Link href="/account/bookings" className="text-sm text-muted-foreground hover:text-foreground">← Back to Bookings</Link>
 
-      <div className="bg-card border border-border rounded-xl p-6 space-y-4">
+      <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-foreground">Booking Details</h2>
           <span className="px-3 py-1 rounded-full text-xs font-medium" style={statusColor(booking.status)}>{booking.status}</span>
@@ -61,7 +61,7 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
                     href={itemHref(id)}
                     target="_blank"
                     className="text-xs px-3 py-1 rounded-full font-medium hover:opacity-80 transition-opacity"
-                    style={{ background: "#fdf6ee", color: "#835105", border: "1px solid #c9a96e" }}
+                    style={{ background: "var(--dash-soft)", color: "var(--dash-accent)", border: "1px solid var(--border)" }}
                   >
                     {item?.name ?? `#${id.slice(-6)}`}
                   </Link>
@@ -86,7 +86,7 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
         const notes = fd.get("notes") as string;
         await prisma.booking.update({ where: { id }, data: { status, adminNotes: notes } });
         redirect(`/account/bookings/${id}`);
-      }} className="bg-card border border-border rounded-xl p-6 space-y-4">
+      }} className="bg-card border border-border rounded-2xl p-6 space-y-4">
         <h3 className="font-semibold text-foreground text-sm">Update Status</h3>
         <select name="status" defaultValue={booking.status} className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground">
           <option value="NEW">NEW</option>
@@ -95,7 +95,7 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
           <option value="COMPLETED">COMPLETED</option>
         </select>
         <textarea name="notes" defaultValue={booking.adminNotes ?? ""} placeholder="Admin notes..." rows={3} className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground resize-none" />
-        <button type="submit" className="px-4 py-2 text-sm rounded-lg font-medium" style={{ background: "#2b1807", color: "#e8d5b7" }}>
+        <button type="submit" className="px-4 py-2 text-sm rounded-lg font-medium" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
           Update
         </button>
       </form>

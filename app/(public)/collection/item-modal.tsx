@@ -18,7 +18,7 @@ type Item = {
   category: { id: string; name: string };
 };
 
-const INK = "#2b1807";
+const INK = "var(--ink)";
 
 export type ModalSocial = { likeCount: number; liked: boolean; commentCount: number; comments: ItemComment[] };
 
@@ -132,7 +132,7 @@ export default function ItemModal({
         }}
         aria-label="Close"
         className="absolute top-3 right-3 md:top-5 md:right-5 z-10 w-11 h-11 rounded-full flex items-center justify-center shadow-md cursor-pointer"
-        style={{ background: "#f7efe3", color: INK }}
+        style={{ background: "var(--cream)", color: INK }}
       >
         <X size={18} />
       </button>
@@ -151,12 +151,12 @@ export default function ItemModal({
             className="max-w-full max-h-full object-contain"
           />
           {prevId && (
-            <button onClick={() => onNavigate(prevId)} aria-label="Previous image" className={`${arrowClass} left-3 cursor-pointer`} style={{ background: "#f7efe3", color: INK }}>
+            <button onClick={() => onNavigate(prevId)} aria-label="Previous image" className={`${arrowClass} left-3 cursor-pointer`} style={{ background: "var(--cream)", color: INK }}>
               <ChevronLeft size={20} />
             </button>
           )}
           {nextId && (
-            <button onClick={() => onNavigate(nextId)} aria-label="Next image" className={`${arrowClass} right-3 cursor-pointer`} style={{ background: "#f7efe3", color: INK }}>
+            <button onClick={() => onNavigate(nextId)} aria-label="Next image" className={`${arrowClass} right-3 cursor-pointer`} style={{ background: "var(--cream)", color: INK }}>
               <ChevronRight size={20} />
             </button>
           )}
@@ -215,7 +215,7 @@ export default function ItemModal({
               className="flex items-center justify-center gap-1.5 h-10 rounded-full text-sm font-semibold cursor-pointer transition-opacity hover:opacity-90"
               style={
                 isSelected
-                  ? { background: INK, color: "#f7efe3" }
+                  ? { background: INK, color: "var(--cream)" }
                   : { border: `1px solid ${INK}`, color: INK }
               }
             >
@@ -225,7 +225,7 @@ export default function ItemModal({
             <button
               onClick={handleBookNow}
               className="h-10 rounded-full text-sm font-semibold cursor-pointer transition-opacity hover:opacity-90"
-              style={{ background: INK, color: "#f7efe3" }}
+              style={{ background: INK, color: "var(--cream)" }}
             >
               Book
             </button>

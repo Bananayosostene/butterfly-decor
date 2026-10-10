@@ -2,7 +2,6 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { WeddingShopHero } from "@/components/butterfly-hero";
 import { DecorSection } from "@/components/decor-section";
-import { VisitTracker } from "@/components/visit-tracker";
 import { getButterflySlides, getCategoryTabs, getHomeSettings, getLatestBridalItems } from "@/lib/data";
 import { getVendorCategories } from "@/lib/vendors";
 import { RealWeddingSection } from "@/components/real-weddings-section";
@@ -34,7 +33,6 @@ export default async function Home() {
         <PlanningSection />
       </main>
       <Footer />
-      <VisitTracker />
     </>
   );
 }

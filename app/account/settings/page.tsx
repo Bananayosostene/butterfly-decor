@@ -13,7 +13,7 @@ export default async function AdminSettingsPage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <div className="bg-card border border-border rounded-xl p-6 space-y-6">
+      <div className="bg-card border border-border rounded-2xl p-6 space-y-6">
 
         <div>
           <h2 className="font-semibold text-foreground mb-2">Admin Account</h2>

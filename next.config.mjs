@@ -8,7 +8,11 @@ const nextConfig = {
   },
   // Items used to have their own page; old shared links now open the gallery popup instead.
   async redirects() {
-    return [{ source: "/collection/:id", destination: "/collection?item=:id", permanent: false }]
+    return [
+      { source: "/collection/:id", destination: "/collection?item=:id", permanent: false },
+      // The step-by-step courses were replaced by the planning sheet on one page.
+      { source: "/wedding-planning/:plan", destination: "/wedding-planning", permanent: false },
+    ]
   },
   images: {
     unoptimized: true,

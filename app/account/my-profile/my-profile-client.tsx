@@ -77,9 +77,9 @@ export default function MyProfileClient({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-2xl bg-card border border-border rounded-xl p-6 space-y-4">
+    <form onSubmit={handleSubmit} className="max-w-2xl bg-card border border-border rounded-2xl p-6 space-y-4">
       <p className="text-sm text-muted-foreground">This is what couples see on your public vendor page.</p>
-      {error && <p className="text-sm py-2 px-3 rounded-lg" style={{ background: "#fde8e8", color: "#991b1b" }}>{error}</p>}
+      {error && <p className="text-sm py-2 px-3 rounded-lg" style={{ background: "var(--dash-danger-bg)", color: "var(--dash-danger)" }}>{error}</p>}
 
       <div className="grid sm:grid-cols-2 gap-4">
         <label className="block">
@@ -123,10 +123,10 @@ export default function MyProfileClient({
       </div>
 
       <div className="flex items-center gap-3">
-        <button type="submit" disabled={saving || uploading} className="px-5 py-2 text-sm rounded-lg font-medium disabled:opacity-50" style={{ background: "#2b1807", color: "#e8d5b7" }}>
+        <button type="submit" disabled={saving || uploading} className="px-5 py-2 text-sm rounded-lg font-medium disabled:opacity-50" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
           {saving ? "Saving..." : "Save profile"}
         </button>
-        {saved && <span className="flex items-center gap-1 text-xs text-green-700"><Check className="w-3.5 h-3.5" /> Saved</span>}
+        {saved && <span className="flex items-center gap-1 text-xs dash-ok-text"><Check className="w-3.5 h-3.5" /> Saved</span>}
       </div>
     </form>
   );

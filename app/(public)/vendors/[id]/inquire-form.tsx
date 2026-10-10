@@ -3,8 +3,8 @@
 import type React from "react";
 import { useState } from "react";
 
-const INK = "#2b1807";
-const inputClass = "w-full px-3 py-2.5 text-sm bg-white outline-none focus:border-[#2b1807]";
+const INK = "var(--ink)";
+const inputClass = "w-full px-3 py-2.5 text-sm bg-white outline-none focus:border-[var(--ink)]";
 const inputStyle = { border: "1px solid #e8d5b7", color: INK };
 
 /**
@@ -53,7 +53,7 @@ export function InquireForm({ vendorName, whatsappNumber }: { vendorName: string
       <button
         type="submit"
         className="w-full py-3 rounded-full text-xs font-bold uppercase tracking-[0.15em] transition-opacity hover:opacity-90 cursor-pointer"
-        style={{ background: INK, color: "#f7efe3" }}
+        style={{ background: INK, color: "var(--cream)" }}
       >
         Send inquiry
       </button>

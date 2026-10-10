@@ -6,7 +6,7 @@ import { displaySerif } from "@/lib/fonts";
 
 type Category = { id: string; name: string };
 
-const INK = "#2b1807";
+const INK = "var(--ink)";
 const inputClass =
   "w-full px-3.5 py-2.5 rounded-lg text-sm bg-background text-foreground border border-border outline-none focus:border-primary";
 
@@ -74,7 +74,7 @@ export default function WelcomeClient({ name, categories }: { name: string; cate
     <div className="min-h-[80vh] px-4 py-12" style={{ background: "#fbf7f2" }}>
       <form onSubmit={handleSubmit} className="max-w-md mx-auto">
         <p className="text-xs font-semibold uppercase tracking-[0.22em]" style={{ color: "#835105" }}>One last step</p>
-        <h1 className={`${displaySerif.className} mt-2 text-4xl`} style={{ color: INK }}>
+        <h1 className={`${displaySerif.className} mt-2 text-2xl md:text-3xl`} style={{ color: INK }}>
           Welcome, {name}
         </h1>
 
@@ -147,7 +147,7 @@ export default function WelcomeClient({ name, categories }: { name: string; cate
             type="submit"
             disabled={saving || isVendor === null || (step === 2 && noCategories)}
             className="flex-1 py-3 rounded-full text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
-            style={{ background: INK, color: "#f7efe3" }}
+            style={{ background: INK, color: "var(--cream)" }}
           >
             {saving ? "Saving…" : step === 1 ? "Next" : "Complete signup"}
           </button>

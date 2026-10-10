@@ -99,7 +99,7 @@ export function CategoryImagesManager({
                     <ChevronDown className="w-4 h-4" />
                   </button>
                 </div>
-                <button onClick={() => handleDelete(img.id)} className="text-red-600 hover:text-red-700">
+                <button onClick={() => handleDelete(img.id)} className="dash-danger-text">
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
@@ -108,7 +108,7 @@ export function CategoryImagesManager({
         )}
 
         <div className="flex justify-end pt-2">
-          <button onClick={onClose} className="px-4 py-2 text-sm rounded-lg font-medium" style={{ background: "#2b1807", color: "#e8d5b7" }}>
+          <button onClick={onClose} className="px-4 py-2 text-sm rounded-lg font-medium" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
             Done
           </button>
         </div>

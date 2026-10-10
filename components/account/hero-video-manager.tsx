@@ -70,18 +70,18 @@ export function HeroVideoManager({ initialVideoUrl }: { initialVideoUrl: string 
         <p className="text-xs text-muted-foreground italic">Using the default bundled video — no custom upload yet.</p>
       )}
 
-      <label className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium cursor-pointer disabled:opacity-50" style={{ background: "#2b1807", color: "#e8d5b7" }}>
+      <label className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium cursor-pointer disabled:opacity-50" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
         <Upload className="w-4 h-4" />
         {uploading ? "Uploading..." : "Upload new video"}
         <input type="file" accept="video/mp4,video/webm,video/quicktime" className="hidden" onChange={handleUpload} disabled={uploading} />
       </label>
 
       {saved && (
-        <p className="flex items-center gap-1 text-xs text-green-700">
+        <p className="flex items-center gap-1 text-xs dash-ok-text">
           <Check className="w-3.5 h-3.5" /> Saved — live on the homepage now.
         </p>
       )}
-      {error && <p className="text-xs text-red-600">{error}</p>}
+      {error && <p className="text-xs dash-danger-text">{error}</p>}
       <p className="text-xs text-muted-foreground">Max 60MB. MP4 recommended, keep it under ~15 seconds for a smooth loop.</p>
     </div>
   );

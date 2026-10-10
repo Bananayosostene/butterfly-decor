@@ -86,7 +86,7 @@ export function WeddingShopHero({ videoSrc }: { videoSrc: string }) {
             Where beauty meets beauty.
           </p>
           <h1
-            className={`${displaySerif.className} -mt-2 text-2xl md:text-4xl leading-[1.05] max-w-xl`}
+            className={`${displaySerif.className} -mt-2 text-3xl md:text-4xl leading-[1.05] max-w-xl`}
             style={{
               color: heading,
               fontWeight: 500,
@@ -100,7 +100,7 @@ export function WeddingShopHero({ videoSrc }: { videoSrc: string }) {
           <form
             action="/wedding-planning"
             className="mt-2 w-full max-w-lg flex items-center gap-2 p-1.5 pl-5 rounded-full shadow-lg"
-            style={{ background: "#f7efe3" }}
+            style={{ background: "var(--cream)" }}
           >
             {/* Native date field: the browser keeps the mm/dd/yyyy segments and rejects impossible
                 values (month above 12, day above the month's length). Clicking the text only lets
@@ -119,12 +119,11 @@ export function WeddingShopHero({ videoSrc }: { videoSrc: string }) {
                 if (!e.currentTarget.value) e.currentTarget.type = "text";
               }}
               className="min-w-0 flex-1 bg-transparent text-sm md:text-base outline-none py-2"
-              style={{ color: "#2b1807" }}
+              style={{ color: "var(--ink)" }}
             />
             <button
               type="submit"
-              className="shrink-0 px-5 md:px-7 py-3 rounded-full text-xs md:text-sm font-bold uppercase tracking-[0.12em] transition-opacity hover:opacity-90 cursor-pointer"
-              style={{ background: "#2b1807", color: "#f7efe3" }}
+              className="shrink-0 px-5 md:px-7 py-3 rounded-full text-xs md:text-sm font-bold uppercase tracking-[0.12em] transition-opacity hover:opacity-90 cursor-pointer bg-ink text-cream"
             >
               Start planning
             </button>

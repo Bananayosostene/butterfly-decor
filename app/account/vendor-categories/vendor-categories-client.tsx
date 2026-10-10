@@ -53,7 +53,7 @@ export default function VendorCategoriesClient({ categories }: { categories: Ven
         <p className="text-sm text-muted-foreground">
           {categories.length} vendor categor{categories.length === 1 ? "y" : "ies"} — vendors pick one of these when they sign up.
         </p>
-        <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "#2b1807", color: "#e8d5b7" }}>
+        <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
           <Plus className="w-4 h-4" /> Add Vendor Category
         </button>
       </div>
@@ -63,7 +63,7 @@ export default function VendorCategoriesClient({ categories }: { categories: Ven
       ) : categories.length === 0 ? (
         <p className="text-muted-foreground text-sm">No vendor categories yet. Add one so vendors can sign up.</p>
       ) : (
-        <div className="bg-card border border-border rounded-xl overflow-hidden overflow-x-auto">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden overflow-x-auto">
           <table className="w-full text-sm min-w-[480px]">
             <thead className="bg-muted">
               <tr>
@@ -87,7 +87,7 @@ export default function VendorCategoriesClient({ categories }: { categories: Ven
                       <button onClick={() => openEdit(c)} aria-label="Edit" className="text-xs px-2.5 py-1.5 rounded-lg border border-border text-foreground hover:bg-muted">
                         <Pencil className="w-3 h-3" />
                       </button>
-                      <button onClick={() => handleDelete(c)} aria-label="Delete" className="text-xs px-2.5 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50">
+                      <button onClick={() => handleDelete(c)} aria-label="Delete" className="text-xs px-2.5 py-1.5 rounded-lg border dash-danger-btn">
                         <Trash2 className="w-3 h-3" />
                       </button>
                     </div>
@@ -106,7 +106,7 @@ export default function VendorCategoriesClient({ categories }: { categories: Ven
               <h2 className="font-semibold text-foreground">{modal.editing ? "Edit Vendor Category" : "Add Vendor Category"}</h2>
               <button onClick={closeModal}><X className="w-4 h-4 text-muted-foreground" /></button>
             </div>
-            {error && <p className="text-sm py-2 px-3 rounded-lg" style={{ background: "#fde8e8", color: "#991b1b" }}>{error}</p>}
+            {error && <p className="text-sm py-2 px-3 rounded-lg" style={{ background: "var(--dash-danger-bg)", color: "var(--dash-danger)" }}>{error}</p>}
             <input
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
@@ -127,7 +127,7 @@ export default function VendorCategoriesClient({ categories }: { categories: Ven
                       aria-pressed={selected}
                       onClick={() => setForm((f) => ({ ...f, icon: selected ? "" : ic.file }))}
                       className="aspect-square rounded-full flex items-center justify-center transition-all"
-                      style={{ border: selected ? "2px solid #2b1807" : "1px solid var(--border)", background: selected ? "#fdf6ee" : "transparent" }}
+                      style={{ border: selected ? "2px solid var(--primary)" : "1px solid var(--border)", background: selected ? "var(--dash-soft)" : "transparent" }}
                     >
                       <img src={`/${ic.file}`} alt="" className="w-3/4 h-3/4 object-contain" />
                     </button>
@@ -137,7 +137,7 @@ export default function VendorCategoriesClient({ categories }: { categories: Ven
             </div>
             <div className="flex gap-2 justify-end">
               <button onClick={closeModal} className="px-4 py-2 text-sm rounded-lg border border-border text-foreground">Cancel</button>
-              <button onClick={handleSave} disabled={saving || !form.name.trim()} className="px-4 py-2 text-sm rounded-lg font-medium disabled:opacity-50" style={{ background: "#2b1807", color: "#e8d5b7" }}>
+              <button onClick={handleSave} disabled={saving || !form.name.trim()} className="px-4 py-2 text-sm rounded-lg font-medium disabled:opacity-50" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
                 {saving ? "Saving..." : "Save"}
               </button>
             </div>

@@ -14,7 +14,7 @@ export type ButterflySlide = { id: string; title: string; leftImageUrl: string; 
 type VendorCategory = { id: string; name: string; icon: string | null };
 type CollectionCategory = { id: string; name: string };
 
-const CHOCOLATE = "#2b1807";
+const CHOCOLATE = "var(--ink)";
 const BORDER = "#e8d5b7";
 const GOLD = "#835105";
 
@@ -90,7 +90,7 @@ export function VendorsSection({
               router.push(destination);
             }}
             className="mt-6 max-w-lg flex items-center gap-2 p-1.5 pl-5 rounded-full shadow-md"
-            style={{ background: "#f7efe3" }}
+            style={{ background: "var(--cream)" }}
           >
             <ListFilter size={18} strokeWidth={1.75} className="shrink-0" style={{ color: CHOCOLATE }} aria-hidden />
             <div className="relative min-w-0 flex-1">
@@ -120,7 +120,7 @@ export function VendorsSection({
             <button
               type="submit"
               className="shrink-0 flex items-center gap-2 px-5 md:px-7 py-3 rounded-full text-xs md:text-sm font-bold uppercase tracking-[0.12em] transition-opacity hover:opacity-90 cursor-pointer"
-              style={{ background: CHOCOLATE, color: "#f7efe3" }}
+              style={{ background: CHOCOLATE, color: "var(--cream)" }}
             >
               <Search size={14} /> Search
             </button>
@@ -142,7 +142,7 @@ export function VendorsSection({
           <Link
             href="/vendors"
             className="group mt-6 inline-flex items-center gap-3 px-7 py-3 rounded-full text-xs md:text-sm font-bold uppercase tracking-[0.15em] transition-opacity hover:opacity-90"
-            style={{ background: CHOCOLATE, color: "#f7efe3" }}
+            style={{ background: CHOCOLATE, color: "var(--cream)" }}
           >
             <ListFilter size={18} strokeWidth={2} className="shrink-0" aria-hidden />
             See all vendors

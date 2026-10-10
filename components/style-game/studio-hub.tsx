@@ -56,7 +56,7 @@ export function StudioHub() {
     <section className="w-full min-h-[calc(100vh-64px)] px-4 py-10 sm:py-14" style={{ background: "linear-gradient(160deg, #F5F5F7 0%, #efe6d8 100%)" }}>
       <div className="max-w-4xl mx-auto flex flex-col items-center text-center gap-3 mb-10">
         <span className="text-3xl">🦋</span>
-        <h1 className="text-3xl sm:text-4xl font-playball" style={{ color: CHOCOLATE }}>Butterfly Style Studio</h1>
+        <h1 className="text-2xl md:text-3xl font-playball" style={{ color: CHOCOLATE }}>Butterfly Style Studio</h1>
         <p className="text-sm sm:text-base max-w-lg" style={{ color: "rgba(43,24,7,0.75)" }}>
           Two ways to test your eye for color and design. Every choice is scored by real
           color-theory — no fake answers, no two rounds the same.

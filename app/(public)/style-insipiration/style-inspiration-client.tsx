@@ -48,7 +48,7 @@ export default function StyleInspirationClient({
       {/* Header */}
       <div className="text-center px-6 pt-8 pb-4">
         <h1
-          className="text-3xl md:text-4xl mb-2"
+          className="text-2xl md:text-3xl mb-2"
           style={{ fontFamily: "'Playball', cursive", color: "var(--primary)" }}
         >
           Outfit Ideas

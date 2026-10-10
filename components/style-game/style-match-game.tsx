@@ -276,7 +276,7 @@ function IntroPanel({ bestScore, onStart }: { bestScore: number; onStart: () => 
       <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: CHOCOLATE }}>
         <Gamepad2 className="w-8 h-8" style={{ color: CREAM }} />
       </div>
-      <h1 className="text-3xl sm:text-4xl font-playball" style={{ color: CHOCOLATE }}>
+      <h1 className="text-2xl md:text-3xl font-playball" style={{ color: CHOCOLATE }}>
         Style Match
       </h1>
       <p className="text-sm sm:text-base leading-relaxed max-w-md" style={{ color: "rgba(43,24,7,0.75)" }}>
@@ -335,7 +335,7 @@ function ChapterIntroPanel({
       <p className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: GOLD }}>
         Chapter {chapterNumber} of 3 · Round {roundIndex + 1} of {TOTAL_ROUNDS}
       </p>
-      <h2 className="text-2xl sm:text-3xl font-playball" style={{ color: CHOCOLATE }}>
+      <h2 className="text-2xl md:text-3xl font-playball" style={{ color: CHOCOLATE }}>
         {chapter.title}
       </h2>
       <p className="text-sm max-w-xs" style={{ color: "rgba(43,24,7,0.7)" }}>
@@ -513,7 +513,7 @@ function GameOverPanel({
           ✨ New personal best!
         </span>
       )}
-      <h2 className="text-2xl sm:text-3xl font-playball" style={{ color: CHOCOLATE }}>{rank}</h2>
+      <h2 className="text-2xl md:text-3xl font-playball" style={{ color: CHOCOLATE }}>{rank}</h2>
       <div className="flex items-center gap-6">
         <div>
           <p className="text-2xl font-bold" style={{ color: CHOCOLATE }}>{score}</p>

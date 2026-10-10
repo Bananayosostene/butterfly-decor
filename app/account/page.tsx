@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
+import { BookOpen, CalendarDays, Clock, FolderOpen, Images, Shirt, Sun, Users } from "lucide-react";
+import { StatCard } from "@/components/account/stat-card";
 
 export default async function AdminDashboard() {
   const cookieStore = await cookies();
@@ -31,17 +33,17 @@ export default async function AdminDashboard() {
   ]);
 
   const stats = [
-    { label: "Categories", value: totalCategories, href: "/account/categories", color: "#3d230c" },
-    { label: "Collection Items", value: totalItems, href: "/account/collection-items", color: "#2b1807" },
-    { label: "Style Ideas", value: totalStyleIdeas, href: "/account/style-ideas", color: "#57422C" },
-    { label: "Total Bookings", value: totalBookings, href: "/account/bookings", color: "#835105" },
+    { label: "Categories", value: totalCategories, href: "/account/categories", icon: FolderOpen },
+    { label: "Collection Items", value: totalItems, href: "/account/collection-items", icon: Images },
+    { label: "Style Ideas", value: totalStyleIdeas, href: "/account/style-ideas", icon: Shirt },
+    { label: "Total Bookings", value: totalBookings, href: "/account/bookings", icon: BookOpen },
   ];
 
   const visitorStats = [
-    { label: "This Hour", value: visitorsThisHour },
-    { label: "Today", value: visitorsToday },
-    { label: "This Month", value: visitorsThisMonth },
-    { label: "All Time", value: totalVisitors },
+    { label: "This Hour", value: visitorsThisHour, icon: Clock },
+    { label: "Today", value: visitorsToday, icon: Sun },
+    { label: "This Month", value: visitorsThisMonth, icon: CalendarDays },
+    { label: "All Time", value: totalVisitors, icon: Users },
   ];
 
   return (
@@ -51,10 +53,7 @@ export default async function AdminDashboard() {
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Content</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {stats.map((s) => (
-            <Link key={s.label} href={s.href} className="p-5 bg-card border border-border rounded-xl hover:shadow-md transition-shadow">
-              <p className="text-xs text-muted-foreground mb-1">{s.label}</p>
-              <p className="text-3xl font-bold" style={{ color: s.color }}>{s.value}</p>
-            </Link>
+            <StatCard key={s.label} label={s.label} value={s.value} icon={s.icon} href={s.href} />
           ))}
         </div>
       </div>
@@ -64,21 +63,18 @@ export default async function AdminDashboard() {
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Visitors</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {visitorStats.map((s) => (
-            <div key={s.label} className="p-5 bg-card border border-border rounded-xl">
-              <p className="text-xs text-muted-foreground mb-1">{s.label}</p>
-              <p className="text-3xl font-bold text-foreground">{s.value}</p>
-            </div>
+            <StatCard key={s.label} label={s.label} value={s.value} icon={s.icon} />
           ))}
         </div>
       </div>
 
       {/* New Bookings Alert */}
       {newBookings > 0 && (
-        <div className="p-4 rounded-xl border flex items-center justify-between" style={{ background: "#fdf6ee", borderColor: "#57422C" }}>
-          <p className="text-sm font-medium" style={{ color: "#2b1807" }}>
+        <div className="p-4 rounded-2xl border flex items-center justify-between" style={{ background: "var(--dash-soft)", borderColor: "var(--border)" }}>
+          <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>
             You have <strong>{newBookings}</strong> new booking{newBookings > 1 ? "s" : ""} waiting for review.
           </p>
-          <Link href="/account/bookings" className="text-xs font-semibold px-4 py-2 rounded-full" style={{ background: "#2b1807", color: "#e8d5b7" }}>
+          <Link href="/account/bookings" className="text-xs font-semibold px-4 py-2 rounded-full" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
             View
           </Link>
         </div>
@@ -87,7 +83,7 @@ export default async function AdminDashboard() {
       {/* Recent Bookings */}
       <div>
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Recent Bookings</h2>
-        <div className="bg-card border border-border rounded-xl overflow-hidden">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden">
           {recentBookings.length === 0 ? (
             <p className="p-6 text-muted-foreground text-sm">No bookings yet.</p>
           ) : (
@@ -106,12 +102,12 @@ export default async function AdminDashboard() {
                     <td className="px-4 py-3 text-foreground">{b.phone}</td>
                     <td className="px-4 py-3 text-muted-foreground">{new Date(b.eventDate).toLocaleDateString()}</td>
                     <td className="px-4 py-3">
-                      <span className="px-2 py-0.5 rounded-full text-xs font-medium" style={{ background: b.status === "NEW" ? "#fdf6ee" : "#f0fdf4", color: b.status === "NEW" ? "#835105" : "#166534" }}>
+                      <span className="px-2 py-0.5 rounded-full text-xs font-medium" style={{ background: b.status === "NEW" ? "var(--dash-soft)" : "var(--dash-ok-bg)", color: b.status === "NEW" ? "var(--dash-accent)" : "var(--dash-ok)" }}>
                         {b.status}
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <Link href={`/account/bookings/${b.id}`} className="text-xs font-medium" style={{ color: "#3d230c" }}>View</Link>
+                      <Link href={`/account/bookings/${b.id}`} className="text-xs font-medium" style={{ color: "var(--dash-accent)" }}>View</Link>
                     </td>
                   </tr>
                 ))}

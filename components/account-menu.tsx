@@ -77,7 +77,7 @@ export function AccountMenu() {
         aria-label="Account menu"
         aria-expanded={open}
         className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center text-sm font-bold uppercase cursor-pointer transition-transform hover:scale-105"
-        style={{ background: "#f7efe3", color: "#2b1807", boxShadow: "0 0 0 2px rgba(247,239,227,0.35)" }}
+        style={{ background: "var(--cream)", color: "var(--ink)", boxShadow: "0 0 0 2px rgba(247,239,227,0.35)" }}
       >
         {account.avatarUrl && !photoFailed ? (
           // Google's image host refuses requests that carry a referrer from another site.
@@ -100,7 +100,7 @@ export function AccountMenu() {
           style={{ background: "#ffffff", border: "1px solid #e8d5b7" }}
         >
           <div className="px-5 py-4 border-b" style={{ borderColor: "#f0e6d6" }}>
-            <p className="text-sm font-bold truncate" style={{ color: "#2b1807" }}>{account.name}</p>
+            <p className="text-sm font-bold truncate" style={{ color: "var(--ink)" }}>{account.name}</p>
             <p className="text-xs truncate" style={{ color: "#57422C" }}>{account.email}</p>
           </div>
           <div className="py-2">
@@ -109,7 +109,7 @@ export function AccountMenu() {
                 href={dashboard.href}
                 role="menuitem"
                 className="flex items-center gap-3 px-5 py-2.5 text-sm font-medium hover:bg-[#fbf7f2]"
-                style={{ color: "#2b1807" }}
+                style={{ color: "var(--ink)" }}
               >
                 <LayoutDashboard size={17} style={{ color: "#a0566c" }} />
                 {dashboard.label}

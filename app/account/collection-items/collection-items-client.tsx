@@ -118,19 +118,19 @@ export default function CollectionItemsClient({
             <button
               onClick={() => setView("table")}
               className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors"
-              style={view === "table" ? { background: "#2b1807", color: "#e8d5b7" } : { color: "var(--muted-foreground)" }}
+              style={view === "table" ? { background: "var(--primary)", color: "var(--primary-foreground)" } : { color: "var(--muted-foreground)" }}
             >
               <TableIcon className="w-3.5 h-3.5" /> Table
             </button>
             <button
               onClick={() => setView("cards")}
               className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors border-l border-border"
-              style={view === "cards" ? { background: "#2b1807", color: "#e8d5b7" } : { color: "var(--muted-foreground)" }}
+              style={view === "cards" ? { background: "var(--primary)", color: "var(--primary-foreground)" } : { color: "var(--muted-foreground)" }}
             >
               <LayoutGrid className="w-3.5 h-3.5" /> Cards
             </button>
           </div>
-          <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "#2b1807", color: "#e8d5b7" }}>
+          <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
             <Plus className="w-4 h-4" /> Add Item
           </button>
         </div>
@@ -141,7 +141,7 @@ export default function CollectionItemsClient({
       ) : items.length === 0 ? (
         <p className="text-muted-foreground text-sm">No items yet.</p>
       ) : view === "table" ? (
-        <div className="bg-card border border-border rounded-xl overflow-hidden overflow-x-auto">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden overflow-x-auto">
           <table className="w-full text-sm min-w-[640px]">
             <thead className="bg-muted">
               <tr>
@@ -168,7 +168,7 @@ export default function CollectionItemsClient({
                       <button onClick={() => openEdit(item)} className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg border border-border text-foreground hover:bg-muted">
                         <Pencil className="w-3 h-3" />
                       </button>
-                      <button onClick={() => handleDelete(item.id)} className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50">
+                      <button onClick={() => handleDelete(item.id)} className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg border dash-danger-btn">
                         <Trash2 className="w-3 h-3" />
                       </button>
                     </div>
@@ -181,7 +181,7 @@ export default function CollectionItemsClient({
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {items.map((item) => (
-            <div key={item.id} className="bg-card border border-border rounded-xl overflow-hidden">
+            <div key={item.id} className="bg-card border border-border rounded-2xl overflow-hidden">
               <div className="relative h-36 w-full">
                 <Image src={cldImage(item.imageUrl, 500)} alt={item.name} fill className="object-cover" />
               </div>
@@ -195,7 +195,7 @@ export default function CollectionItemsClient({
                   <button onClick={() => openEdit(item)} className="flex items-center gap-1 text-xs px-2 py-1 rounded border border-border text-foreground hover:bg-muted">
                     <Pencil className="w-3 h-3" />
                   </button>
-                  <button onClick={() => handleDelete(item.id)} className="flex items-center gap-1 text-xs px-2 py-1 rounded border border-red-200 text-red-600 hover:bg-red-50">
+                  <button onClick={() => handleDelete(item.id)} className="flex items-center gap-1 text-xs px-2 py-1 rounded border dash-danger-btn">
                     <Trash2 className="w-3 h-3" />
                   </button>
                 </div>
@@ -230,7 +230,7 @@ export default function CollectionItemsClient({
             </div>
             <div className="flex gap-2 justify-end">
               <button onClick={closeModal} className="px-4 py-2 text-sm rounded-lg border border-border text-foreground">Cancel</button>
-              <button onClick={handleSave} disabled={saving || uploading} className="px-4 py-2 text-sm rounded-lg font-medium disabled:opacity-50" style={{ background: "#2b1807", color: "#e8d5b7" }}>
+              <button onClick={handleSave} disabled={saving || uploading} className="px-4 py-2 text-sm rounded-lg font-medium disabled:opacity-50" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
                 {saving ? "Saving..." : "Save"}
               </button>
             </div>

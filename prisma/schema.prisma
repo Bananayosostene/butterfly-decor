@@ -108,6 +108,31 @@ model DeviceVisit {
   device    String?
   browser   String?
   os        String?
+  browserVersion String?
+  osVersion      String?
+  /// Phone or tablet model when the browser reveals it.
+  model          String?
+  // Where the visitor is, from the hosting platform's headers (production only).
+  country        String?
+  region         String?
+  city           String?
+  timezone       String?
+  language       String?
+  /// Screen size, e.g. "390x844".
+  screen         String?
+  /// Network quality reported by the browser, e.g. "4g".
+  connection     String?
+  /// The site they came from (empty when they typed the address or used a bookmark).
+  referrer       String?
+  /// First page they opened.
+  landingPage    String?
+  // Filled when the visitor is signed in.
+  userName       String?
+  userEmail      String?
+  pageViews      Int?
+  /// Time with the site actually on screen.
+  durationSeconds Int?
+  lastSeenAt     DateTime?
   createdAt DateTime @default(now())
 
   @@index([createdAt])
@@ -202,4 +227,47 @@ model ButterflySlide {
   leftImageUrl  String
   rightImageUrl String
   createdAt     DateTime @default(now())
+}
+
+type PlanningColumn {
+  id    String
+  label String
+  /// Short columns hold a number (e.g. "Umubare"); the others hold free text.
+  short Boolean @default(false)
+}
+
+type PlanningRow {
+  id       String
+  label    String
+  /// Optional photo shown beside the record once this person/item is chosen.
+  imageUrl String?
+}
+
+/// One part of the wedding planning sheet. There are two: Introduction and Reception.
+model PlanningSection {
+  id        String           @id @default(auto()) @map("_id") @db.ObjectId
+  /// "GUSABA" or "RECEPTION"
+  key       String           @unique
+  title     String
+  /// Heading of the column where the customer picks a person or item.
+  rowsLabel String
+  columns   PlanningColumn[]
+  rows      PlanningRow[]
+  updatedAt DateTime         @updatedAt
+}
+
+/// What one customer wrote in their planning sheet.
+model PlanningSheet {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @unique @db.ObjectId
+  /// yyyy-mm-dd
+  weddingDate String?
+  /// { GUSABA: [...], RECEPTION: [...] }: the records the customer added (see SheetEntry in
+  /// lib/planning-sheet.ts). The admin writes each record's price in the same list.
+  entries     Json?
+  /// Set when the customer sends the list to the business; the dashboard lists those.
+  submittedAt DateTime?
+  updatedAt   DateTime @updatedAt
+
+  @@index([submittedAt])
 }

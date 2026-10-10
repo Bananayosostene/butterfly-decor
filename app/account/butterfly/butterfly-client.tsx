@@ -108,17 +108,17 @@ export default function ButterflyClient({ slides, canImport }: { slides: Slide[]
           {slides.length} slide{slides.length === 1 ? "" : "s"} in the homepage butterfly animation. Each slide has a left and a
           right photo (the two wings) and a title shown under them. Tall photos work best.
         </p>
-        <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "#2b1807", color: "#e8d5b7" }}>
+        <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
           <Plus className="w-4 h-4" /> Add Slide
         </button>
       </div>
 
       {canImport && (
-        <div className="p-4 rounded-xl border flex flex-wrap items-center justify-between gap-3" style={{ background: "#fdf6ee", borderColor: "#57422C" }}>
-          <p className="text-sm" style={{ color: "#2b1807" }}>
+        <div className="p-4 rounded-xl border flex flex-wrap items-center justify-between gap-3" style={{ background: "var(--dash-soft)", borderColor: "var(--border)" }}>
+          <p className="text-sm" style={{ color: "var(--foreground)" }}>
             The animation used to take its photos from your collection categories. Copy them here to start with the same slides.
           </p>
-          <button onClick={handleImport} disabled={saving} className="text-xs font-semibold px-4 py-2 rounded-full disabled:opacity-50" style={{ background: "#2b1807", color: "#e8d5b7" }}>
+          <button onClick={handleImport} disabled={saving} className="text-xs font-semibold px-4 py-2 rounded-full disabled:opacity-50" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
             {saving ? "Copying..." : "Copy photos from categories"}
           </button>
         </div>
@@ -129,7 +129,7 @@ export default function ButterflyClient({ slides, canImport }: { slides: Slide[]
       ) : (
         <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 ${loading ? "opacity-60" : ""}`}>
           {slides.map((slide) => (
-            <div key={slide.id} className="bg-card border border-border rounded-xl p-4">
+            <div key={slide.id} className="bg-card border border-border rounded-2xl p-4">
               <div className="flex justify-center gap-1">
                 <img src={cldImage(slide.leftImageUrl, 300)} alt={`${slide.title} (left)`} loading="lazy" className="w-24 h-36 object-cover rounded-md -rotate-2 shadow" />
                 <img src={cldImage(slide.rightImageUrl, 300)} alt={`${slide.title} (right)`} loading="lazy" className="w-24 h-36 object-cover rounded-md rotate-2 shadow" />
@@ -139,7 +139,7 @@ export default function ButterflyClient({ slides, canImport }: { slides: Slide[]
                 <button onClick={() => openEdit(slide)} aria-label="Edit" className="text-xs px-2.5 py-1.5 rounded-lg border border-border text-foreground hover:bg-muted">
                   <Pencil className="w-3 h-3" />
                 </button>
-                <button onClick={() => handleDelete(slide)} aria-label="Delete" className="text-xs px-2.5 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50">
+                <button onClick={() => handleDelete(slide)} aria-label="Delete" className="text-xs px-2.5 py-1.5 rounded-lg border dash-danger-btn">
                   <Trash2 className="w-3 h-3" />
                 </button>
               </div>
@@ -155,7 +155,7 @@ export default function ButterflyClient({ slides, canImport }: { slides: Slide[]
               <h2 className="font-semibold text-foreground">{modal.editing ? "Edit Slide" : "Add Slide"}</h2>
               <button onClick={closeModal}><X className="w-4 h-4 text-muted-foreground" /></button>
             </div>
-            {error && <p className="text-sm py-2 px-3 rounded-lg" style={{ background: "#fde8e8", color: "#991b1b" }}>{error}</p>}
+            {error && <p className="text-sm py-2 px-3 rounded-lg" style={{ background: "var(--dash-danger-bg)", color: "var(--dash-danger)" }}>{error}</p>}
             <input
               value={form.title}
               onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
@@ -169,7 +169,7 @@ export default function ButterflyClient({ slides, canImport }: { slides: Slide[]
             </div>
             <div className="flex gap-2 justify-end">
               <button onClick={closeModal} className="px-4 py-2 text-sm rounded-lg border border-border text-foreground">Cancel</button>
-              <button onClick={handleSave} disabled={saving || uploading !== null || !ready} className="px-4 py-2 text-sm rounded-lg font-medium disabled:opacity-50" style={{ background: "#2b1807", color: "#e8d5b7" }}>
+              <button onClick={handleSave} disabled={saving || uploading !== null || !ready} className="px-4 py-2 text-sm rounded-lg font-medium disabled:opacity-50" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
                 {saving ? "Saving..." : "Save"}
               </button>
             </div>

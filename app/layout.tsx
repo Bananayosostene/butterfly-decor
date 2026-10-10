@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { ModalProvider } from "@/components/modal-provider";
 import { JsonLd } from "@/components/json-ld";
+import { VisitTracker } from "@/components/visit-tracker";
 import "./globals.css";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://www.butterflydec.com";
@@ -559,6 +560,7 @@ export default function RootLayout({
         {children}
         <JsonLd />
         <ModalProvider />
+        <VisitTracker />
         <Analytics />
       </body>
     </html>

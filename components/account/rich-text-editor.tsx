@@ -34,8 +34,8 @@ function ToolbarButton({
       disabled={disabled}
       className="p-1.5 rounded-md transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
       style={{
-        background: active ? "#2b1807" : "transparent",
-        color: active ? "#e8d5b7" : "var(--foreground)",
+        background: active ? "var(--primary)" : "transparent",
+        color: active ? "var(--primary-foreground)" : "var(--foreground)",
       }}
       onMouseDown={(e) => e.preventDefault()}
     >

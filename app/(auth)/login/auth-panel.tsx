@@ -63,11 +63,11 @@ export default function AuthPanel({
   return (
     <div
       className="w-full max-w-md mx-auto rounded-2xl px-6 py-5 md:px-8 md:py-6 shadow-xl border-t-4"
-      style={{ background: "rgba(253,250,246,0.94)", borderTopColor: "#2b1807", backdropFilter: "blur(6px)" }}
+      style={{ background: "rgba(253,250,246,0.94)", borderTopColor: "var(--ink)", backdropFilter: "blur(6px)" }}
     >
       <div className="text-center">
-        <p className={`${displaySerif.className} text-base`} style={{ color: "#2b1807" }}>Butterfly Decor</p>
-        <h1 className={`${displaySerif.className} mt-1.5 text-3xl md:text-2xl leading-tight`} style={{ color: "#2b1807" }}>
+        <p className={`${displaySerif.className} text-base`} style={{ color: "var(--ink)" }}>Butterfly Decor</p>
+        <h1 className={`${displaySerif.className} mt-1.5 text-2xl md:text-3xl leading-tight`} style={{ color: "var(--ink)" }}>
           {mode === "login" ? "Welcome back" : "Create your account"}
         </h1>
   
@@ -138,7 +138,7 @@ export default function AuthPanel({
           type="submit"
           disabled={loading}
           className="w-full py-3 rounded-full text-xs font-bold uppercase tracking-[0.15em] transition-opacity hover:opacity-90 disabled:opacity-60 cursor-pointer"
-          style={{ background: "#2b1807", color: "#f7efe3" }}
+          style={{ background: "var(--ink)", color: "var(--cream)" }}
         >
           {loading ? "Please wait…" : mode === "register" ? "Create my account" : "Sign in"}
         </button>
@@ -150,7 +150,7 @@ export default function AuthPanel({
           type="button"
           onClick={() => switchMode(mode === "login" ? "register" : "login")}
           className="font-semibold underline underline-offset-4 cursor-pointer"
-          style={{ color: "#2b1807" }}
+          style={{ color: "var(--ink)" }}
         >
           {mode === "login" ? "Create an account" : "Sign in"}
         </button>

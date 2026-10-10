@@ -1,12 +1,16 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/db";
+import { BookOpen, CalendarDays, FolderOpen, Users } from "lucide-react";
 import { StatBarChart, StatTrendChart } from "@/components/account/stat-bar-chart";
+import { StatCard } from "@/components/account/stat-card";
 
 // Validated categorical palette (fixed order — identity encoding, e.g. device/browser breakdowns).
 const CATEGORICAL = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4"];
 // Single-hue magnitude color (bookings trend, category item counts).
-const GOLD = "#a97d3c";
+// Follows the dashboard theme, so it stays readable in dark and light mode.
+const GOLD = "var(--dash-accent)";
 
 const DEVICES = ["Desktop", "Mobile", "Tablet"] as const;
 const BROWSERS = ["Chrome", "Firefox", "Safari", "Edge", "Unknown"] as const;
@@ -51,41 +55,32 @@ export default async function StatisticsPage() {
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 bg-card border border-border rounded-xl">
-          <p className="text-xs text-muted-foreground mb-1">Bookings (14d)</p>
-          <p className="text-3xl font-bold" style={{ color: "#2b1807" }}>{bookingsLast14}</p>
-        </div>
-        <div className="p-5 bg-card border border-border rounded-xl">
-          <p className="text-xs text-muted-foreground mb-1">All-Time Bookings</p>
-          <p className="text-3xl font-bold" style={{ color: "#2b1807" }}>{totalBookingsAll}</p>
-        </div>
-        <div className="p-5 bg-card border border-border rounded-xl">
-          <p className="text-xs text-muted-foreground mb-1">All-Time Visitors</p>
-          <p className="text-3xl font-bold" style={{ color: "#2b1807" }}>{totalVisitorsAll}</p>
-        </div>
-        <div className="p-5 bg-card border border-border rounded-xl">
-          <p className="text-xs text-muted-foreground mb-1">Categories</p>
-          <p className="text-3xl font-bold" style={{ color: "#2b1807" }}>{categories.length}</p>
-        </div>
+        <StatCard label="Bookings (14d)" value={bookingsLast14} icon={CalendarDays} />
+        <StatCard label="All-Time Bookings" value={totalBookingsAll} icon={BookOpen} />
+        <StatCard label="All-Time Visitors" value={totalVisitorsAll} icon={Users} />
+        <StatCard label="Categories" value={categories.length} icon={FolderOpen} />
       </div>
 
-      <div className="bg-card border border-border rounded-xl p-6">
+      <div className="bg-card border border-border rounded-2xl p-6">
         <h2 className="text-sm font-semibold text-foreground mb-4">Bookings — Last 14 Days</h2>
         <StatTrendChart points={trendPoints} color={GOLD} />
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-card border border-border rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-foreground mb-4">Visitors by Device</h2>
+        <div className="bg-card border border-border rounded-2xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-foreground">Visitors by Device</h2>
+            <Link href="/account/visitors" className="text-xs font-medium" style={{ color: "var(--dash-accent)" }}>See every visitor</Link>
+          </div>
           <StatBarChart bars={deviceBars} />
         </div>
-        <div className="bg-card border border-border rounded-xl p-6">
+        <div className="bg-card border border-border rounded-2xl p-6">
           <h2 className="text-sm font-semibold text-foreground mb-4">Visitors by Browser</h2>
           <StatBarChart bars={browserBars} />
         </div>
       </div>
 
-      <div className="bg-card border border-border rounded-xl p-6">
+      <div className="bg-card border border-border rounded-2xl p-6">
         <h2 className="text-sm font-semibold text-foreground mb-4">Top Categories by Item Count</h2>
         <StatBarChart bars={topCategories} unit=" items" />
       </div>

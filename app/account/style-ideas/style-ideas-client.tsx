@@ -62,7 +62,7 @@ export default function StyleIdeasClient({ ideas }: { ideas: StyleIdea[] }) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">{ideas.length} style ideas</p>
-        <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "#2b1807", color: "#e8d5b7" }}>
+        <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
           <Plus className="w-4 h-4" /> Add Style Idea
         </button>
       </div>
@@ -74,7 +74,7 @@ export default function StyleIdeasClient({ ideas }: { ideas: StyleIdea[] }) {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {ideas.map((idea) => (
-            <div key={idea.id} className="bg-card border border-border rounded-xl overflow-hidden">
+            <div key={idea.id} className="bg-card border border-border rounded-2xl overflow-hidden">
               <div className="relative h-40 w-full">
                 <Image src={cldImage(idea.imageUrl, 500)} alt={idea.title} fill className="object-cover" />
               </div>
@@ -87,7 +87,7 @@ export default function StyleIdeasClient({ ideas }: { ideas: StyleIdea[] }) {
                   <button onClick={() => openEdit(idea)} className="flex items-center gap-1 text-xs px-2 py-1 rounded border border-border text-foreground hover:bg-muted">
                     <Pencil className="w-3 h-3" />
                   </button>
-                  <button onClick={() => handleDelete(idea.id)} className="flex items-center gap-1 text-xs px-2 py-1 rounded border border-red-200 text-red-600 hover:bg-red-50">
+                  <button onClick={() => handleDelete(idea.id)} className="flex items-center gap-1 text-xs px-2 py-1 rounded border dash-danger-btn">
                     <Trash2 className="w-3 h-3" />
                   </button>
                 </div>
@@ -116,7 +116,7 @@ export default function StyleIdeasClient({ ideas }: { ideas: StyleIdea[] }) {
             </div>
             <div className="flex gap-2 justify-end">
               <button onClick={closeModal} className="px-4 py-2 text-sm rounded-lg border border-border text-foreground">Cancel</button>
-              <button onClick={handleSave} disabled={saving || uploading} className="px-4 py-2 text-sm rounded-lg font-medium disabled:opacity-50" style={{ background: "#2b1807", color: "#e8d5b7" }}>
+              <button onClick={handleSave} disabled={saving || uploading} className="px-4 py-2 text-sm rounded-lg font-medium disabled:opacity-50" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
                 {saving ? "Saving..." : "Save"}
               </button>
             </div>

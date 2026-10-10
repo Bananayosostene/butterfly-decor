@@ -27,7 +27,7 @@ export function ShareModal({ item, onClose }: { item: { id: string; name: string
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-3">
-          <p className="text-sm font-semibold truncate max-w-[80%]" style={{ color: "#2b1807", fontFamily: "Georgia, serif" }}>{item.name}</p>
+          <p className="text-sm font-semibold truncate max-w-[80%]" style={{ color: "var(--ink)", fontFamily: "Georgia, serif" }}>{item.name}</p>
           <button onClick={onClose}><X className="w-4 h-4" style={{ color: "#835105" }} /></button>
         </div>
         <div className="flex items-center gap-2 mb-3 rounded-lg px-3 py-2" style={{ background: "#f0e6d6", border: "1px solid #57422C" }}>

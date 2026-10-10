@@ -64,7 +64,7 @@ export default function VendorItemsClient({
       ) : (
         <div className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 ${loading ? "opacity-60" : ""}`}>
           {items.map((item) => (
-            <div key={item.id} className="bg-card border border-border rounded-xl overflow-hidden">
+            <div key={item.id} className="bg-card border border-border rounded-2xl overflow-hidden">
               <div className="relative aspect-square">
                 <img
                   src={cldImage(item.imageUrl, 500)}
@@ -74,7 +74,7 @@ export default function VendorItemsClient({
                 />
                 <span
                   className="absolute top-2 left-2 text-[11px] font-semibold px-2 py-0.5 rounded-full"
-                  style={item.active ? { background: "#dcfce7", color: "#166534" } : { background: "#fee2e2", color: "#991b1b" }}
+                  style={item.active ? { background: "var(--dash-ok-bg)", color: "var(--dash-ok)" } : { background: "var(--dash-danger-bg)", color: "var(--dash-danger)" }}
                 >
                   {item.active ? "Active" : "Hidden"}
                 </span>
@@ -93,7 +93,7 @@ export default function VendorItemsClient({
                   >
                     {item.active ? <><EyeOff className="w-3 h-3" /> Deactivate</> : <><Eye className="w-3 h-3" /> Activate</>}
                   </button>
-                  <button onClick={() => handleDelete(item)} aria-label="Delete" className="text-xs px-2.5 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50">
+                  <button onClick={() => handleDelete(item)} aria-label="Delete" className="text-xs px-2.5 py-1.5 rounded-lg border dash-danger-btn">
                     <Trash2 className="w-3 h-3" />
                   </button>
                 </div>

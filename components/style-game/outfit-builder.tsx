@@ -77,7 +77,7 @@ export function OutfitBuilder() {
       <div className="w-full max-w-xl rounded-3xl shadow-xl overflow-hidden" style={{ background: CREAM, border: `1.5px solid ${BORDER}` }}>
         {phase === "intro" && (
           <div className="p-8 sm:p-10 flex flex-col items-center text-center gap-5">
-            <h1 className="text-3xl font-playball" style={{ color: CHOCOLATE }}>Outfit Builder</h1>
+            <h1 className="text-2xl md:text-3xl font-playball" style={{ color: CHOCOLATE }}>Outfit Builder</h1>
             <p className="text-sm max-w-md" style={{ color: "rgba(43,24,7,0.75)" }}>
               Dress the bride and groom, piece by piece. Every choice you make sets the tone for
               the next — build a look that feels intentional from head to toe.

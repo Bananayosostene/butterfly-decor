@@ -17,7 +17,7 @@ import { stripHtmlToText } from "@/lib/text";
 import CollectionPageClient, { type Crumb, type FilterTab } from "./collection-page-client";
 
 const WEDDING_INTRO =
-  "Bridal gowns, groom suits, invitations, gifts and decor — browse everything we prepare for your wedding day.";
+  "Bridal gowns, groom suits, invitations, gifts and decor, browse everything we prepare for your wedding day.";
 const DECOR_INTRO =
   "Backdrops for your introduction and reception, bridal showers, birthdays, graduations and flowers.";
 
