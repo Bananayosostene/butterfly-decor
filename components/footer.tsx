@@ -43,7 +43,7 @@ export async function Footer() {
       title: "Explore",
       links: [
         { label: "Wedding Planning", href: "/wedding-planning" },
-        { label: "Latest Weddings", href: "/#latest-weddings" },
+        { label: "Wedding Albums", href: "/wedding-albums" },
         { label: "Vendors", href: "/vendors" },
         { label: "Style Inspiration", href: "/style-insipiration" },
         { label: "All Collection", href: "/collection" },

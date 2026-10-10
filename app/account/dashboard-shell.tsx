@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, FolderOpen, Image, Shirt, BookOpen, Settings, LogOut, Menu, X, BarChart3, Store, Images, UserRound,
-  Sparkles, ChevronDown, ClipboardList, ListChecks, Users, Moon, Sun, ExternalLink, Gem, Home, type LucideIcon,
+  Sparkles, ChevronDown, ClipboardList, ListChecks, Users, Heart, Moon, Sun, ExternalLink, Gem, Home, type LucideIcon,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -40,6 +40,7 @@ const NAV: Record<DashboardRole, NavSection[]> = {
             { href: "/account/categories", label: "Categories", icon: FolderOpen },
             { href: "/account/collection-items", label: "Collection items", icon: Image },
             { href: "/account/style-ideas", label: "Style ideas", icon: Shirt },
+            { href: "/account/wedding-albums", label: "Wedding albums", icon: Heart },
           ],
         },
         {

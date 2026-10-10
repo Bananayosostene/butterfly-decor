@@ -271,3 +271,17 @@ model PlanningSheet {
 
   @@index([submittedAt])
 }
+
+/// Photos of one real wedding (one couple). Shown on the homepage and on /wedding-albums.
+model WeddingAlbum {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  /// The couple, e.g. "Aline & Eric".
+  title       String
+  /// yyyy-mm-dd, optional.
+  weddingDate String?
+  /// Up to 20 photos; the first one is the cover.
+  images      String[]
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+}

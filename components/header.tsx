@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { CalendarCheck, ClipboardList, Heart, Store } from "lucide-react";
+import { CalendarCheck, ClipboardList, Heart, Images, Store } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { AccountMenu } from "@/components/account-menu";
 
@@ -30,6 +30,7 @@ export function Header() {
 
   const navLinks = [
     { href: "/collection", label: "WEDDING", icon: Heart },
+    { href: "/wedding-albums", label: "ALBUMS", icon: Images },
     { href: "/vendors", label: "VENDORS", icon: Store },
     { href: "/wedding-planning", label: "PLANNING", icon: ClipboardList },
   ];

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowRight, Download, Images, PencilLine, Send, Store } from "lucide-react";
+import { Download, Images, PencilLine, Send, Store } from "lucide-react";
 import { displaySerif } from "@/lib/fonts";
 import { getPlanningSections, getUserSheet } from "@/lib/planning-data";
 import { isDate, withFirstRecord } from "@/lib/planning-sheet";
