@@ -49,14 +49,14 @@ export function Header() {
   const navClass = (href: string) =>
     `px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
       isActive(href)
-        ? "bg-accent text-primary-foreground"
-        : "text-primary-foreground/80 hover:text-primary-foreground"
+        ? "bg-accent text-paper"
+        : "text-paper/80 hover:text-paper"
     }`;
 
   const tabClass = (href: string) => {
     const active = isActive(href);
     return `flex-1 min-w-0 flex flex-col items-center gap-1 px-0.5 py-2 rounded-lg transition-colors ${
-      active ? "text-primary-foreground" : "text-primary-foreground/70"
+      active ? "text-paper" : "text-paper/70"
     }`;
   };
 
@@ -76,7 +76,7 @@ export function Header() {
             {/* Brand */}
             <div className="flex items-center gap-2">
               <Link href="/" className="flex items-center">
-                <span className="text-[16px] font-medium text-primary-foreground">Butterfly</span>
+                <span className="text-[16px] font-medium text-paper">Butterfly</span>
                 <Image
                   src="/butterfly_logo.png"
                   alt=""
@@ -84,7 +84,7 @@ export function Header() {
                   height={25}
                   className="object-contain"
                 />
-                <span className="text-sm font-medium text-primary-foreground">Decor</span>
+                <span className="text-sm font-medium text-paper">Decor</span>
               </Link>
             </div>
 

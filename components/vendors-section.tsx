@@ -74,10 +74,10 @@ export function VendorsSection({
           <p className="text-xs font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
             Discover your wedding dream team
           </p>
-          <h2 className={`${displaySerif.className} mt-3 text-2xl md:text-3xl leading-[1.1]`} style={{ color: CHOCOLATE }}>
+          <h2 className={`${displaySerif.className} mt-3 text-xl md:text-2xl leading-[1.1]`} style={{ color: CHOCOLATE }}>
             Find the Best Wedding Vendors Near You
           </h2>
-          <p className="mt-3 max-w-lg text-sm md:text-base leading-relaxed" style={{ color: "rgba(43,24,7,0.65)" }}>
+          <p className="mt-3 max-w-lg text-sm  leading-relaxed" style={{ color: "rgba(43,24,7,0.65)" }}>
             Looking for trusted wedding professionals? Browse photographers, venues, caterers and more from our vendor
             community.
           </p>
@@ -119,7 +119,7 @@ export function VendorsSection({
             </div>
             <button
               type="submit"
-              className="shrink-0 flex items-center gap-2 px-5 md:px-7 py-3 rounded-full text-xs md:text-sm font-bold uppercase tracking-[0.12em] transition-opacity hover:opacity-90 cursor-pointer"
+              className="shrink-0 flex items-center gap-2 px-5 md:px-7 py-3 rounded-full text-xs  font-bold uppercase tracking-[0.12em] transition-opacity hover:opacity-90 cursor-pointer"
               style={{ background: CHOCOLATE, color: "var(--cream)" }}
             >
               <Search size={14} /> Search
@@ -141,7 +141,7 @@ export function VendorsSection({
           )}
           <Link
             href="/vendors"
-            className="group mt-6 inline-flex items-center gap-3 px-7 py-3 rounded-full text-xs md:text-sm font-bold uppercase tracking-[0.15em] transition-opacity hover:opacity-90"
+            className="group mt-6 inline-flex items-center gap-3 px-7 py-3 rounded-full text-xs font-bold uppercase tracking-[0.15em] transition-opacity hover:opacity-90"
             style={{ background: CHOCOLATE, color: "var(--cream)" }}
           >
             <ListFilter size={18} strokeWidth={2} className="shrink-0" aria-hidden />

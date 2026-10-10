@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Pencil, Trash2, Plus, X } from "lucide-react";
 import { CATEGORY_ICONS, iconForCategory } from "@/lib/category-icons";
@@ -81,7 +82,12 @@ export default function VendorCategoriesClient({ categories }: { categories: Ven
                       {c.name}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground">{c.vendors}</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {/* Opens the vendors list already filtered to this category */}
+                    <Link href={`/account/vendors?category=${c.id}`} className="hover:underline underline-offset-4" style={{ color: "var(--dash-accent)" }}>
+                      {c.vendors} vendor{c.vendors !== 1 ? "s" : ""}
+                    </Link>
+                  </td>
                   <td className="px-4 py-3">
                     <div className="flex gap-2">
                       <button onClick={() => openEdit(c)} aria-label="Edit" className="text-xs px-2.5 py-1.5 rounded-lg border border-border text-foreground hover:bg-muted">

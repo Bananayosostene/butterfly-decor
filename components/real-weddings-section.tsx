@@ -21,12 +21,12 @@ export function RealWeddingSection({ albums, items }: { albums: Album[]; items: 
   return (
     <section id="latest-weddings" className="w-full pt-10 md:pt-14 pb-12" style={{ background: "#fbf7f2" }}>
       <div className=" px-4 md:px-12 lg:px-20 mb-6 md:mb-8 flex flex-wrap items-end justify-between gap-4">
-        <h2 className={`${displaySerif.className} text-xl md:text-2xl lg:text-3xl leading-tight`} style={{ color: INK }}>
+        <h2 className={`${displaySerif.className} text-xl md:text-2xl  leading-tight`} style={{ color: INK }}>
           Browse Latest Real Wedding Albums
         </h2>
         <Link
           href={hasAlbums ? "/wedding-albums" : "/collection"}
-          className="group flex items-center gap-3 text-xs md:text-sm font-semibold uppercase tracking-[0.2em] pb-1"
+          className="group flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] pb-1"
           style={{ color: INK }}
         >
           {hasAlbums ? "See all albums" : "Browse all looks"}

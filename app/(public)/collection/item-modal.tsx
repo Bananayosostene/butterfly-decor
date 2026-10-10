@@ -171,8 +171,8 @@ export default function ItemModal({
           >
             {item.category.name}
           </Link>
-          <h2 className={`${displaySerif.className} mt-2 text-2xl md:text-3xl leading-tight`} style={{ color: INK }}>
-            {item.name}
+          <h2 className={`${displaySerif.className} mt-2 text-xl md:text-2xl leading-tight`} style={{ color: INK }}>
+            {item.name} 
           </h2>
 
           <div className="mt-4 flex items-center gap-2">

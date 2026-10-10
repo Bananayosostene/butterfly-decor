@@ -48,6 +48,7 @@ const NAV: Record<DashboardRole, NavSection[]> = {
           icon: Store,
           children: [
             { href: "/account/vendor-categories", label: "Vendor categories", icon: FolderOpen },
+            { href: "/account/vendors", label: "Vendors", icon: Users },
             { href: "/account/vendor-items", label: "Vendor items", icon: Images },
           ],
         },
@@ -71,7 +72,10 @@ const NAV: Record<DashboardRole, NavSection[]> = {
     },
     {
       label: "Customers",
-      entries: [{ href: "/account/bookings", label: "Bookings", icon: BookOpen }],
+      entries: [
+        { href: "/account/bookings", label: "Bookings", icon: BookOpen },
+        { href: "/account/users", label: "Clients", icon: UserRound },
+      ],
     },
   ],
   VENDOR: [

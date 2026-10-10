@@ -80,7 +80,7 @@ export function DecorCollections({ collections = defaultCollections }: DecorColl
   return (
     <section className="w-full py-6 md:py-10 px-4 md:px-8 lg:px-12" style={{ background: "#F5F5F7" }}>
       <div className="max-w-6xl mx-auto mb-6 text-center">
-        <h2 className="text-2xl md:text-3xl font-light text-foreground mb-2 font-playball">
+        <h2 className="text-xl md:text-2xl font-light text-foreground mb-2 font-playball">
           Explore your dream of decor
         </h2>
         <p className="text-sm md:text-base text-muted-foreground">

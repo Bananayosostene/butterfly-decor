@@ -38,7 +38,7 @@ export function DecorSection({ imageUrl, categories }: { imageUrl: string | null
       />
 
       <div className="relative max-w-4xl mx-auto px-4 py-15 md:py-20 text-center">
-        <h2 className={`${displaySerif.className} mt-3 text-2xl md:text-3xl leading-[1.1]`} style={{ color: INK }}>
+        <h2 className={`${displaySerif.className} mt-3 text-xl md:text-2xl leading-[1.1]`} style={{ color: INK }}>
           Transform Your Venue
           <br />
           Into an Unforgettable Celebration

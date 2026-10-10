@@ -67,7 +67,7 @@ export default function AuthPanel({
     >
       <div className="text-center">
         <p className={`${displaySerif.className} text-base`} style={{ color: "var(--ink)" }}>Butterfly Decor</p>
-        <h1 className={`${displaySerif.className} mt-1.5 text-2xl md:text-3xl leading-tight`} style={{ color: "var(--ink)" }}>
+        <h1 className={`${displaySerif.className} mt-1.5 text-xl md:text-2xl leading-tight`} style={{ color: "var(--ink)" }}>
           {mode === "login" ? "Welcome back" : "Create your account"}
         </h1>
   

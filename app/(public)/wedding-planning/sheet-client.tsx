@@ -242,7 +242,7 @@ export default function SheetClient({
         <button
           onClick={handleSend}
           disabled={busy}
-          className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full text-sm font-bold uppercase tracking-wider disabled:opacity-60 cursor-pointer"
+          className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full text-xs font-bold uppercase tracking-wider disabled:opacity-60 cursor-pointer"
           style={{ background: INK, color: "var(--cream)" }}
         >
           {state === "sent" ? <Check size={16} /> : <Send size={16} />}

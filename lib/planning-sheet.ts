@@ -67,7 +67,7 @@ const rows = (prefix: string, labels: string[]): SheetRow[] =>
 export const DEFAULT_SECTIONS: SheetSection[] = [
   {
     key: "GUSABA",
-    title: "Introduction",
+    title: "List",
     rowsLabel: "People / Item",
     columns: [
       { id: "count", label: "Umubare", short: true },

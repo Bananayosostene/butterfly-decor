@@ -52,7 +52,7 @@ export default async function VendorPage({ params }: Props) {
           </ol>
         </nav>
 
-        <h1 className={`${displaySerif.className} mt-3 text-2xl md:text-3xl`} style={{ color: INK }}>{vendor.name}</h1>
+        <h1 className={`${displaySerif.className} mt-3 text-xl md:text-2xl`} style={{ color: INK }}>{vendor.name}</h1>
         <p className="mt-2 text-xs" style={{ color: "#57422C" }}>
           {vendor.vendorCategory && <span className="font-semibold uppercase tracking-[0.18em]">{vendor.vendorCategory.name}</span>}
           {vendor.vendorCategory && vendor.location && " in "}
@@ -69,7 +69,7 @@ export default async function VendorPage({ params }: Props) {
 
             {vendor.about && (
               <section className="mt-8 pt-8 border-t" style={{ borderColor: LINE }}>
-                <h2 className={`${displaySerif.className} text-2xl md:text-3xl`} style={{ color: INK }}>About this vendor</h2>
+                <h2 className={`${displaySerif.className} text-xl md:text-2xl`} style={{ color: INK }}>About this vendor</h2>
                 <p className="mt-4 text-sm leading-relaxed whitespace-pre-line" style={{ color: "#57422C" }}>{vendor.about}</p>
               </section>
             )}

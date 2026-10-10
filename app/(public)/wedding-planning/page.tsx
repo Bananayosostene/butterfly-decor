@@ -40,7 +40,7 @@ export default async function WeddingPlanningPage({ searchParams }: { searchPara
     <div className="min-h-screen pb-24" style={{ background: "#fbf7f2" }}>
       <div className="max-w-4xl mx-auto px-4 pt-8 md:pt-10">
         <header className="text-center">
-          <h1 className={`${displaySerif.className} text-2xl md:text-3xl`} style={{ color: INK }}>
+          <h1 className={`${displaySerif.className} text-xl md:text-2xl`} style={{ color: INK }}>
             Plan your wedding
           </h1>
           {/* Three pictures instead of a paragraph */}
@@ -75,13 +75,13 @@ export default async function WeddingPlanningPage({ searchParams }: { searchPara
 
         {/* Short timelines */}
         <section className="mt-12">
-          <h2 className={`${displaySerif.className} text-2xl md:text-3xl text-center`} style={{ color: INK }}>
+          <h2 className={`${displaySerif.className} text-xl md:text-2xl text-center`} style={{ color: INK }}>
             How much time do you have?
           </h2>
           <div className="mt-6 grid md:grid-cols-3 gap-4">
             {WEDDING_PLANS.map((plan) => (
               <article key={plan.slug} className="rounded-2xl bg-white p-5" style={{ border: `1px solid ${LINE}` }}>
-                <p className={`${displaySerif.className} text-2xl md:text-3xl`} style={{ color: INK }}>{plan.time}</p>
+                <p className={`${displaySerif.className} text-xl md:text-2xl`} style={{ color: INK }}>{plan.time}</p>
                 <p className="mt-1 text-xs font-semibold uppercase tracking-wider" style={{ color: GOLD }}>{plan.note}</p>
                 <ol className="mt-4 space-y-3">
                   {plan.steps.map((step, i) => (

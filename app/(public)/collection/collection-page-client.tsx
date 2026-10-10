@@ -260,7 +260,7 @@ export default function CollectionPageClient({
             ))}
           </ol>
         </nav>
-        <h1 className={`${displaySerif.className} mt-3 text-2xl md:text-3xl leading-[1.08] max-w-2xl`} style={{ color: INK }}>
+        <h1 className={`${displaySerif.className} mt-3 text-xl md:text-2xl leading-[1.08] max-w-2xl`} style={{ color: INK }}>
           {title}
         </h1>
         {description && (

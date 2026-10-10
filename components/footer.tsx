@@ -4,10 +4,10 @@ import { getCategoryTabs } from "@/lib/data";
 import { decorHref, slugify } from "@/lib/category-icons";
 
 /** Text colors: dark on the light mobile footer, cream on the chocolate desktop footer. */
-const SOFT = "text-[#57422C] md:text-paper/80";
-const HEADING = "text-paper-foreground md:text-paper";
+const SOFT = "text-paper md:text-paper/80";
+const HEADING = "text-paper md:text-paper";
 const LINK =
-  "text-sm text-paper-foreground/80 md:text-paper/80 hover:text-paper-foreground md:hover:text-paper transition-colors";
+  "text-sm text-paper/80 md:text-paper/80 hover:text-paper md:hover:text-paper transition-colors";
 
 type FooterLink = { label: string; href: string };
 

@@ -45,7 +45,7 @@ export default async function VendorsPage({
       <div className="max-w-6xl mx-auto px-4 pt-10">
         <header className="text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em]" style={{ color: ROSE }}>Vendor directory</p>
-          <h1 className={`${displaySerif.className} mt-2 text-2xl md:text-3xl`} style={{ color: INK }}>
+          <h1 className={`${displaySerif.className} mt-2 text-xl md:text-2xl`} style={{ color: INK }}>
             {active?.name ?? "Wedding Vendors"}
           </h1>
           <p className="mt-3 max-w-xl mx-auto text-sm leading-relaxed" style={{ color: "#57422C" }}>

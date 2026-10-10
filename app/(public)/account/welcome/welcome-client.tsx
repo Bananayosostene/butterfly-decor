@@ -74,7 +74,7 @@ export default function WelcomeClient({ name, categories }: { name: string; cate
     <div className="min-h-[80vh] px-4 py-12" style={{ background: "#fbf7f2" }}>
       <form onSubmit={handleSubmit} className="max-w-md mx-auto">
         <p className="text-xs font-semibold uppercase tracking-[0.22em]" style={{ color: "#835105" }}>One last step</p>
-        <h1 className={`${displaySerif.className} mt-2 text-2xl md:text-3xl`} style={{ color: INK }}>
+        <h1 className={`${displaySerif.className} mt-2 text-xl md:text-2xl`} style={{ color: INK }}>
           Welcome, {name}
         </h1>
 
