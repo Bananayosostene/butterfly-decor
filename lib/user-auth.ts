@@ -15,15 +15,34 @@ const SESSION_DAYS = 30
 
 export type UserRole = "CLIENT" | "VENDOR"
 
+export const ACCOUNT_HINT_OPTIONS = {
+  httpOnly: false,
+  sameSite: "lax",
+  secure: process.env.NODE_ENV === "production",
+  maxAge: SESSION_DAYS * 24 * 60 * 60,
+  path: "/",
+} as const
+
 /** Shows the header who is signed in (display only; see lib/account-hint.ts). */
 export async function setAccountHint(hint: AccountHint) {
-  ;(await cookies()).set(ACCOUNT_HINT_COOKIE, encodeAccountHint(hint), {
-    httpOnly: false,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    maxAge: SESSION_DAYS * 24 * 60 * 60,
-    path: "/",
-  })
+  ;(await cookies()).set(ACCOUNT_HINT_COOKIE, encodeAccountHint(hint), ACCOUNT_HINT_OPTIONS)
+}
+
+/**
+ * What the header shows for the admin. The admin table only holds an email, so the name and
+ * photo come from the site account with the same email when there is one (e.g. after a Google
+ * sign-in), otherwise from `fallback`.
+ */
+export async function adminHintFor(adminId: string, fallback?: { name?: string | null; avatarUrl?: string | null }): Promise<AccountHint | null> {
+  const admin = await prisma.adminUser.findUnique({ where: { id: adminId }, select: { email: true } })
+  if (!admin) return null
+  const user = await prisma.user.findUnique({ where: { email: admin.email.toLowerCase() }, select: { name: true, avatarUrl: true } })
+  return {
+    name: user?.name || fallback?.name || "Admin",
+    email: admin.email,
+    kind: "ADMIN",
+    avatarUrl: user?.avatarUrl ?? fallback?.avatarUrl ?? null,
+  }
 }
 
 export async function clearAccountHint() {

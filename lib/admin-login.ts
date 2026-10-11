@@ -1,6 +1,7 @@
 import { cookies } from "next/headers"
 import nodemailer from "nodemailer"
 import { prisma } from "@/lib/db"
+import { OWNER_COOKIE, OWNER_COOKIE_OPTIONS } from "@/lib/visits"
 import { verifyPassword, hashPassword, createSession, recordFailedLogin, clearFailedLogins } from "@/lib/auth"
 
 /** Admin part of the shared sign-in: same rules as before (3 failed attempts lock the account). */
@@ -33,7 +34,7 @@ async function sendLockoutEmail(email: string, resetToken: string, origin: strin
   })
 }
 
-export type AdminLoginResult = { ok: true } | { ok: false; status: 401 | 423; message: string }
+export type AdminLoginResult = { ok: true; adminId: string } | { ok: false; status: 401 | 423; message: string }
 
 /**
  * Signs the admin in when `email` belongs to an admin account. Returns null when it does not, so
@@ -69,13 +70,21 @@ export async function loginAdmin(email: string, password: string, origin: string
     await prisma.adminUser.update({ where: { id: admin.id }, data: { password: hashPassword(password) } })
   }
 
-  const sessionToken = await createSession(admin.id)
-  ;(await cookies()).set("admin_session", sessionToken, {
+  await startAdminSession(admin.id)
+  return { ok: true, adminId: admin.id }
+}
+
+/** Opens the admin session. Used by the password sign-in and by Google sign-in. */
+export async function startAdminSession(adminId: string) {
+  const sessionToken = await createSession(adminId)
+  const store = await cookies()
+  // From now on this browser's visits count as the owner's, not as a visitor's.
+  store.set(OWNER_COOKIE, "1", OWNER_COOKIE_OPTIONS)
+  store.set("admin_session", sessionToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60, // 7 days
     path: "/",
   })
-  return { ok: true }
 }

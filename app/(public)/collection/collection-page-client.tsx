@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link, { useLinkStatus } from "next/link";
 import { HoverPrefetchLink } from "@/components/hover-prefetch-link";
 import ItemModal, { type ModalSocial } from "./item-modal";
 import { categoryHref } from "@/lib/category-icons";
 import type { ItemSocial } from "@/lib/data";
+import { useImageViews } from "@/hooks/use-image-views";
 import { useLoadMore } from "@/hooks/use-load-more";
 import { cldImage } from "@/lib/image";
 import { displaySerif } from "@/lib/fonts";
@@ -83,9 +84,12 @@ function GalleryBlocks({
   moreCount,
   onShowAll,
   onOpen,
+  seenRef,
 }: {
   items: CollectionItem[];
   onOpen: (itemId: string) => void;
+  /** Marks a tile as viewed once it scrolls onto the screen. */
+  seenRef: (itemId: string) => (element: Element | null) => void;
   /** When set, the last tile shows "+N" and opens the full gallery instead of the image. */
   moreCount?: number;
   onShowAll?: () => void;
@@ -142,6 +146,7 @@ function GalleryBlocks({
             ) : (
               <button
                 key={item.id}
+                ref={seenRef(item.id)}
                 type="button"
                 onClick={() => onOpen(item.id)}
                 className={`${tileClass} cursor-pointer`}
@@ -205,8 +210,16 @@ export default function CollectionPageClient({
   // Likes and comments made in the popup, so reopening an image shows them.
   const [socialChanges, setSocialChanges] = useState<Record<string, Partial<ModalSocial>>>(() => ({ ...socialMemory }));
 
+  // Everyone who sees an image counts as a viewer, whether they open it or scroll past it.
+  const views = useImageViews("ITEM");
+  useEffect(() => {
+    if (initialItemId) views.viewed(initialItemId, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const showItem = (itemId: string | null) => {
     setOpenId(itemId);
+    if (itemId) views.viewed(itemId, true);
     // A shared link arrived with ?item=…; once closed, tidy the address without reloading.
     if (!itemId && window.location.search.includes("item=")) {
       const params = new URLSearchParams(window.location.search);
@@ -279,7 +292,7 @@ export default function CollectionPageClient({
             </div>
           ) : showAll ? (
             <>
-              <GalleryBlocks items={items} onOpen={showItem} />
+              <GalleryBlocks items={items} onOpen={showItem} seenRef={views.seenRef} />
               {hasMore && <div ref={sentinelRef} className="h-4" />}
               {loadingMore && (
                 <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -295,6 +308,7 @@ export default function CollectionPageClient({
               moreCount={hiddenCount > 0 ? hiddenCount : undefined}
               onShowAll={() => setShowAll(true)}
               onOpen={showItem}
+              seenRef={views.seenRef}
             />
           )}
         </div>
@@ -313,6 +327,7 @@ export default function CollectionPageClient({
             ...socialChanges[openItem.id],
           }}
           canModerate={canModerate}
+          views={views.counts[openItem.id]}
           categoryHref={categoryHref(openItem.category)}
           onNavigate={showItem}
           onSocialChange={updateSocial}

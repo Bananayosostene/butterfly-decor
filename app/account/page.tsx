@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
+import { realVisits } from "@/lib/visits";
 import { BookOpen, CalendarDays, Clock, FolderOpen, Images, Shirt, Sun, Users } from "lucide-react";
 import { StatCard } from "@/components/account/stat-card";
 
@@ -25,10 +26,10 @@ export default async function AdminDashboard() {
     prisma.styleIdea.count(),
     prisma.booking.count(),
     prisma.booking.count({ where: { status: "NEW" } }),
-    prisma.deviceVisit.count({ where: { createdAt: { gte: startOfDay } } }),
-    prisma.deviceVisit.count({ where: { createdAt: { gte: startOfMonth } } }),
-    prisma.deviceVisit.count({ where: { createdAt: { gte: oneHourAgo } } }),
-    prisma.deviceVisit.count(),
+    prisma.deviceVisit.count({ where: realVisits({ createdAt: { gte: startOfDay } }) }),
+    prisma.deviceVisit.count({ where: realVisits({ createdAt: { gte: startOfMonth } }) }),
+    prisma.deviceVisit.count({ where: realVisits({ createdAt: { gte: oneHourAgo } }) }),
+    prisma.deviceVisit.count({ where: realVisits() }),
     prisma.booking.findMany({ orderBy: { createdAt: "desc" }, take: 5 }),
   ]);
 

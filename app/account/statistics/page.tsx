@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { BookOpen, CalendarDays, FolderOpen, Users } from "lucide-react";
 import { StatBarChart, StatTrendChart } from "@/components/account/stat-bar-chart";
 import { StatCard } from "@/components/account/stat-card";
+import { realVisits } from "@/lib/visits";
 
 // Validated categorical palette (fixed order — identity encoding, e.g. device/browser breakdowns).
 const CATEGORICAL = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4"];
@@ -30,10 +31,10 @@ export default async function StatisticsPage() {
 
   const [bookingCounts, deviceCounts, browserCounts, categories, totalVisitorsAll, totalBookingsAll] = await Promise.all([
     Promise.all(dayRanges.map((r) => prisma.booking.count({ where: { createdAt: { gte: r.start, lt: r.end } } }))),
-    Promise.all(DEVICES.map((d) => prisma.deviceVisit.count({ where: { device: d } }))),
-    Promise.all(BROWSERS.map((b) => prisma.deviceVisit.count({ where: { browser: b } }))),
+    Promise.all(DEVICES.map((d) => prisma.deviceVisit.count({ where: realVisits({ device: d }) }))),
+    Promise.all(BROWSERS.map((b) => prisma.deviceVisit.count({ where: realVisits({ browser: b }) }))),
     prisma.category.findMany({ include: { _count: { select: { items: true } } } }),
-    prisma.deviceVisit.count(),
+    prisma.deviceVisit.count({ where: realVisits() }),
     prisma.booking.count(),
   ]);
 

@@ -85,7 +85,7 @@ export const getCollectionItems = unstable_cache(
     ])
     return { items, total }
   },
-  ["collection-items-v3"],
+  ["collection-items-v4"],
   { tags: ["collection-items", "categories"], revalidate: HOUR },
 )
 
@@ -102,7 +102,7 @@ export const getLatestBridalItems = unstable_cache(
       take,
     })
   },
-  ["latest-bridal-items"],
+  ["latest-bridal-items-v2"],
   { tags: ["collection-items", "categories"], revalidate: HOUR },
 )
 

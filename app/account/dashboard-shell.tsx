@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, FolderOpen, Image, Shirt, BookOpen, Settings, LogOut, Menu, X, BarChart3, Store, Images, UserRound,
-  Sparkles, ChevronDown, ClipboardList, ListChecks, Users, Heart, Moon, Sun, ExternalLink, Gem, Home, type LucideIcon,
+  Sparkles, ChevronDown, ClipboardList, ListChecks, Users, Heart, ThumbsUp, Moon, Sun, ExternalLink, Gem, Home, type LucideIcon,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -28,6 +28,7 @@ const NAV: Record<DashboardRole, NavSection[]> = {
         { href: "/account", label: "Dashboard", icon: LayoutDashboard, exact: true },
         { href: "/account/statistics", label: "Statistics", icon: BarChart3 },
         { href: "/account/visitors", label: "Visitors", icon: Users },
+        { href: "/account/reactions", label: "Reactions", icon: ThumbsUp },
       ],
     },
     {
@@ -134,7 +135,7 @@ function Sidebar({
 
   const logout = async () => {
     await fetch(role === "ADMIN" ? "/api/admin/logout" : "/api/auth/logout", { method: "POST" });
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   return (

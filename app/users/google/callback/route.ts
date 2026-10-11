@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/db"
 import { homeFor } from "@/lib/account-paths"
 import { GOOGLE_STATE_COOKIE, googleRedirectUri } from "@/lib/google-oauth"
-import { startUserSession } from "@/lib/user-auth"
+import { startAdminSession } from "@/lib/admin-login"
+import { adminHintFor, endUserSession, setAccountHint, startUserSession } from "@/lib/user-auth"
 import { type NextRequest, NextResponse } from "next/server"
 
 /** Google sends the visitor back here after they approve sign-in. */
@@ -46,6 +47,23 @@ export async function GET(req: NextRequest) {
       typeof profile.picture === "string" && /^https:\/\/[a-z0-9-]+\.googleusercontent\.com\//i.test(profile.picture)
         ? profile.picture
         : null
+
+    // The admin signs in with Google too: Google has verified that this person owns the admin's
+    // email address. As with the password sign-in, admin accounts are checked first.
+    const admin = await prisma.adminUser.findFirst({ where: { email: { equals: email, mode: "insensitive" } }, select: { id: true } })
+    if (admin) {
+      // Keep the photo current on the site account with the same email, where the header reads it.
+      if (avatarUrl) await prisma.user.updateMany({ where: { email }, data: { avatarUrl } })
+      // One identity at a time: leave any client/vendor session behind.
+      await endUserSession()
+      await startAdminSession(admin.id)
+      const hint = await adminHintFor(admin.id, { name: profile.name, avatarUrl })
+      if (hint) await setAccountHint(hint)
+      const res = NextResponse.redirect(new URL("/account", req.url))
+      res.cookies.delete(GOOGLE_STATE_COOKIE)
+      return res
+    }
+
     let user = await prisma.user.findUnique({ where: { email }, select: { id: true, googleId: true, role: true } })
     if (!user) {
       user = await prisma.user.create({
@@ -65,6 +83,8 @@ export async function GET(req: NextRequest) {
 
     const res = NextResponse.redirect(new URL(homeFor(user.role), req.url))
     res.cookies.delete(GOOGLE_STATE_COOKIE)
+    // One identity at a time: a client or vendor signing in ends any admin session in this browser.
+    res.cookies.delete("admin_session")
     return res
   } catch (error) {
     return fail("unexpected error", error)

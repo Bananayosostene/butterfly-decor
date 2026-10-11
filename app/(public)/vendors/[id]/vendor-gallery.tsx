@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { Eye } from "lucide-react";
+import { useImageViews } from "@/hooks/use-image-views";
 import { cldImage } from "@/lib/image";
 import { displaySerif } from "@/lib/fonts";
 
@@ -12,6 +14,14 @@ const PREVIEW_COUNT = 5;
 /** One large photo with four smaller ones; the last tile shows "+N" and opens the rest. */
 export function VendorGallery({ photos, vendorName }: { photos: Photo[]; vendorName: string }) {
   const [showAll, setShowAll] = useState(false);
+  // Everyone who scrolls a photo onto their screen counts as a viewer.
+  const views = useImageViews("VENDOR");
+  const viewBadge = (photoId: string) =>
+    views.counts[photoId] !== undefined && (
+      <span className="absolute bottom-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-white" style={{ background: "rgba(0,0,0,0.55)" }} title="People who viewed this photo">
+        <Eye size={12} /> {views.counts[photoId]}
+      </span>
+    );
 
   const [first, ...rest] = photos;
   const side = rest.slice(0, PREVIEW_COUNT - 1);
@@ -24,8 +34,9 @@ export function VendorGallery({ photos, vendorName }: { photos: Photo[]; vendorN
     <>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         {/* The big photo takes its height from the two rows beside it; on phones it is a square. */}
-        <div className="relative col-span-2 row-span-2 aspect-square md:aspect-auto overflow-hidden" style={tileStyle}>
+        <div ref={views.seenRef(first.id)} className="relative col-span-2 row-span-2 aspect-square md:aspect-auto overflow-hidden" style={tileStyle}>
           <img src={cldImage(first.imageUrl, 1100)} alt={first.description ?? vendorName} className="absolute inset-0 w-full h-full object-cover" />
+          {viewBadge(first.id)}
         </div>
         {side.map((photo, i) => {
           const isMoreTile = !showAll && more.length > 0 && i === side.length - 1;
@@ -50,7 +61,7 @@ export function VendorGallery({ photos, vendorName }: { photos: Photo[]; vendorN
               </span>
             </button>
           ) : (
-            <div key={photo.id} className={tile} style={tileStyle}>{image}</div>
+            <div key={photo.id} ref={views.seenRef(photo.id)} className={tile} style={tileStyle}>{image}{viewBadge(photo.id)}</div>
           );
         })}
       </div>
@@ -58,8 +69,9 @@ export function VendorGallery({ photos, vendorName }: { photos: Photo[]; vendorN
       {showAll && (
         <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2">
           {more.map((photo) => (
-            <div key={photo.id} className={tile} style={tileStyle}>
+            <div key={photo.id} ref={views.seenRef(photo.id)} className={tile} style={tileStyle}>
               <img src={cldImage(photo.imageUrl, 550)} alt={photo.description ?? vendorName} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+              {viewBadge(photo.id)}
             </div>
           ))}
         </div>

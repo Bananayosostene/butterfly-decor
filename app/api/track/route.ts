@@ -3,10 +3,14 @@ import { isObjectId } from "@/lib/data";
 import { getSessionAdminId } from "@/lib/auth";
 import { getUserByToken, USER_COOKIE } from "@/lib/user-auth";
 import { isBot, parseUserAgent } from "@/lib/user-agent";
+import { VISITOR_COOKIE } from "@/lib/visitor";
+import { OWNER_COOKIE, OWNER_COOKIE_OPTIONS } from "@/lib/visits";
 import { after, type NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
 const MAX_SECONDS = 12 * 60 * 60;
+/** Addresses a request has when it comes from the same computer the site is running on. */
+const LOCAL_ADDRESSES = ["::1", "127.0.0.1", "::ffff:127.0.0.1"];
 
 const text = (value: unknown, max: number) => (typeof value === "string" && value.trim() ? value.trim().slice(0, max) : null);
 const whole = (value: unknown, max: number) =>
@@ -31,12 +35,29 @@ function locationOf(req: NextRequest) {
   return { country, region: header("x-vercel-ip-country-region"), city: header("x-vercel-ip-city") };
 }
 
-/** The signed-in person behind this request, if any. */
-async function accountOf(req: NextRequest) {
-  const user = await getUserByToken(req.cookies.get(USER_COOKIE)?.value);
-  if (user) return { userName: user.name, userEmail: user.email };
-  if (await getSessionAdminId(req.cookies.get("admin_session")?.value)) return { userName: "Admin", userEmail: null };
-  return null;
+/**
+ * Who is behind this request: the signed-in account's name (if any), whether this is the site
+ * owner (admin signed in, or a browser the admin has used before), and the id used for likes.
+ */
+async function whoIs(req: NextRequest) {
+  const [user, adminId] = await Promise.all([
+    getUserByToken(req.cookies.get(USER_COOKIE)?.value),
+    getSessionAdminId(req.cookies.get("admin_session")?.value),
+  ]);
+  const account = adminId ? { userName: "Admin", userEmail: null } : user ? { userName: user.name, userEmail: user.email } : null;
+  return {
+    account,
+    admin: !!adminId,
+    owner: !!adminId || !!req.cookies.get(OWNER_COOKIE)?.value,
+    visitorId: req.cookies.get(VISITOR_COOKIE)?.value?.slice(0, 64),
+  };
+}
+
+/** Marks the browser as the owner's when the admin is signed in on it. */
+function respond(body: object, admin: boolean) {
+  const res = NextResponse.json(body);
+  if (admin) res.cookies.set(OWNER_COOKIE, "1", OWNER_COOKIE_OPTIONS);
+  return res;
 }
 
 function notifyByEmail(v: { device: string; model: string | null; browser: string; os: string; ip: string; place: string; name: string }) {
@@ -80,18 +101,25 @@ export async function POST(req: NextRequest) {
     // ── Update of a visit already recorded ──
     if (body?.id !== undefined) {
       if (typeof body.id !== "string" || !isObjectId(body.id)) return NextResponse.json({ ok: false }, { status: 400 });
-      const account = await accountOf(req);
+      const { account, admin, owner, visitorId } = await whoIs(req);
       await prisma.deviceVisit.updateMany({
         where: { id: body.id },
         data: {
           durationSeconds: whole(body.seconds, MAX_SECONDS) ?? undefined,
           pageViews: whole(body.pages, 1000) ?? undefined,
+          ...(Array.isArray(body.paths)
+            ? { pages: body.paths.filter((p: unknown) => typeof p === "string" && p.startsWith("/")).slice(0, 30).map((p: string) => p.slice(0, 200)) }
+            : {}),
           lastSeenAt: new Date(),
           // Someone who signed in during the visit gets their name on it.
           ...(account ?? {}),
+          // The admin signing in part-way makes the whole visit the owner's.
+          ...(owner ? { isOwner: true } : {}),
+          // The first like or comment gives the browser its id; keep it with the visit.
+          ...(visitorId ? { visitorId } : {}),
         },
       });
-      return NextResponse.json({ ok: true });
+      return respond({ ok: true }, admin);
     }
 
     // ── New visit ──
@@ -101,7 +129,7 @@ export async function POST(req: NextRequest) {
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || req.headers.get("x-real-ip") || "Unknown";
     const info = parseUserAgent(ua);
     const location = locationOf(req);
-    const account = await accountOf(req);
+    const { account, admin, owner, visitorId } = await whoIs(req);
     // The browser can name the phone model and exact system version when the user-agent hides them.
     const model = text(body?.model, 80) ?? info.model;
     const osVersion = text(body?.osVersion, 40) ?? info.osVersion;
@@ -124,12 +152,19 @@ export async function POST(req: NextRequest) {
         referrer: text(body?.referrer, 300),
         landingPage: text(body?.path, 300),
         pageViews: 1,
+        pages: text(body?.path, 200) ? [text(body?.path, 200)!.split("?")[0]] : [],
         durationSeconds: 0,
         lastSeenAt: new Date(),
+        // A visit to the test server on the owner's own computer is never a real visitor.
+        isOwner: owner || LOCAL_ADDRESSES.includes(ip),
+        visitorId,
         ...(account ?? {}),
       },
       select: { id: true },
     });
+
+    // The owner's own visits are recorded without an email.
+    if (owner || LOCAL_ADDRESSES.includes(ip)) return respond({ ok: true, id: visit.id }, admin);
 
     // The email goes out after the response, so the visitor's browser is not kept waiting.
     after(() =>
@@ -144,7 +179,7 @@ export async function POST(req: NextRequest) {
       }).catch((error) => console.error("Visit email error:", error)),
     );
 
-    return NextResponse.json({ ok: true, id: visit.id });
+    return respond({ ok: true, id: visit.id }, admin);
   } catch (error) {
     console.error("Track error:", error);
     return NextResponse.json({ ok: false }, { status: 500 });

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, X } from "lucide-react";
+import { albumPhotoKey, useImageViews } from "@/hooks/use-image-views";
 import { displaySerif } from "@/lib/fonts";
 import { cldImage } from "@/lib/image";
 
@@ -16,6 +17,12 @@ const PREVIEW_COUNT = 5;
 export default function AlbumGallery({ title, images }: { title: string; images: string[] }) {
   const [open, setOpen] = useState<number | null>(null);
   const [showAll, setShowAll] = useState(false);
+  // Everyone who sees a photo counts as a viewer, whether they open it or scroll past it.
+  const views = useImageViews("ALBUM");
+  useEffect(() => {
+    if (open !== null) views.viewed(albumPhotoKey(images[open]), true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   const shown = showAll ? images : images.slice(0, PREVIEW_COUNT);
   const hiddenCount = images.length - shown.length;
@@ -55,6 +62,7 @@ export default function AlbumGallery({ title, images }: { title: string; images:
               return (
                 <button
                   key={url}
+                  ref={isMoreTile ? undefined : views.seenRef(albumPhotoKey(url))}
                   type="button"
                   onClick={() => (isMoreTile ? setShowAll(true) : setOpen(index))}
                   aria-label={isMoreTile ? `Show ${hiddenCount} more photos` : `Open photo ${index + 1} of ${images.length}`}
@@ -98,7 +106,14 @@ export default function AlbumGallery({ title, images }: { title: string; images:
             className="max-w-full max-h-full object-contain"
             onClick={(e) => e.stopPropagation()}
           />
-          <p className="absolute top-4 left-4 text-sm text-white/80">{open + 1} / {images.length}</p>
+          <p className="absolute top-4 left-4 flex items-center gap-4 text-sm text-white/80">
+            {open + 1} / {images.length}
+            {views.counts[albumPhotoKey(images[open])] !== undefined && (
+              <span className="flex items-center gap-1.5" title="People who viewed this photo">
+                <Eye size={15} /> {views.counts[albumPhotoKey(images[open])]}
+              </span>
+            )}
+          </p>
           <button onClick={() => setOpen(null)} aria-label="Close" className="absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center bg-white/15 text-white cursor-pointer">
             <X size={20} />
           </button>

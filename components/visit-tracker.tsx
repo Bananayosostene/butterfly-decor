@@ -5,7 +5,11 @@ import { usePathname } from "next/navigation";
 
 const KEY = "bfly-visit";
 
-type Visit = { id: string | null; seconds: number; pages: number; lastPath: string };
+/** `paths`: the pages opened, in order, each one once. */
+type Visit = { id: string | null; seconds: number; pages: number; lastPath: string; paths?: string[] };
+
+const MAX_PATHS = 30;
+const addPath = (paths: string[] = [], path: string) => (paths.includes(path) || paths.length >= MAX_PATHS ? paths : [...paths, path]);
 
 const read = (): Visit | null => {
   try {
@@ -55,10 +59,10 @@ export function VisitTracker() {
     if (!isSitePage(pathname)) return;
     const visit = read();
     if (visit) {
-      if (visit.lastPath !== pathname) write({ ...visit, pages: visit.pages + 1, lastPath: pathname });
+      if (visit.lastPath !== pathname) write({ ...visit, pages: visit.pages + 1, lastPath: pathname, paths: addPath(visit.paths, pathname) });
       return;
     }
-    write({ id: null, seconds: 0, pages: 1, lastPath: pathname });
+    write({ id: null, seconds: 0, pages: 1, lastPath: pathname, paths: [pathname] });
     deviceDetails()
       .then((details) => fetch("/api/track", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(details) }))
       .then((res) => res.json())
@@ -79,7 +83,7 @@ export function VisitTracker() {
       const next = { ...visit, seconds: visit.seconds + Math.round((Date.now() - shownAt) / 1000) };
       shownAt = 0;
       write(next);
-      if (next.id) navigator.sendBeacon("/api/track", new Blob([JSON.stringify({ id: next.id, seconds: next.seconds, pages: next.pages })], { type: "application/json" }));
+      if (next.id) navigator.sendBeacon("/api/track", new Blob([JSON.stringify({ id: next.id, seconds: next.seconds, pages: next.pages, paths: next.paths ?? [] })], { type: "application/json" }));
     };
     const onVisibility = () => {
       if (document.visibilityState === "hidden") report();

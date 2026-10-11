@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, ChevronLeft, ChevronRight, Heart, MessageCircle, Share2, X } from "lucide-react";
+import { CheckCircle2, ChevronLeft, ChevronRight, Eye, Heart, MessageCircle, Share2, X } from "lucide-react";
 import { ShareModal } from "@/components/share-modal";
 import { cldImage } from "@/lib/image";
 import { displaySerif } from "@/lib/fonts";
@@ -42,9 +42,12 @@ export default function ItemModal({
   social,
   canModerate,
   categoryHref,
+  views,
   onNavigate,
   onSocialChange,
 }: ItemModalData & {
+  /** How many people have viewed this image (arrives a moment after the popup opens). */
+  views?: number;
   /** Show another item (prev/next), or close the popup with null. */
   onNavigate: (itemId: string | null) => void;
   /** Keeps likes and comments in the gallery, so reopening the image shows them. */
@@ -207,6 +210,11 @@ export default function ItemModal({
             >
               <Share2 size={15} />
             </button>
+            {views !== undefined && (
+              <span className="ml-auto flex items-center gap-1.5 text-sm" style={{ color: "#57422C" }} title="People who viewed this image">
+                <Eye size={16} /> {views}
+              </span>
+            )}
           </div>
 
           <div className="mt-3 grid grid-cols-2 gap-2">

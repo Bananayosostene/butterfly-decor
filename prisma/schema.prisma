@@ -132,6 +132,13 @@ model DeviceVisit {
   pageViews      Int?
   /// Time with the site actually on screen.
   durationSeconds Int?
+  /// True for the site owner's own visits (admin signed in, or a browser the admin has used).
+  /// They are recorded but left out of the visitor numbers.
+  isOwner        Boolean?
+  /// The anonymous id used for likes and comments, when this browser has one.
+  visitorId      String?
+  /// The pages opened during the visit, in order (each page once).
+  pages          String[]
   lastSeenAt     DateTime?
   createdAt DateTime @default(now())
 
@@ -284,4 +291,18 @@ model WeddingAlbum {
   createdAt   DateTime @default(now())
 
   @@index([createdAt])
+}
+
+/// One device saw one image (opened it, or scrolled past it). Each device counts once per image.
+model ImageView {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  /// "ITEM" (collection item), "ALBUM" (wedding album photo) or "VENDOR" (vendor photo)
+  kind      String
+  /// The item id, or for an album photo the file name at the end of its address.
+  key       String
+  /// The device, from the same anonymous cookie used for likes and comments.
+  viewerId  String
+  createdAt DateTime @default(now())
+
+  @@unique([kind, key, viewerId])
 }
