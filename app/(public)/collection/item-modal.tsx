@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, ChevronLeft, ChevronRight, Eye, Heart, MessageCircle, Share2, X } from "lucide-react";
+import { CheckCircle2, ChevronLeft, ChevronRight, Heart, MessageCircle, Share2, X } from "lucide-react";
 import { ShareModal } from "@/components/share-modal";
 import { cldImage } from "@/lib/image";
 import { displaySerif } from "@/lib/fonts";
@@ -211,8 +211,8 @@ export default function ItemModal({
               <Share2 size={15} />
             </button>
             {views !== undefined && (
-              <span className="ml-auto flex items-center gap-1.5 text-sm" style={{ color: "#57422C" }} title="People who viewed this image">
-                <Eye size={16} /> {views}
+              <span className="ml-auto text-sm" style={{ color: "#57422C" }} title="People who viewed this image">
+                {views} {views === 1 ? "view" : "views"}
               </span>
             )}
           </div>

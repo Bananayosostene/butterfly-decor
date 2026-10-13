@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, Eye, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { albumPhotoKey, useImageViews } from "@/hooks/use-image-views";
 import { displaySerif } from "@/lib/fonts";
 import { cldImage } from "@/lib/image";
@@ -109,8 +109,8 @@ export default function AlbumGallery({ title, images }: { title: string; images:
           <p className="absolute top-4 left-4 flex items-center gap-4 text-sm text-white/80">
             {open + 1} / {images.length}
             {views.counts[albumPhotoKey(images[open])] !== undefined && (
-              <span className="flex items-center gap-1.5" title="People who viewed this photo">
-                <Eye size={15} /> {views.counts[albumPhotoKey(images[open])]}
+              <span title="People who viewed this photo">
+                {views.counts[albumPhotoKey(images[open])]} {views.counts[albumPhotoKey(images[open])] === 1 ? "view" : "views"}
               </span>
             )}
           </p>
