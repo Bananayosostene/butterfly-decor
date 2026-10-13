@@ -3,13 +3,12 @@ import type { Metadata } from "next";
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://www.butterflydec.com";
 
 export const metadata: Metadata = {
-  title: "Collections",
-  description:
-    "Browse our complete collection of wedding decorations, bridal gowns, groom suits, birthday decorations, gift wrapping, invitations, and event decor in Rwanda.",
+  // Shown as the page name in Google; the site name is added after it by the root layout.
+  title: "Wedding Decor & Outfits rantals in Rwanda",
+  description: "See the bridal gowns, groom suits, imikenyero, wedding backdrops, flowers and cakes Butterfly Decor (Sostene Group) has for rent in Kigali, Rwanda, and book what you like.",
   openGraph: {
-    title: "Collections | Sostene decor",
-    description:
-      "Browse our complete collection of wedding decorations, bridal gowns, groom suits, birthday decorations, and more in Rwanda.",
+    title: "Wedding Decor and Outfit Rentals by Butterfly Decor Rwanda",
+    description: "See the bridal gowns, groom suits, imikenyero, wedding backdrops, flowers and cakes Butterfly Decor (Sostene Group) has for rent in Kigali, Rwanda, and book what you like.",
     url: `${BASE_URL}/collection`,
   },
   alternates: {

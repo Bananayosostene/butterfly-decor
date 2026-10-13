@@ -5,12 +5,13 @@ export function JsonLd() {
       "@context": "https://schema.org",
       "@type": ["LocalBusiness", "EventVenue"],
       name: "Butterfly Decor",
-      alternateName: ["Butterfly Events Ltd", "Butterfly Decor Rwanda"],
+      // Other names people search for: Google links them all to this business.
+      alternateName: ["Butterfly Decor Rwanda", "Butterfly Decor ,Butterfly Decor Kigali", "Sostene Decor", "Sostene Group", "Butterfly Events "],
       url: BASE_URL,
       logo: `${BASE_URL}/new_logo.png`,
       image: `${BASE_URL}/flyer-03.jpg`,
       description:
-        "Premium event decoration and outfit rental for weddings, birthdays, church events and celebrations in Rwanda. Bridal gowns, groom suits, gift wrapping, invitations and more. | Serivisi zo gutaka ibirori mu Rwanda: impuzu z'ubukwe, gutaka ubukwe, impakira ingabire, impapuro z'ubutumire n'ibindi.",
+        "Butterfly Decor (Sostene Group) in Kigali, Rwanda: wedding decoration and outfit rental, with bridal gowns, groom suits, imikenyero, backdrops and flowers for Gusaba and reception. | Serivisi zo gutaka ubukwe mu Rwanda no gukodesha imyenda y'ubukwe n'imikenyero.",
       telephone: "+250788724867",
       address: {
         "@type": "PostalAddress",
@@ -37,7 +38,14 @@ export function JsonLd() {
         opens: "08:00",
         closes: "20:00",
       },
-      sameAs: ["https://wa.me/250788724867"],
+      // The business's own social pages: they tell Google which "Butterfly Decor" this one is.
+      sameAs: [
+        "https://www.instagram.com/butterfly__decor",
+        "https://www.tiktok.com/@butterfly__decor",
+        "https://www.youtube.com/@butterfly_decor",
+        "https://wa.me/250788724867",
+      ],
+      email: "butterflydecor26@gmail.com",
       hasOfferCatalog: {
         "@type": "OfferCatalog",
         name: "Event Decoration & Outfit Rental | Gutaka Ibirori n'Impuzu",

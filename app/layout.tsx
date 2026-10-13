@@ -10,9 +10,16 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://www.butterflydec.c
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
-  title: "Butterfly decor (Sostene Group)",
+  // Every page name in Google ends with the brand, so people searching for it find the site.
+  title: {
+    default: "Butterfly Decor Rwanda (Sostene Group) | Wedding Decor & Outfit Rental in Kigali",
+    template: "%s | Butterfly Decor Rwanda",
+  },
   description:
-    "Butterfly decor is Where beauty meets celebration throught decoration and outfit rental, ,free wedding planning and other services for your special events.",
+    "Butterfly Decor is Where beauty meets celebration throught decoration, bridal gowns, groom suits and imikenyero for rent, real wedding albums and free wedding planning.",
+  // The code from Google Search Console (Settings → Ownership verification → HTML tag), set as
+  // GOOGLE_SITE_VERIFICATION in the hosting settings. Nothing is added while it is empty.
+  verification: process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : undefined,
  keywords: [
   // =========================================================
   // BRAND
@@ -513,8 +520,8 @@ export const metadata: Metadata = {
     alternateLocale: "rw_RW",
     url: BASE_URL,
     siteName: "Butterfly Decor Rwanda",
-    title: "Butterfly Decor",
-    description: "Event Decoration & Outfit Rental in Rwanda",
+    title: "Butterfly Decor Rwanda (Sostene Group)",
+    description: "Wedding decoration and outfit rental in Kigali, Rwanda",
     images: [
       {
         url: "/og-image.png",
@@ -551,7 +558,6 @@ export default function RootLayout({
   return (
     <html lang="en-RW">
       <head>
-        <meta name="google-site-verification" content="PASTE_YOUR_CODE_HERE" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Playball&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Eye } from "lucide-react";
 import { useImageViews } from "@/hooks/use-image-views";
 import { cldImage } from "@/lib/image";
 import { displaySerif } from "@/lib/fonts";
@@ -18,8 +17,8 @@ export function VendorGallery({ photos, vendorName }: { photos: Photo[]; vendorN
   const views = useImageViews("VENDOR");
   const viewBadge = (photoId: string) =>
     views.counts[photoId] !== undefined && (
-      <span className="absolute bottom-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-white" style={{ background: "rgba(0,0,0,0.55)" }} title="People who viewed this photo">
-        <Eye size={12} /> {views.counts[photoId]}
+      <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full text-xs font-semibold text-white" style={{ background: "rgba(0,0,0,0.55)" }} title="People who viewed this photo">
+        {views.counts[photoId]} {views.counts[photoId] === 1 ? "view" : "views"}
       </span>
     );
 
