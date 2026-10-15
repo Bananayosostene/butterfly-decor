@@ -29,7 +29,7 @@ export function Header() {
   }, []);
 
   const navLinks = [
-    { href: "/collection", label: "WEDDING", icon: Heart },
+    { href: "/collection", label: "COLLECTION", icon: Heart },
     { href: "/wedding-albums", label: "ALBUMS", icon: Images },
     { href: "/vendors", label: "VENDORS", icon: Store },
     { href: "/wedding-planning", label: "PLANNING", icon: ClipboardList },
