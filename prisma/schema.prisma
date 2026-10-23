@@ -31,6 +31,10 @@ model Session {
 
 model Booking {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  /// Filled when the customer was signed in while booking.
+  userId        String?  @db.ObjectId
+  name          String?
+  email         String?
   phone         String
   eventDate     DateTime
   selectedItems String[]
@@ -139,6 +143,8 @@ model DeviceVisit {
   visitorId      String?
   /// The pages opened during the visit, in order (each page once).
   pages          String[]
+  /// True when this browser had visited before.
+  returning      Boolean?
   lastSeenAt     DateTime?
   createdAt DateTime @default(now())
 
@@ -195,6 +201,15 @@ model User {
   coverUrl         String?
   vendorCategoryId String?         @db.ObjectId
   vendorCategory   VendorCategory? @relation(fields: [vendorCategoryId], references: [id])
+  /// "YYYY-MM-DD", or "MM-DD" when the year was not given. Used for birthday wishes.
+  birthday         String?
+  /// The year a birthday wish was last sent, so it goes out once a year.
+  birthdayWishedYear Int?
+  /// True when the person asked not to receive news emails (account and booking emails still go out).
+  emailOptOut      Boolean?
+  /// For vendors: "PENDING" until the admin approves the profile, then "APPROVED", or "SUSPENDED".
+  /// Missing on vendors who joined before approval existed; they count as approved.
+  vendorStatus     String?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   sessions         UserSession[]
@@ -305,4 +320,62 @@ model ImageView {
   createdAt DateTime @default(now())
 
   @@unique([kind, key, viewerId])
+}
+
+/// Something the admin or a vendor should know about, shown under the bell in the dashboard.
+model Notification {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  /// "ADMIN" for the site admin; "USER" for one site account (see userId).
+  audience  String
+  userId    String?   @db.ObjectId
+  /// e.g. BOOKING, ACCOUNT, VENDOR, LOGIN, SECURITY, VISIT, INQUIRY, PLANNING, BIRTHDAY, EVENT
+  type      String
+  title     String
+  body      String?
+  /// Page to open when the notification is clicked.
+  href      String?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([audience, createdAt])
+  @@index([userId, createdAt])
+}
+
+/// Every sign-in attempt, kept for security: who, how, from where, and whether it worked.
+model LoginEvent {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  /// "ADMIN" or "USER"
+  who       String
+  userId    String?  @db.ObjectId
+  email     String
+  /// "PASSWORD" or "GOOGLE"
+  method    String
+  success   Boolean
+  ip        String?
+  userAgent String?
+  /// Short description of the device, e.g. "Chrome on Windows".
+  device    String?
+  city      String?
+  country   String?
+  createdAt DateTime @default(now())
+
+  @@index([email, createdAt])
+  @@index([createdAt])
+}
+
+/// A message a visitor sent to a vendor from the vendor's page. Kept so the business can see the
+/// leads it brings to each vendor.
+model Inquiry {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  vendorId  String   @db.ObjectId
+  userId    String?  @db.ObjectId
+  name      String
+  phone     String?
+  /// yyyy-mm-dd
+  eventDate String?
+  message   String
+  createdAt DateTime @default(now())
+
+  @@index([vendorId, createdAt])
+  @@index([createdAt])
 }

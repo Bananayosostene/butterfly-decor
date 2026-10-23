@@ -7,6 +7,7 @@ import { prisma } from "@/lib/db";
 import { parsePage } from "@/lib/data";
 import { StatCard } from "@/components/account/stat-card";
 import { OWNER_VISITS, realVisits } from "@/lib/visits";
+import { VisitorInsights } from "./visitor-insights";
 
 const PER_PAGE = 50;
 
@@ -93,6 +94,9 @@ export default async function VisitorsPage({ searchParams }: { searchParams: Pro
         <StatCard label="Average time" value={duration(Math.round(timed._avg.durationSeconds ?? 0))} icon={Clock} />
         <StatCard label="Countries" value={countries.length} icon={Globe} />
       </div>
+
+      {/* Live and 30-day insights about real visitors */}
+      {!mine && page === 1 && <VisitorInsights />}
 
       {visits.length === 0 ? (
         <p className="text-muted-foreground text-sm">No visits recorded yet.</p>

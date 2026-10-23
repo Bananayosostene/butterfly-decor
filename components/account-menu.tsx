@@ -104,6 +104,17 @@ export function AccountMenu() {
             <p className="text-xs truncate" style={{ color: "#57422C" }}>{account.email}</p>
           </div>
           <div className="py-2">
+            {account.kind !== "ADMIN" && (
+              <Link
+                href="/profile"
+                role="menuitem"
+                className="flex items-center gap-3 px-5 py-2.5 text-sm font-medium hover:bg-[#fbf7f2]"
+                style={{ color: "var(--ink)" }}
+              >
+                <UserRound size={17} style={{ color: "#a0566c" }} />
+                My profile
+              </Link>
+            )}
             {dashboard && (
               <Link
                 href={dashboard.href}

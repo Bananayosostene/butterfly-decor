@@ -8,13 +8,14 @@ const inputClass = "w-full px-3 py-2.5 text-sm bg-white outline-none focus:borde
 const inputStyle = { border: "1px solid #e8d5b7", color: INK };
 
 /**
- * Inquiry form. There is no inbox on the site: sending opens WhatsApp with the message already
- * written, addressed to the vendor (or to Butterfly Decor when the vendor has no phone number).
+ * Inquiry form. The message is saved on the site (the vendor gets it by email and in their
+ * dashboard), then WhatsApp opens with it already written, so the conversation can go on there.
  */
-export function InquireForm({ vendorName, whatsappNumber }: { vendorName: string; whatsappNumber: string }) {
+export function InquireForm({ vendorId, vendorName, whatsappNumber }: { vendorId: string; vendorName: string; whatsappNumber: string }) {
   const [name, setName] = useState("");
   const [date, setDate] = useState("");
   const [message, setMessage] = useState("");
+  const [phone, setPhone] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +25,13 @@ export function InquireForm({ vendorName, whatsappNumber }: { vendorName: string
       date && `Wedding date: ${new Date(`${date}T00:00:00`).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}`,
       message.trim(),
     ].filter(Boolean);
+    // Saved in the background; WhatsApp must open straight away or the browser may block it.
+    fetch("/api/inquiries", {
+      method: "POST",
+      keepalive: true,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ vendorId, name, phone, eventDate: date, message }),
+    }).catch(() => {});
     window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(lines.join("\n"))}`, "_blank", "noopener");
   };
 
@@ -32,6 +40,10 @@ export function InquireForm({ vendorName, whatsappNumber }: { vendorName: string
       <label className="block">
         <span className="text-xs mb-1 block" style={{ color: "#57422C" }}>Your name</span>
         <input value={name} onChange={(e) => setName(e.target.value)} required maxLength={60} className={inputClass} style={inputStyle} />
+      </label>
+      <label className="block">
+        <span className="text-xs mb-1 block" style={{ color: "#57422C" }}>Your phone (optional)</span>
+        <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} maxLength={20} className={inputClass} style={inputStyle} />
       </label>
       <label className="block">
         <span className="text-xs mb-1 block" style={{ color: "#57422C" }}>Wedding date (optional)</span>

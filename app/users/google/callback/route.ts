@@ -2,6 +2,8 @@ import { prisma } from "@/lib/db"
 import { homeFor } from "@/lib/account-paths"
 import { GOOGLE_STATE_COOKIE, googleRedirectUri } from "@/lib/google-oauth"
 import { startAdminSession } from "@/lib/admin-login"
+import { recordLogin } from "@/lib/login-events"
+import { welcomeNewAccount } from "@/lib/account-events"
 import { adminHintFor, endUserSession, setAccountHint, startUserSession } from "@/lib/user-auth"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -57,6 +59,7 @@ export async function GET(req: NextRequest) {
       // One identity at a time: leave any client/vendor session behind.
       await endUserSession()
       await startAdminSession(admin.id)
+      await recordLogin(req, { who: "ADMIN", email, name: profile.name, method: "GOOGLE", success: true })
       const hint = await adminHintFor(admin.id, { name: profile.name, avatarUrl })
       if (hint) await setAccountHint(hint)
       const res = NextResponse.redirect(new URL("/account", req.url))
@@ -64,12 +67,13 @@ export async function GET(req: NextRequest) {
       return res
     }
 
-    let user = await prisma.user.findUnique({ where: { email }, select: { id: true, googleId: true, role: true } })
+    let user = await prisma.user.findUnique({ where: { email }, select: { id: true, name: true, googleId: true, role: true } })
     if (!user) {
       user = await prisma.user.create({
         data: { email, name: profile.name || email.split("@")[0], googleId: profile.sub, avatarUrl },
-        select: { id: true, googleId: true, role: true },
+        select: { id: true, name: true, googleId: true, role: true },
       })
+      await welcomeNewAccount({ id: user.id, name: user.name, email, method: "Google" })
     } else if (!user.googleId) {
       // The address was registered with a password but never proven. Google has now proven who owns
       // it, so drop the old password and sessions in case someone else created that account first.
@@ -80,6 +84,7 @@ export async function GET(req: NextRequest) {
       await prisma.user.update({ where: { id: user.id }, data: { avatarUrl } })
     }
     await startUserSession(user.id)
+    await recordLogin(req, { who: "USER", userId: user.id, email, name: user.name, method: "GOOGLE", success: true })
 
     const res = NextResponse.redirect(new URL(homeFor(user.role), req.url))
     res.cookies.delete(GOOGLE_STATE_COOKIE)

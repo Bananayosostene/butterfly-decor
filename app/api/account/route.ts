@@ -3,6 +3,8 @@ import { homeFor } from "@/lib/account-paths"
 import { isObjectId } from "@/lib/data"
 import { getCurrentUser, setAccountHint } from "@/lib/user-auth"
 import { refreshVendors } from "@/lib/vendors"
+import { vendorSignedUp } from "@/lib/account-events"
+import { cleanBirthday } from "@/lib/birthday"
 import { type NextRequest, NextResponse } from "next/server"
 
 const fail = (message: string, status = 400) =>
@@ -16,8 +18,10 @@ export async function PATCH(req: NextRequest) {
     if (user.role) return fail("Your account type is already set.", 409)
 
     const body = await req.json().catch(() => ({}))
+    // Optional; a date that is not real is simply not saved.
+    const birthday = cleanBirthday(body.birthday) ?? undefined
     if (!body.vendor) {
-      await prisma.user.update({ where: { id: user.id }, data: { role: "CLIENT" } })
+      await prisma.user.update({ where: { id: user.id }, data: { role: "CLIENT", birthday } })
       await setAccountHint({ name: user.name, email: user.email, kind: "CLIENT", avatarUrl: user.avatarUrl })
       return NextResponse.json({ success: true, message: "Saved", statusCode: 200, data: { next: homeFor("CLIENT") } })
     }
@@ -34,8 +38,10 @@ export async function PATCH(req: NextRequest) {
 
     await prisma.user.update({
       where: { id: user.id },
-      data: { role: "VENDOR", businessName, vendorCategoryId: categoryId, about, location: location || null },
+      // New vendors appear on the public pages once the admin has approved them.
+      data: { role: "VENDOR", businessName, vendorCategoryId: categoryId, about, location: location || null, vendorStatus: "PENDING", birthday },
     })
+    await vendorSignedUp({ id: user.id, name: user.name, email: user.email, businessName })
     await setAccountHint({ name: businessName, email: user.email, kind: "VENDOR", avatarUrl: user.avatarUrl })
     refreshVendors()
     return NextResponse.json({ success: true, message: "Saved", statusCode: 200, data: { next: homeFor("VENDOR") } })

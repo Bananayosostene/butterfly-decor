@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db"
 import { isObjectId } from "@/lib/data"
 import { getDashboardUser } from "@/lib/user-auth"
 import { refreshVendors } from "@/lib/vendors"
+import { cleanBirthday } from "@/lib/birthday"
 import { type NextRequest, NextResponse } from "next/server"
 
 const text = (value: unknown, max: number) => (typeof value === "string" ? value.trim().slice(0, max) : undefined)
@@ -31,6 +32,7 @@ export async function PATCH(req: NextRequest) {
         about: text(body.about, 2000),
         coverUrl: body.coverUrl === null ? null : text(body.coverUrl, 500),
         vendorCategoryId: categoryId,
+        birthday: cleanBirthday(body.birthday),
       },
     })
     refreshVendors()

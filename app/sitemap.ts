@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { prisma } from "@/lib/db";
+import { LIVE_VENDOR } from "@/lib/vendors";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://www.butterflydec.com";
 
@@ -8,7 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [items, albums, vendors] = await Promise.all([
     prisma.collectionItem.findMany({ select: { id: true, updatedAt: true } }),
     prisma.weddingAlbum.findMany({ select: { id: true, createdAt: true } }),
-    prisma.user.findMany({ where: { role: "VENDOR" }, select: { id: true, updatedAt: true } }),
+    prisma.user.findMany({ where: LIVE_VENDOR, select: { id: true, updatedAt: true } }),
   ]);
 
   const staticPages = [

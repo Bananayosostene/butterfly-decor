@@ -4,9 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, FolderOpen, Image, Shirt, BookOpen, Settings, LogOut, Menu, X, BarChart3, Store, Images, UserRound,
-  Sparkles, ChevronDown, ClipboardList, ListChecks, Users, Heart, ThumbsUp, Moon, Sun, ExternalLink, Gem, Home, type LucideIcon,
+  Sparkles, ChevronDown, ClipboardList, ListChecks, Users, Heart, ThumbsUp, ShieldCheck, MessageSquare, BellRing, Moon, Sun, ExternalLink, Gem, Home, type LucideIcon,
 } from "lucide-react";
 import { useState } from "react";
+import { NotificationBell } from "@/components/account/notification-bell";
 
 export type DashboardRole = "ADMIN" | "VENDOR";
 export type DashboardTheme = "dark" | "light";
@@ -26,9 +27,9 @@ const NAV: Record<DashboardRole, NavSection[]> = {
       label: "Overview",
       entries: [
         { href: "/account", label: "Dashboard", icon: LayoutDashboard, exact: true },
-        { href: "/account/statistics", label: "Statistics", icon: BarChart3 },
         { href: "/account/visitors", label: "Visitors", icon: Users },
         { href: "/account/reactions", label: "Reactions", icon: ThumbsUp },
+        { href: "/account/security", label: "Security", icon: ShieldCheck },
       ],
     },
     {
@@ -85,6 +86,7 @@ const NAV: Record<DashboardRole, NavSection[]> = {
       entries: [
         { href: "/account/my-gallery", label: "My gallery", icon: Images },
         { href: "/account/my-profile", label: "My profile", icon: UserRound },
+        { href: "/account/my-inquiries", label: "Messages", icon: MessageSquare },
       ],
     },
   ],
@@ -95,8 +97,13 @@ const BARE_PATHS = ["/account/forgot-password", "/account/reset-password"];
 const isActive = (item: NavLink, pathname: string) =>
   item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
-const linksOf = (role: DashboardRole) =>
-  NAV[role].flatMap((s) => s.entries).flatMap((e) => ("children" in e ? e.children : [e]));
+/** Pages reached from the top bar rather than the menu, so they still get a title. */
+const EXTRA_PAGES: NavLink[] = [{ href: "/account/notifications", label: "Notifications", icon: BellRing }];
+
+const linksOf = (role: DashboardRole) => [
+  ...NAV[role].flatMap((s) => s.entries).flatMap((e) => ("children" in e ? e.children : [e])),
+  ...EXTRA_PAGES,
+];
 
 function NavItem({ item, pathname, onNavigate, nested }: { item: NavLink; pathname: string; onNavigate: () => void; nested?: boolean }) {
   const active = isActive(item, pathname);
@@ -263,14 +270,7 @@ export default function DashboardShell({
           </button>
           <h1 className="text-base font-semibold text-foreground truncate">{currentPage?.label ?? "Dashboard"}</h1>
           <div className="ml-auto flex items-center gap-1.5">
-            <Link
-              href="/"
-              target="_blank"
-              className="inline-flex items-center gap-2 h-9 px-3 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-accent transition-colors"
-            >
-              <ExternalLink className="w-4 h-4" />
-              <span className="hidden sm:inline">View site</span>
-            </Link>
+            <NotificationBell />
             <button
               onClick={toggleTheme}
               aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}

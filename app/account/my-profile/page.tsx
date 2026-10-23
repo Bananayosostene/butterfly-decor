@@ -11,7 +11,7 @@ export default async function MyProfilePage() {
   const [profile, categories] = await Promise.all([
     prisma.user.findUnique({
       where: { id: user.id },
-      select: { businessName: true, location: true, phone: true, about: true, coverUrl: true, vendorCategoryId: true },
+      select: { businessName: true, location: true, phone: true, about: true, coverUrl: true, vendorCategoryId: true, birthday: true },
     }),
     prisma.vendorCategory.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } }),
   ]);

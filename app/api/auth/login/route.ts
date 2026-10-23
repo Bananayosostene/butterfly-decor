@@ -2,6 +2,7 @@ import { cookies } from "next/headers"
 import { prisma } from "@/lib/db"
 import { verifyPassword } from "@/lib/auth"
 import { loginAdmin } from "@/lib/admin-login"
+import { recordLogin } from "@/lib/login-events"
 import { homeFor } from "@/lib/account-paths"
 import { adminHintFor, endUserSession, setAccountHint, startUserSession } from "@/lib/user-auth"
 import { type NextRequest, NextResponse } from "next/server"
@@ -22,6 +23,7 @@ export async function POST(req: NextRequest) {
       (await loginAdmin(email, password, req.nextUrl.origin)) ??
       (typedEmail !== email ? await loginAdmin(typedEmail, password, req.nextUrl.origin) : null)
     if (admin) {
+      await recordLogin(req, { who: "ADMIN", email, method: "PASSWORD", success: admin.ok })
       if (!admin.ok)
         return NextResponse.json({ success: false, message: admin.message, statusCode: admin.status }, { status: admin.status })
       // One identity at a time: leave any client/vendor session behind.
@@ -30,10 +32,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, message: "Signed in", statusCode: 200, data: { next: "/account" } })
     }
 
-    const user = await prisma.user.findUnique({ where: { email }, select: { id: true, password: true, role: true } })
+    const user = await prisma.user.findUnique({ where: { email }, select: { id: true, name: true, password: true, role: true } })
     // Accounts created with Google have no password; the same message is used for every failure.
-    if (!user?.password || !verifyPassword(password, user.password))
+    if (!user?.password || !verifyPassword(password, user.password)) {
+      if (user) await recordLogin(req, { who: "USER", userId: user.id, email, name: user.name, method: "PASSWORD", success: false })
       return NextResponse.json({ success: false, message: "Wrong email or password.", statusCode: 401 }, { status: 401 })
+    }
+    await recordLogin(req, { who: "USER", userId: user.id, email, name: user.name, method: "PASSWORD", success: true })
 
     await startUserSession(user.id)
     ;(await cookies()).delete("admin_session")

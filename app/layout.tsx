@@ -524,10 +524,11 @@ export const metadata: Metadata = {
     description: "Wedding decoration and outfit rental in Kigali, Rwanda",
     images: [
       {
-        url: "/og-image.png",
+        // The homepage itself: shown beside the site in Google and when the link is shared.
+        url: "/og-image.jpg",
         width: 1200,
-        height: 630,
-        alt: "Butterfly Decor Rwanda",
+        height: 577,
+        alt: "Butterfly Decor Rwanda: the free online wedding planner",
       },
     ],
   },
@@ -535,7 +536,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Butterfly Decor",
     description: "Event Decoration & Outfit Rental in Rwanda",
-    images: ["/og-image.png"],
+    images: ["/og-image.jpg"],
   },
   alternates: {
     canonical: BASE_URL,
@@ -544,9 +545,16 @@ export const metadata: Metadata = {
       rw: `${BASE_URL}/rw`,
     },
   },
+  // The gold butterfly with a chocolate inside, on a transparent background (app/favicon.ico holds
+  // the small sizes). Google needs a square icon of at least 48 pixels.
   icons: {
-    icon: "/icon.svg",
-    apple: "/icon.svg",
+    icon: [
+      { url: "/icon-48.png", sizes: "48x48", type: "image/png" },
+      { url: "/icon-96.png", sizes: "96x96", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: "/apple-icon.png",
   },
 };
 

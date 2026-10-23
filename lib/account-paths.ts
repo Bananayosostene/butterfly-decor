@@ -7,4 +7,4 @@ export function homeFor(role: string | null | undefined) {
 }
 
 /** Dashboard pages a vendor may open; everything else under /admin is for the site admin. */
-export const VENDOR_DASHBOARD_PATHS = ["/account/my-gallery", "/account/my-profile"];
+export const VENDOR_DASHBOARD_PATHS = ["/account/my-gallery", "/account/my-profile", "/account/my-inquiries", "/account/notifications"];

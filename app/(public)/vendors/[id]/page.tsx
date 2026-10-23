@@ -102,7 +102,7 @@ export default async function VendorPage({ params }: Props) {
             <div className="p-5 border" style={{ borderColor: LINE }}>
               <h2 className={`${displaySerif.className} text-2xl`} style={{ color: INK }}>Inquire</h2>
               <p className="mt-2 text-sm" style={{ color: "#57422C" }}>Send a message to check availability and request pricing.</p>
-              <InquireForm vendorName={vendor.name} whatsappNumber={whatsappNumber} />
+              <InquireForm vendorId={vendor.id} vendorName={vendor.name} whatsappNumber={whatsappNumber} />
             </div>
           </aside>
         </div>

@@ -2,6 +2,8 @@ import { prisma } from "@/lib/db"
 import { hashPassword } from "@/lib/auth"
 import { homeFor } from "@/lib/account-paths"
 import { startUserSession } from "@/lib/user-auth"
+import { welcomeNewAccount } from "@/lib/account-events"
+import { recordLogin } from "@/lib/login-events"
 import { type NextRequest, NextResponse } from "next/server"
 
 const fail = (message: string, status = 400) =>
@@ -32,6 +34,9 @@ export async function POST(req: NextRequest) {
       select: { id: true },
     })
     await startUserSession(user.id)
+    await welcomeNewAccount({ id: user.id, name, email, method: "email and password" })
+    // The first sign-in is recorded, so a later sign-in from another device can be noticed.
+    await recordLogin(req, { who: "USER", userId: user.id, email, name, method: "PASSWORD", success: true })
     return NextResponse.json({ success: true, message: "Account created", statusCode: 201, data: { next: homeFor(null) } }, { status: 201 })
   } catch {
     return fail("Could not create your account. Please try again.", 500)

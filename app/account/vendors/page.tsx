@@ -8,11 +8,12 @@ import { isObjectId, parsePage } from "@/lib/data";
 import { cldImage } from "@/lib/image";
 import { vendorsHref } from "./href";
 import VendorFilters from "./vendor-filters";
+import VendorStatus from "./vendor-status";
 
 const PER_PAGE = 25;
 
 /** Every vendor account, searched by name and filtered by category. The filters live in the address. */
-export default async function VendorsAdminPage({ searchParams }: { searchParams: Promise<{ q?: string; category?: string; page?: string }> }) {
+export default async function VendorsAdminPage({ searchParams }: { searchParams: Promise<{ q?: string; category?: string; page?: string; status?: string }> }) {
   const [params, cookieStore] = await Promise.all([searchParams, cookies()]);
   if (!cookieStore.get("admin_session")?.value) redirect("/login");
 
@@ -20,21 +21,24 @@ export default async function VendorsAdminPage({ searchParams }: { searchParams:
   const category = params.category && isObjectId(params.category) ? params.category : "";
   const page = parsePage(params.page);
 
+  // ?status=PENDING lists the vendors waiting for approval.
+  const waitingOnly = params.status === "PENDING";
   const where: Prisma.UserWhereInput = {
     role: "VENDOR",
+    ...(waitingOnly && { vendorStatus: "PENDING" }),
     ...(category && { vendorCategoryId: category }),
     // The search matches the business name or the owner's name.
     ...(q && { OR: [{ businessName: { contains: q, mode: "insensitive" } }, { name: { contains: q, mode: "insensitive" } }] }),
   };
 
-  const [vendors, total, all, categories] = await Promise.all([
+  const [vendors, total, all, categories, waiting, leads] = await Promise.all([
     prisma.user.findMany({
       where,
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * PER_PAGE,
       take: PER_PAGE,
       select: {
-        id: true, name: true, email: true, phone: true, businessName: true, location: true, coverUrl: true, createdAt: true,
+        id: true, name: true, email: true, phone: true, businessName: true, location: true, coverUrl: true, createdAt: true, vendorStatus: true,
         vendorCategory: { select: { name: true } },
         _count: { select: { items: true } },
       },
@@ -42,11 +46,18 @@ export default async function VendorsAdminPage({ searchParams }: { searchParams:
     prisma.user.count({ where }),
     prisma.user.count({ where: { role: "VENDOR" } }),
     prisma.vendorCategory.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } }),
+    prisma.user.count({ where: { role: "VENDOR", vendorStatus: "PENDING" } }),
+    prisma.inquiry.groupBy({ by: ["vendorId"], _count: { vendorId: true } }),
   ]);
+  const leadsOf = new Map(leads.map((l) => [l.vendorId, l._count.vendorId]));
   const lastPage = Math.max(1, Math.ceil(total / PER_PAGE));
 
   return (
     <div className="space-y-6">
+      <div className="flex flex-wrap gap-2">
+        <Link href="/account/vendors" className="px-4 py-1.5 rounded-full text-sm font-medium border border-border" style={!waitingOnly ? { background: "var(--primary)", color: "var(--primary-foreground)" } : { color: "var(--foreground)" }}>All vendors</Link>
+        <Link href="/account/vendors?status=PENDING" className="px-4 py-1.5 rounded-full text-sm font-medium border border-border" style={waitingOnly ? { background: "var(--primary)", color: "var(--primary-foreground)" } : { color: "var(--foreground)" }}>Waiting for approval · {waiting}</Link>
+      </div>
       <VendorFilters q={q} category={category} categories={categories} summary={q || category ? `${total} of ${all} vendors` : `${all} vendor${all !== 1 ? "s" : ""}`} />
 
       <div className="bg-card border border-border rounded-2xl overflow-hidden">
@@ -54,7 +65,7 @@ export default async function VendorsAdminPage({ searchParams }: { searchParams:
           <table className="w-full text-sm">
             <thead className="bg-muted">
               <tr>
-                {["Vendor", "Category", "Contact", "Location", "Photos", "Joined", ""].map((h) => (
+                {["Vendor", "Status", "Category", "Contact", "Location", "Photos", "Messages", "Joined", ""].map((h) => (
                   <th key={h} className="text-left px-4 py-3 text-muted-foreground font-medium whitespace-nowrap">{h}</th>
                 ))}
               </tr>
@@ -77,6 +88,7 @@ export default async function VendorsAdminPage({ searchParams }: { searchParams:
                         </div>
                       </div>
                     </td>
+                    <td className="px-4 py-3"><VendorStatus vendorId={v.id} status={v.vendorStatus ?? "APPROVED"} /></td>
                     <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{v.vendorCategory?.name ?? "Not chosen"}</td>
                     <td className="px-4 py-3">
                       <p className="text-foreground whitespace-nowrap">{v.phone || "-"}</p>
@@ -84,6 +96,7 @@ export default async function VendorsAdminPage({ searchParams }: { searchParams:
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">{v.location || "-"}</td>
                     <td className="px-4 py-3 text-muted-foreground">{v._count.items}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{leadsOf.get(v.id) ?? 0}</td>
                     <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{v.createdAt.toLocaleDateString("en-GB")}</td>
                     <td className="px-4 py-3">
                       <a href={`/vendors/${v.id}`} target="_blank" className="inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap" style={{ color: "var(--dash-accent)" }}>
@@ -94,7 +107,7 @@ export default async function VendorsAdminPage({ searchParams }: { searchParams:
                 );
               })}
               {vendors.length === 0 && (
-                <tr><td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">{all ? "No vendors match." : "No vendor has signed up yet."}</td></tr>
+                <tr><td colSpan={9} className="px-4 py-12 text-center text-muted-foreground">{all ? "No vendors match." : "No vendor has signed up yet."}</td></tr>
               )}
             </tbody>
           </table>

@@ -19,6 +19,7 @@ export default function WelcomeClient({ name, categories }: { name: string; cate
   const [categoryId, setCategoryId] = useState("");
   const [location, setLocation] = useState("");
   const [about, setAbout] = useState("");
+  const [birthday, setBirthday] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -37,7 +38,7 @@ export default function WelcomeClient({ name, categories }: { name: string; cate
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(
-          isVendor ? { vendor: true, businessName, vendorCategoryId: categoryId, location, about } : { vendor: false },
+          isVendor ? { vendor: true, businessName, vendorCategoryId: categoryId, location, about, birthday } : { vendor: false, birthday },
         ),
       });
       const json = await res.json().catch(() => ({}));
@@ -87,6 +88,11 @@ export default function WelcomeClient({ name, categories }: { name: string; cate
               {radio(true, "Yes")}
               {radio(false, "No")}
             </div>
+            <label className="mt-6 block">
+              <span className="text-sm font-semibold" style={{ color: INK }}>Your birthday (optional)</span>
+              <span className="block text-xs mb-1.5" style={{ color: "var(--muted-foreground)" }}>So we can wish you a happy birthday.</span>
+              <input type="date" value={birthday} onChange={(e) => setBirthday(e.target.value)} max={new Date().toISOString().slice(0, 10)} className={inputClass} />
+            </label>
           </fieldset>
         )}
 

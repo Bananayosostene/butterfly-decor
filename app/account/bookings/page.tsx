@@ -1,56 +1,71 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-import { prisma } from "@/lib/db";
 import Link from "next/link";
+import { prisma } from "@/lib/db";
+import { parsePage } from "@/lib/data";
+import { BOOKING_STATUSES, statusLabel } from "@/lib/bookings";
+import { BookingCard, bookingThumbs } from "@/components/account/booking-card";
 
-export default async function BookingsPage() {
-  const cookieStore = await cookies();
+const PER_PAGE = 20;
+
+/** Every booking, newest first, as cards; filtered by status. */
+export default async function BookingsPage({ searchParams }: { searchParams: Promise<{ status?: string; page?: string }> }) {
+  const [params, cookieStore] = await Promise.all([searchParams, cookies()]);
   if (!cookieStore.get("admin_session")?.value) redirect("/login");
 
-  const bookings = await prisma.booking.findMany({ orderBy: { createdAt: "desc" } });
+  const status = (BOOKING_STATUSES as readonly string[]).includes(params.status ?? "") ? params.status! : "";
+  const page = parsePage(params.page);
+  const where = status ? { status } : {};
 
-  const statusColor = (s: string) =>
-    s === "NEW" ? { background: "var(--dash-soft)", color: "var(--dash-accent)" } :
-    s === "CONFIRMED" ? { background: "var(--dash-ok-bg)", color: "var(--dash-ok)" } :
-    { background: "var(--muted)", color: "var(--muted-foreground)" };
+  const [bookings, total, counts] = await Promise.all([
+    prisma.booking.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * PER_PAGE,
+      take: PER_PAGE,
+      select: { id: true, name: true, phone: true, eventDate: true, status: true, selectedItems: true, createdAt: true },
+    }),
+    prisma.booking.count({ where }),
+    prisma.booking.groupBy({ by: ["status"], _count: { status: true } }),
+  ]);
+  const thumbs = await bookingThumbs(bookings);
+  const countOf = (s: string) => counts.find((c) => c.status === s)?._count.status ?? 0;
+  const all = counts.reduce((n, c) => n + c._count.status, 0);
+  const lastPage = Math.max(1, Math.ceil(total / PER_PAGE));
+  const href = (nextStatus: string, nextPage = 1) => {
+    const query = new URLSearchParams({ ...(nextStatus && { status: nextStatus }), ...(nextPage > 1 && { page: String(nextPage) }) }).toString();
+    return `/account/bookings${query ? `?${query}` : ""}`;
+  };
 
   return (
-    <div className="space-y-6">
-      <p className="text-sm text-muted-foreground">{bookings.length} total bookings</p>
+    <div className="space-y-6 max-w-5xl">
+      <div className="flex flex-wrap gap-2">
+        {[{ value: "", label: "All", count: all }, ...BOOKING_STATUSES.map((s) => ({ value: s, label: statusLabel[s], count: countOf(s) }))].map((tab) => (
+          <Link
+            key={tab.label}
+            href={href(tab.value)}
+            className="px-4 py-1.5 rounded-full text-sm font-medium border border-border"
+            style={status === tab.value ? { background: "var(--primary)", color: "var(--primary-foreground)" } : { color: "var(--foreground)" }}
+          >
+            {tab.label} · {tab.count}
+          </Link>
+        ))}
+      </div>
 
       {bookings.length === 0 ? (
-        <p className="text-muted-foreground text-sm">No bookings yet.</p>
+        <p className="text-muted-foreground text-sm">No bookings here.</p>
       ) : (
-        <div className="bg-card border border-border rounded-2xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-muted">
-                <tr>
-                  <th className="text-left px-4 py-3 text-muted-foreground font-medium">Phone</th>
-                  <th className="text-left px-4 py-3 text-muted-foreground font-medium">Event Date</th>
-                  <th className="text-left px-4 py-3 text-muted-foreground font-medium">Items</th>
-                  <th className="text-left px-4 py-3 text-muted-foreground font-medium">Status</th>
-                  <th className="text-left px-4 py-3 text-muted-foreground font-medium">Created</th>
-                  <th className="text-left px-4 py-3 text-muted-foreground font-medium"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {bookings.map((b) => (
-                  <tr key={b.id} className="border-t border-border hover:bg-muted/40">
-                    <td className="px-4 py-3 text-foreground font-medium">{b.phone}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{new Date(b.eventDate).toLocaleDateString()}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{b.selectedItems.length} item{b.selectedItems.length !== 1 ? "s" : ""}</td>
-                    <td className="px-4 py-3">
-                      <span className="px-2 py-0.5 rounded-full text-xs font-medium" style={statusColor(b.status)}>{b.status}</span>
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">{new Date(b.createdAt).toLocaleDateString()}</td>
-                    <td className="px-4 py-3">
-                      <Link href={`/account/bookings/${b.id}`} className="text-xs font-medium" style={{ color: "var(--dash-accent)" }}>View</Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <div className="space-y-3">
+          {bookings.map((b) => <BookingCard key={b.id} booking={b} thumbs={thumbs} />)}
+        </div>
+      )}
+
+      {lastPage > 1 && (
+        <div className="flex items-center justify-between text-sm">
+          <p className="text-muted-foreground">Page {page} of {lastPage}</p>
+          <div className="flex gap-2">
+            {page > 1 && <Link href={href(status, page - 1)} className="px-4 py-2 rounded-lg border border-border text-foreground hover:bg-accent">Newer</Link>}
+            {page < lastPage && <Link href={href(status, page + 1)} className="px-4 py-2 rounded-lg border border-border text-foreground hover:bg-accent">Older</Link>}
           </div>
         </div>
       )}

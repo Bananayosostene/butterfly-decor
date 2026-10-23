@@ -72,9 +72,11 @@ export function BookingModal({ open, onClose }: BookingModalProps) {
         }),
       });
 
-      if (!response.ok) throw new Error();
+      const json = await response.json().catch(() => null);
+      // The server explains what is wrong (e.g. the phone number), so the visitor can fix it.
+      if (!response.ok) throw new Error(json?.message || json?.error);
 
-      const { whatsappUrl } = await response.json();
+      const { whatsappUrl } = json;
       window.open(whatsappUrl, "_blank");
 
       setPhone("");
@@ -84,8 +86,8 @@ export function BookingModal({ open, onClose }: BookingModalProps) {
       setSelectedItems([]);
       syncStorage([]);
       onClose();
-    } catch {
-      setError("Failed to submit booking. Please try again.");
+    } catch (err) {
+      setError(err instanceof Error && err.message ? err.message : "Failed to submit booking. Please try again.");
     } finally {
       setLoading(false);
     }

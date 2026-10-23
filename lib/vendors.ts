@@ -1,4 +1,5 @@
 import { unstable_cache, revalidateTag } from "next/cache"
+import type { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/db"
 
 /** Cached reads for the public vendor pages; every vendor-related write calls refreshVendors(). */
@@ -7,6 +8,15 @@ const TAG = "vendors"
 const HOUR = 60 * 60
 
 export const VENDORS_PAGE_SIZE = 24
+
+/**
+ * Vendors couples may see: approved ones, and those who joined before approval existed (no
+ * status). New vendors wait for the admin; suspended ones are hidden.
+ */
+export const LIVE_VENDOR = {
+  role: "VENDOR",
+  OR: [{ vendorStatus: "APPROVED" }, { vendorStatus: null }, { vendorStatus: { isSet: false } }],
+} satisfies Prisma.UserWhereInput
 
 export function refreshVendors() {
   revalidateTag(TAG, { expire: 0 })
@@ -21,10 +31,12 @@ export const getVendorCategories = unstable_cache(
 /** Vendors for the directory: newest first, optionally in one category and/or matching a name. */
 export const getVendors = unstable_cache(
   async (categoryId: string | null, q: string, take: number) => {
-    const where = {
-      role: "VENDOR",
-      ...(categoryId ? { vendorCategoryId: categoryId } : {}),
-      ...(q ? { businessName: { contains: q, mode: "insensitive" as const } } : {}),
+    const where: Prisma.UserWhereInput = {
+      AND: [
+        LIVE_VENDOR,
+        categoryId ? { vendorCategoryId: categoryId } : {},
+        q ? { businessName: { contains: q, mode: "insensitive" as const } } : {},
+      ],
     }
     const [vendors, total] = await Promise.all([
       prisma.user.findMany({
@@ -55,7 +67,7 @@ export const getVendors = unstable_cache(
       })),
     }
   },
-  ["vendors-list"],
+  ["vendors-list-v2"],
   { tags: [TAG], revalidate: HOUR },
 )
 
@@ -63,7 +75,7 @@ export const getVendors = unstable_cache(
 export const getVendor = unstable_cache(
   async (id: string) => {
     const vendor = await prisma.user.findFirst({
-      where: { id, role: "VENDOR" },
+      where: { AND: [{ id }, LIVE_VENDOR] },
       select: {
         id: true,
         name: true,
@@ -81,6 +93,6 @@ export const getVendor = unstable_cache(
     })
     return vendor && { ...vendor, name: vendor.businessName || vendor.name }
   },
-  ["vendor"],
+  ["vendor-v2"],
   { tags: [TAG], revalidate: HOUR },
 )

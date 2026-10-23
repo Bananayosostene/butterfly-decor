@@ -8,8 +8,9 @@ export function JsonLd() {
       // Other names people search for: Google links them all to this business.
       alternateName: ["Butterfly Decor Rwanda", "Butterfly Decor ,Butterfly Decor Kigali", "Sostene Decor", "Sostene Group", "Butterfly Events "],
       url: BASE_URL,
-      logo: `${BASE_URL}/new_logo.png`,
-      image: `${BASE_URL}/flyer-03.jpg`,
+      // Google reads the square logo for the business, and the picture for search results.
+      logo: `${BASE_URL}/icon-512.png`,
+      image: `${BASE_URL}/og-image.jpg`,
       description:
         "Butterfly Decor (Sostene Group) in Kigali, Rwanda: wedding decoration and outfit rental, with bridal gowns, groom suits, imikenyero, backdrops and flowers for Gusaba and reception. | Serivisi zo gutaka ubukwe mu Rwanda no gukodesha imyenda y'ubukwe n'imikenyero.",
       telephone: "+250788724867",

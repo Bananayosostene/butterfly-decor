@@ -6,9 +6,14 @@ import { isBot, parseUserAgent } from "@/lib/user-agent";
 import { VISITOR_COOKIE } from "@/lib/visitor";
 import { OWNER_COOKIE, OWNER_COOKIE_OPTIONS } from "@/lib/visits";
 import { after, type NextRequest, NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+import { adminEmails, sendEmail, siteUrl } from "@/lib/email";
+import { notifyAdmin } from "@/lib/notify";
 
 const MAX_SECONDS = 12 * 60 * 60;
+/** Set on a browser's first visit; a later visit with it counts as a returning visitor. */
+const SEEN_COOKIE = "bfly_seen";
+/** The address that has always received the visitor emails, besides the admin accounts. */
+const VISITOR_EMAIL = "sbananayo99@gmail.com";
 /** Addresses a request has when it comes from the same computer the site is running on. */
 const LOCAL_ADDRESSES = ["::1", "127.0.0.1", "::ffff:127.0.0.1"];
 
@@ -59,36 +64,6 @@ function respond(body: object, admin: boolean) {
   if (admin) res.cookies.set(OWNER_COOKIE, "1", OWNER_COOKIE_OPTIONS);
   return res;
 }
-
-function notifyByEmail(v: { device: string; model: string | null; browser: string; os: string; ip: string; place: string; name: string }) {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: { user: process.env.NODEMAILER_USER, pass: process.env.NODEMAILER_PASS },
-  });
-  const row = (label: string, value: string) =>
-    `<tr><td style="padding:8px 0;color:#6b7280;font-size:14px;">${label}</td><td style="padding:8px 0;font-weight:600;">${value}</td></tr>`;
-  return transporter.sendMail({
-    from: process.env.NODEMAILER_USER,
-    to: "sbananayo99@gmail.com",
-    subject: "New Visitor on Butterfly Decor",
-    html: `
-      <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:24px;border:1px solid #e5e7eb;border-radius:12px;">
-        <h2 style="color:#0f0b06;margin-bottom:16px;">New Visitor</h2>
-        <table style="width:100%;border-collapse:collapse;">
-          ${row("Visitor", v.name)}
-          ${row("Location", v.place)}
-          ${row("Device", [v.device, v.model].filter(Boolean).join(" · "))}
-          ${row("Browser", v.browser)}
-          ${row("OS", v.os)}
-          ${row("IP", v.ip)}
-          ${row("Time", new Date().toLocaleString("en-GB", { timeZone: "Africa/Kigali" }))}
-        </table>
-      </div>
-    `,
-  });
-}
-
-const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
 /**
  * Called by the visit tracker. Without an `id` it records a new visit and returns its id; with
@@ -158,28 +133,42 @@ export async function POST(req: NextRequest) {
         // A visit to the test server on the owner's own computer is never a real visitor.
         isOwner: owner || LOCAL_ADDRESSES.includes(ip),
         visitorId,
+        // A browser that has been here before (in another visit) carries this cookie.
+        returning: !!req.cookies.get(SEEN_COOKIE)?.value,
         ...(account ?? {}),
       },
       select: { id: true },
     });
 
-    // The owner's own visits are recorded without an email.
+    // The owner's own visits are recorded without a notification.
     if (owner || LOCAL_ADDRESSES.includes(ip)) return respond({ ok: true, id: visit.id }, admin);
 
-    // The email goes out after the response, so the visitor's browser is not kept waiting.
-    after(() =>
-      notifyByEmail({
-        device: info.device,
-        model: model && escapeHtml(model),
-        browser: [info.browser, info.browserVersion].filter(Boolean).join(" "),
-        os: escapeHtml([info.os, osVersion].filter(Boolean).join(" ")),
-        ip: escapeHtml(ip),
-        place: escapeHtml([location.city, location.region, location.country].filter(Boolean).join(", ") || "Unknown"),
-        name: escapeHtml(account ? [account.userName, account.userEmail].filter(Boolean).join(" · ") : "Guest"),
-      }).catch((error) => console.error("Visit email error:", error)),
+    const returning = !!req.cookies.get(SEEN_COOKIE)?.value;
+    const who = account ? account.userName : returning ? "A returning visitor" : "A new visitor";
+    const place = [location.city, location.country].filter(Boolean).join(", ") || "an unknown place";
+    const device = [info.device, model].filter(Boolean).join(", ");
+    await notifyAdmin({
+      type: "VISIT",
+      title: `${who} is on the site`,
+      body: `From ${place}, on ${device} (${info.browser}). Opened ${text(body?.path, 120) ?? "/"}.`,
+      href: "/account/visitors",
+    });
+    // A short plain email to the owner's address that has always received visitor emails.
+    after(async () =>
+      sendEmail({
+        to: [VISITOR_EMAIL, ...(await adminEmails())],
+        subject: `${who} on Butterfly Decor`,
+        paragraphs: [
+          `${who} just opened the site from ${place}, on ${device} with ${info.browser} on ${[info.os, osVersion].filter(Boolean).join(" ")}.`,
+          `First page: ${text(body?.path, 120) ?? "/"}. Came from: ${text(body?.referrer, 120) ?? "a direct visit"}.`,
+        ],
+        action: { label: "See all visitors", href: siteUrl("/account/visitors") },
+      }),
     );
 
-    return respond({ ok: true, id: visit.id }, admin);
+    const res = respond({ ok: true, id: visit.id }, admin);
+    if (!returning) res.cookies.set(SEEN_COOKIE, "1", { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", maxAge: 365 * 24 * 60 * 60, path: "/" });
+    return res;
   } catch (error) {
     console.error("Track error:", error);
     return NextResponse.json({ ok: false }, { status: 500 });

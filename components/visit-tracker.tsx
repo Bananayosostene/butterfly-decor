@@ -92,9 +92,16 @@ export function VisitTracker() {
 
     document.addEventListener("visibilitychange", onVisibility);
     window.addEventListener("pagehide", report);
+    // While the page is on screen, report once a minute (it also restarts the timer).
+    const heartbeat = setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+      report();
+      shownAt = Date.now();
+    }, 60_000);
     return () => {
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("pagehide", report);
+      clearInterval(heartbeat);
       report();
     };
   }, []);

@@ -13,6 +13,7 @@ type Profile = {
   about: string | null;
   coverUrl: string | null;
   vendorCategoryId: string | null;
+  birthday: string | null;
 };
 
 const inputClass = "w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground";
@@ -32,6 +33,7 @@ export default function MyProfileClient({
     about: profile.about ?? "",
     coverUrl: profile.coverUrl ?? "",
     vendorCategoryId: profile.vendorCategoryId ?? "",
+    birthday: profile.birthday ?? "",
   });
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -100,6 +102,10 @@ export default function MyProfileClient({
         <label className="block">
           <span className="text-xs text-muted-foreground mb-1 block">Phone / WhatsApp</span>
           <input type="tel" value={form.phone} onChange={set("phone")} maxLength={20} placeholder="+250 788 000 000" className={inputClass} />
+        </label>
+        <label className="block">
+          <span className="text-xs text-muted-foreground mb-1 block">Your birthday (not shown to couples)</span>
+          <input type="date" value={form.birthday} onChange={set("birthday")} max={new Date().toISOString().slice(0, 10)} className={inputClass} />
         </label>
       </div>
 
