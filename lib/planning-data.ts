@@ -12,8 +12,6 @@ export const getPlanningSections = unstable_cache(
       return {
         key: fallback.key,
         title: s.title,
-        rowsLabel: s.rowsLabel,
-        columns: s.columns.map((c) => ({ id: c.id, label: c.label, short: c.short })),
         rows: s.rows.map((r) => ({ id: r.id, label: r.label, imageUrl: r.imageUrl ?? null })),
       }
     })

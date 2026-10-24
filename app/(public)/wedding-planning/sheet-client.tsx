@@ -5,7 +5,7 @@ import { Check, Download, Plus, Send, X } from "lucide-react";
 import { displaySerif } from "@/lib/fonts";
 import { cldImage } from "@/lib/image";
 import {
-  CUSTOM_ITEM, MAX_ROWS, emptyEntry, hasPrices, money, sectionTotal, sheetTotal,
+  CUSTOM_ITEM, FIXED_COLUMNS, MAX_ROWS, emptyEntry, hasPrices, money, sectionTotal, sheetTotal,
   type SectionKey, type SheetEntries, type SheetEntry, type SheetSection,
 } from "@/lib/planning-sheet";
 
@@ -122,10 +122,8 @@ export default function SheetClient({
                 {/* Column names: a real header row on larger screens; on phones they sit inside the fields */}
                 <div className="hidden md:flex items-center gap-3 px-3 py-2.5 text-sm font-semibold" style={{ background: INK, color: "#fff" }}>
                   <span className="w-8 text-center">No</span>
-                  <span className="flex-1">{section.rowsLabel}</span>
-                  {section.columns.map((c) => (
-                    <span key={c.id} className={c.short ? "w-24 text-center" : "flex-1"}>{c.label}</span>
-                  ))}
+                  <span className="flex-1">People / Item</span>
+                  <span className="w-24 text-center">Number</span>
                   {priced && <span className="w-28 text-right">Amafaranga</span>}
                   <span className="w-8" />
                 </div>
@@ -155,7 +153,7 @@ export default function SheetClient({
                           className={`${FIELD} flex-1 min-w-0 cursor-pointer`}
                           style={{ border: `1px solid ${LINE}`, color: entry.itemId ? INK : SOFT }}
                         >
-                          <option value="">{section.rowsLabel}...</option>
+                          <option value="">People / Item...</option>
                           {/* A choice the business has since removed stays visible on this record. */}
                           {entry.itemId && entry.itemId !== CUSTOM_ITEM && !section.rows.some((r) => r.id === entry.itemId) && <option value={entry.itemId}>{entry.label}</option>}
                           {section.rows.map((r) => (
@@ -170,7 +168,7 @@ export default function SheetClient({
                             maxLength={80}
                             autoFocus
                             placeholder="Write it here"
-                            aria-label={`Your own ${section.rowsLabel} ${i + 1}`}
+                            aria-label={`Your own item ${i + 1}`}
                             className={`${FIELD} flex-1 min-w-0 basis-full sm:basis-0`}
                             style={{ border: `1px solid ${GOLD}`, color: INK }}
                           />
@@ -186,21 +184,18 @@ export default function SheetClient({
                         <X size={16} />
                       </button>
 
-                      {/* On phones, text fields go on their own line under the choice; a small number field stays beside it */}
-                      {section.columns.some((c) => !c.short) && <span className="basis-full md:hidden" />}
-                      {section.columns.map((c) => (
-                        <input
-                          key={c.id}
-                          value={entry.cells[c.id] ?? ""}
-                          onChange={(e) => patch(section.key, entry.id, (x) => ({ ...x, cells: { ...x.cells, [c.id]: e.target.value } }))}
-                          inputMode={c.short ? "numeric" : undefined}
-                          maxLength={200}
-                          placeholder={c.label}
-                          aria-label={`${c.label} ${i + 1}`}
-                          className={`${FIELD} md:placeholder:text-transparent ${c.short ? "w-24 text-center" : "flex-1 min-w-0"}`}
-                          style={{ border: `1px solid ${LINE}`, color: INK }}
-                        />
-                      ))}
+                      {/* Number field */}
+                      <span className="basis-full md:hidden" />
+                      <input
+                        value={entry.cells[FIXED_COLUMNS[1].id] ?? ""}
+                        onChange={(e) => patch(section.key, entry.id, (x) => ({ ...x, cells: { ...x.cells, [FIXED_COLUMNS[1].id]: e.target.value } }))}
+                        inputMode="numeric"
+                        maxLength={200}
+                        placeholder="Number"
+                        aria-label={`Number ${i + 1}`}
+                        className={`${FIELD} md:placeholder:text-transparent w-24 text-center`}
+                        style={{ border: `1px solid ${LINE}`, color: INK }}
+                      />
                       {priced && (
                         <span className="w-full md:w-28 text-right text-sm font-semibold" style={{ color: INK }}>
                           {entry.amount !== null ? money(entry.amount) : ""}

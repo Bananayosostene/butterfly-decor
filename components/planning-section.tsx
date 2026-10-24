@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { displaySerif } from "@/lib/fonts";
 import { getPlanningSections } from "@/lib/planning-data";
+import { FIXED_COLUMNS } from "@/lib/planning-sheet";
 
 const INK = "var(--ink)";
 const GOLD = "#835105";
@@ -20,7 +21,7 @@ const STATS = [
 /** Homepage section under the hero that introduces the wedding planner. */
 export async function PlanningSection() {
   const [sheet] = await getPlanningSections();
-  const column = sheet.columns[0];
+  const numberCol = FIXED_COLUMNS[1];
 
   return (
     <section className="w-full px-4 md:px-8 lg:px-12 py-12 md:py-16 border-b" style={{ background: "#fbf7f2", borderColor: LINE }}>
@@ -36,8 +37,8 @@ export async function PlanningSection() {
           <div className="mt-5 rounded-xl overflow-hidden bg-white shadow-sm text-xs md:text-sm" style={{ border: "1px solid #e0c896" }}>
             <div className="flex items-center gap-2 px-3 py-2 font-semibold" style={{ background: INK, color: "#fff" }}>
               <span className="w-6 text-center">No</span>
-              <span className="flex-1 truncate">{sheet.rowsLabel}</span>
-              <span className="w-24 text-center truncate">{column.label}</span>
+              <span className="flex-1 truncate">People / Item</span>
+              <span className="w-24 text-center truncate">{numberCol.label}</span>
             </div>
             {sheet.rows.slice(0, SAMPLE.length).map((row, i) => (
               <div key={row.id} className="flex items-center gap-2 px-3 py-2.5" style={{ borderTop: "1px solid #eadcbd", background: i % 2 ? "#fff" : "#fffcf4", color: INK }}>

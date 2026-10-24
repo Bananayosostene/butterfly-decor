@@ -1,7 +1,6 @@
 /**
- * The wedding planning sheet: two parts (Introduction, Reception). In each part the customer
- * adds records one by one: they pick a person or item from the list the admin prepared and fill
- * in the columns. The admin later writes the price of each record.
+ * The wedding planning sheet: two parts (Introduction, Reception). Each part has two fixed
+ * columns — "People / Item" and "Number" — and a list of rows the admin manages.
  *
  * This file has no database code, so client components can import it. The reads are in
  * lib/planning-data.ts.
@@ -10,40 +9,39 @@
 export const SECTION_KEYS = ["GUSABA", "RECEPTION"] as const
 export type SectionKey = (typeof SECTION_KEYS)[number]
 
-export type SheetColumn = { id: string; label: string; short: boolean }
-/** A person or item the customer can choose, e.g. "Umugeni". */
+/** A person or item the admin adds, e.g. "Umugeni (Bridal)". */
 export type SheetRow = { id: string; label: string; imageUrl: string | null }
 export type SheetSection = {
   key: SectionKey
   title: string
-  /** Heading of the column where the person or item is chosen. */
-  rowsLabel: string
-  columns: SheetColumn[]
   rows: SheetRow[]
 }
+
+// Columns are fixed — always "People / Item" and "Number".
+export type SheetColumn = { id: string; label: string; short: boolean }
+export const FIXED_COLUMNS: SheetColumn[] = [
+  { id: "item", label: "People / Item", short: false },
+  { id: "count", label: "Number", short: true },
+]
 
 /** One record a customer added to a part of the sheet. */
 export type SheetEntry = {
   id: string
-  /** Id of the chosen person/item, CUSTOM_ITEM when they wrote their own, or "" when nothing is chosen yet. */
   itemId: string
-  /** Name of the chosen person/item when it was saved (kept even if the admin later removes it). */
   label: string
-  /** What was written in each column, keyed by column id. */
   cells: Record<string, string>
-  /** Price in RWF, written by the admin only. */
   amount: number | null
 }
 export type SheetEntries = Record<SectionKey, SheetEntry[]>
 
-/** `itemId` of a record whose person/item the customer wrote themselves (not on the admin's list). */
 export const CUSTOM_ITEM = "custom"
-
 export const emptyEntry = (): SheetEntry => ({ id: newId(), itemId: "", label: "", cells: {}, amount: null })
 
-/** A sheet always shows at least one (empty) record per part. */
 export function withFirstRecord(entries: SheetEntries): SheetEntries {
-  return { GUSABA: entries.GUSABA.length ? entries.GUSABA : [emptyEntry()], RECEPTION: entries.RECEPTION.length ? entries.RECEPTION : [emptyEntry()] }
+  return {
+    GUSABA: entries.GUSABA.length ? entries.GUSABA : [emptyEntry()],
+    RECEPTION: entries.RECEPTION.length ? entries.RECEPTION : [emptyEntry()],
+  }
 }
 
 export const sectionTotal = (entries: SheetEntry[]) => entries.reduce((sum, e) => sum + (e.amount ?? 0), 0)
@@ -51,68 +49,30 @@ export const sheetTotal = (entries: SheetEntries) => SECTION_KEYS.reduce((sum, k
 export const hasPrices = (entries: SheetEntries) => SECTION_KEYS.some((key) => entries[key].some((e) => e.amount !== null))
 export const money = (amount: number) => `${amount.toLocaleString("en-US")} RWF`
 
-export const MAX_COLUMNS = 5
 export const MAX_ROWS = 40
 const MAX_LABEL = 80
 const MAX_VALUE = 200
 const MAX_AMOUNT = 1_000_000_000
-const ID = /^[a-z0-9]{3,16}$/
+const ID = /^[a-z0-9]{2,16}$/
 
 export const newId = () => Math.random().toString(36).slice(2, 10)
 
-const rows = (prefix: string, labels: string[]): SheetRow[] =>
-  labels.map((label, i) => ({ id: `${prefix}${i + 1}`, label, imageUrl: null }))
-
-/** Used until the admin saves their own version. */
 export const DEFAULT_SECTIONS: SheetSection[] = [
-  {
-    key: "GUSABA",
-    title: "List",
-    rowsLabel: "People / Item",
-    columns: [
-      { id: "count", label: "Umubare", short: true },
-    ],
-    rows: rows("g", [
-      "Umugeni",
-      "Malene",
-      "Umukwe",
-      "Palen",
-      "Abafille (bazambarira umugeni)",
-      "Abasore (bazambarira umukwe)",
-      "Mama (umugeni)",
-      "Mama (umukwe)",
-      "Jeunes mama",
-    ]),
-  },
-  {
-    key: "RECEPTION",
-    title: "Reception",
-    rowsLabel: "People / Item",
-    columns: [
-      { id: "count", label: "Umubare", short: true },
-    ],
-    rows: rows("r", ["Umugeni na malene", "Umukwe na palen", "Abafille", "Abasore", "Abana"]),
-  },
+  { key: "GUSABA", title: "Gusaba no Gukwa", rows: [] },
+  { key: "RECEPTION", title: "Reception", rows: [] },
 ]
 
 const text = (value: unknown, max: number) => (typeof value === "string" ? value.trim().slice(0, max) : "")
 
 /** Checks what the admin sent for one section. Returns null when it cannot be saved. */
-export function cleanSection(body: any): Omit<SheetSection, "key"> | null {
+export function cleanSection(body: any): Omit<SheetSection, "key"> & { rowsLabel: string; columns: SheetColumn[] } | null {
   const title = text(body?.title, MAX_LABEL)
-  const rowsLabel = text(body?.rowsLabel, MAX_LABEL)
-  if (!title || !rowsLabel || !Array.isArray(body.columns) || !Array.isArray(body.rows)) return null
-  if (body.columns.length > MAX_COLUMNS || body.rows.length > MAX_ROWS) return null
+  if (!title || !Array.isArray(body.rows)) return null
+  if (body.rows.length > MAX_ROWS) return null
 
   const seen = new Set<string>()
   const fresh = (id: unknown) => typeof id === "string" && ID.test(id) && !seen.has(id) && !!seen.add(id)
 
-  const columns: SheetColumn[] = []
-  for (const c of body.columns) {
-    const label = text(c?.label, MAX_LABEL)
-    if (!label || !fresh(c.id)) return null
-    columns.push({ id: c.id, label, short: c.short === true })
-  }
   const cleanRows: SheetRow[] = []
   for (const r of body.rows) {
     const label = text(r?.label, MAX_LABEL)
@@ -120,11 +80,11 @@ export function cleanSection(body: any): Omit<SheetSection, "key"> | null {
     const imageUrl = typeof r.imageUrl === "string" && r.imageUrl.startsWith("https://") ? r.imageUrl.slice(0, 500) : null
     cleanRows.push({ id: r.id, label, imageUrl })
   }
-  if (!columns.length || !cleanRows.length) return null
-  return { title, rowsLabel, columns, rows: cleanRows }
+  // rowsLabel and columns are kept in the DB for backwards compatibility but are no longer
+  // configurable — columns are always the two fixed ones.
+  return { title, rows: cleanRows, rowsLabel: "People / Item", columns: FIXED_COLUMNS }
 }
 
-/** What is stored for a sheet, made safe to use (old or damaged data becomes empty lists). */
 export function readEntries(stored: unknown): SheetEntries {
   const entries: SheetEntries = { GUSABA: [], RECEPTION: [] }
   for (const key of SECTION_KEYS) {
@@ -144,11 +104,6 @@ export function readEntries(stored: unknown): SheetEntries {
   return entries
 }
 
-/**
- * Checks the records someone sent. Records with nothing in them are dropped. Prices are only
- * taken from the request when `withAmounts` is true (the admin); a customer's save keeps the
- * prices already stored.
- */
 export function cleanEntries(body: unknown, sections: SheetSection[], previous: SheetEntries, withAmounts: boolean): SheetEntries {
   const entries: SheetEntries = { GUSABA: [], RECEPTION: [] }
   const seen = new Set<string>()
@@ -162,17 +117,15 @@ export function cleanEntries(body: unknown, sections: SheetSection[], previous: 
       if (!raw || typeof raw.id !== "string" || !ID.test(raw.id) || seen.has(raw.id)) continue
       const old = before.get(raw.id)
 
-      // The chosen person/item must be on the admin's list, or be the one already saved.
       const option = section.rows.find((r) => r.id === raw.itemId)
-      // ...or something the customer wrote themselves.
       const own = raw.itemId === CUSTOM_ITEM ? text(raw.label, MAX_LABEL) : ""
       const itemId = option ? option.id : own ? CUSTOM_ITEM : old && old.itemId === raw.itemId && raw.itemId !== CUSTOM_ITEM ? old.itemId : ""
       const label = option ? option.label : own || (itemId ? old!.label : "")
 
       const cells: Record<string, string> = {}
-      for (const column of section.columns) {
-        const value = text(raw.cells?.[column.id], MAX_VALUE)
-        if (value) cells[column.id] = value
+      for (const col of FIXED_COLUMNS) {
+        const value = text(raw.cells?.[col.id], MAX_VALUE)
+        if (value) cells[col.id] = value
       }
 
       let amount = old?.amount ?? null

@@ -16,7 +16,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ key:
     const data = cleanSection(await req.json())
     if (!data)
       return NextResponse.json(
-        { success: false, message: "Every column and row needs a name, and the sheet needs at least one of each.", statusCode: 400 },
+        { success: false, message: "Every row needs a name.", statusCode: 400 },
         { status: 400 },
       )
 

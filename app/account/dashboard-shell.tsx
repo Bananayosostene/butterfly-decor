@@ -41,7 +41,6 @@ const NAV: Record<DashboardRole, NavSection[]> = {
           children: [
             { href: "/account/categories", label: "Categories", icon: FolderOpen },
             { href: "/account/collection-items", label: "Collection items", icon: Image },
-            { href: "/account/style-ideas", label: "Style ideas", icon: Shirt },
             { href: "/account/wedding-albums", label: "Wedding albums", icon: Heart },
           ],
         },
