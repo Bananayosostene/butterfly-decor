@@ -74,7 +74,7 @@ export function Header() {
           <div className="flex items-center justify-between h-16">
 
             {/* Brand */}
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col">
               <Link href="/" className="flex items-center">
                 <span className="text-[16px] font-medium text-paper">Butterfly</span>
                 <Image
@@ -86,6 +86,7 @@ export function Header() {
                 />
                 <span className="text-sm font-medium text-paper">Decor</span>
               </Link>
+              <span className="text-[10px] text-paper/50 tracking-wide">Sostene Group</span>
             </div>
 
             {/* Desktop Nav */}

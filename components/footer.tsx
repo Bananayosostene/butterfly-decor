@@ -151,6 +151,9 @@ export async function Footer() {
             <p className={`hidden md:block text-sm ${SOFT}`}>
               butterflydecor26@gmail.com
             </p>
+            <p className={`hidden md:block text-xs ${SOFT} opacity-70`}>
+              Kn 2 st · 0788724867
+            </p>
           </div>
 
           {/* Copyright — desktop only, keeps the mobile footer short */}

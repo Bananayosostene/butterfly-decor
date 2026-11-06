@@ -12,11 +12,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   // Every page name in Google ends with the brand, so people searching for it find the site.
   title: {
-    default: "Butterfly Decor Rwanda (Sostene Group) | Wedding Decor & Outfit Rental in Kigali",
+    default: "Butterfly Decor Rwanda - Sostene Group",
     template: "%s | Butterfly Decor Rwanda",
   },
   description:
-    "Butterfly Decor is Where beauty meets celebration throught decoration, bridal gowns, groom suits and imikenyero for rent, real wedding albums and free wedding planning.",
+    "Butterfly Decor is Where beauty meets celebration throught decoration, bridal gowns, groom suits and imikenyero... location Kn 2 st Kigali",
   // The code from Google Search Console (Settings → Ownership verification → HTML tag), set as
   // GOOGLE_SITE_VERIFICATION in the hosting settings. Nothing is added while it is empty.
   verification: process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : undefined,
