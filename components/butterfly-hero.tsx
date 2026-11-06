@@ -83,7 +83,7 @@ export function WeddingShopHero({ videoSrc }: { videoSrc: string }) {
             className="text-xs md:text-sm font-semibold uppercase tracking-[0.22em]"
             style={{ color: heading, opacity: 0.9 }}
           >
-            Where beauty meets beauty.
+            Where beauty meets beauty
           </p>
         
           <h1

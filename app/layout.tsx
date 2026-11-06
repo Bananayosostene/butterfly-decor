@@ -520,7 +520,7 @@ export const metadata: Metadata = {
     alternateLocale: "rw_RW",
     url: BASE_URL,
     siteName: "Butterfly Decor Rwanda",
-    title: "Butterfly Decor Rwanda (Sostene Group)",
+    title: "Butterfly Decor Rwanda -Sostene Group",
     description: "Wedding decoration and outfit rental in Kigali, Rwanda",
     images: [
       {

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { MapPin } from "lucide-react";
 import { getCategoryTabs } from "@/lib/data";
 import { decorHref, slugify } from "@/lib/category-icons";
 
@@ -149,11 +150,9 @@ export async function Footer() {
           {/* Contact — phone on mobile too, email on md and up */}
           <div className="items-center justify-center text-center">
             <p className={`hidden md:block text-sm ${SOFT}`}>
-              butterflydecor26@gmail.com
+              butterflydecor26@gmail.com | 0788724867
             </p>
-            <p className={`hidden md:block text-xs ${SOFT} opacity-70`}>
-              Kn 2 st · 0788724867
-            </p>
+          
           </div>
 
           {/* Copyright — desktop only, keeps the mobile footer short */}
@@ -181,6 +180,12 @@ export async function Footer() {
                   </li>
                 ))}
               </ul>
+              {column.title === "Account" && (
+                <p className={`mt-4 flex items-center gap-1.5 ${LINK}`}>
+                  <MapPin className="w-4 h-4 text-primary-foreground" strokeWidth={1.75} aria-hidden />
+                  Kn 2 st
+                </p>
+              )}
             </div>
           ))}
         </div>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Phone } from "lucide-react";
 import { displaySerif } from "@/lib/fonts";
 import { getPlanningSections } from "@/lib/planning-data";
 import { FIXED_COLUMNS } from "@/lib/planning-sheet";
@@ -60,16 +60,26 @@ export async function PlanningSection() {
             Choose who will be dressed for your Introduction and your Reception, and how many.
             Send us the list, get the prices, and download it as a PDF.
           </p>
-          <Link
-            href="/wedding-planning"
-            className="group mt-6 inline-flex items-center gap-4 pl-7 pr-2 py-2 rounded-full text-xs md:text-sm font-bold uppercase tracking-[0.15em] transition-opacity hover:opacity-90"
-            style={{ background: INK, color: "var(--cream)" }}
-          >
-            Let&apos;s plan your wedding
-            <span className="w-9 h-9 rounded-full flex items-center justify-center border transition-transform group-hover:translate-x-0.5" style={{ borderColor: "rgba(247,239,227,0.6)" }}>
-              <ArrowRight size={16} strokeWidth={1.5} />
-            </span>
-          </Link>
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <Link
+              href="/wedding-planning"
+              className="group inline-flex items-center gap-4 pl-7 pr-2 py-2 rounded-full text-xs md:text-sm font-bold uppercase tracking-[0.15em] transition-opacity hover:opacity-90"
+              style={{ background: INK, color: "var(--cream)" }}
+            >
+              Let&apos;s plan your wedding
+              <span className="w-9 h-9 rounded-full flex items-center justify-center border transition-transform group-hover:translate-x-0.5" style={{ borderColor: "rgba(247,239,227,0.6)" }}>
+                <ArrowRight size={16} strokeWidth={1.5} />
+              </span>
+            </Link>
+            <a
+              href="tel:+250788724867"
+              className="inline-flex items-center gap-2 text-sm font-semibold hover:underline"
+              style={{ color: INK }}
+            >
+              <Phone size={16} strokeWidth={1.75} style={{ color: GOLD }} />
+              0788 724 867
+            </a>
+          </div>
 
           <dl className="mt-8 pt-6 border-t grid grid-cols-3 gap-4" style={{ borderColor: LINE }}>
             {STATS.map((s) => (

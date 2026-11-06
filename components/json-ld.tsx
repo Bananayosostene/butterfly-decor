@@ -12,7 +12,7 @@ export function JsonLd() {
       logo: `${BASE_URL}/icon-512.png`,
       image: `${BASE_URL}/og-image.jpg`,
       description:
-        "Butterfly Decor (Sostene Group) in Kigali, Rwanda: wedding decoration and outfit rental, with bridal gowns, groom suits, imikenyero, backdrops and flowers for Gusaba and reception. | Serivisi zo gutaka ubukwe mu Rwanda no gukodesha imyenda y'ubukwe n'imikenyero.",
+        "Butterfly Decor in Kigali, Rwanda: wedding decoration and outfit rental, with bridal gowns, groom suits, imikenyero, backdrops and flowers for Gusaba and reception. | Serivisi zo gutaka ubukwe mu Rwanda no gukodesha imyenda y'ubukwe n'imikenyero.",
       telephone: "+250788724867",
       address: {
         "@type": "PostalAddress",

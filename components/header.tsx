@@ -49,14 +49,14 @@ export function Header() {
   const navClass = (href: string) =>
     `px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
       isActive(href)
-        ? "bg-accent text-paper"
+        ? "text-primary-foreground"
         : "text-paper/80 hover:text-paper"
     }`;
 
   const tabClass = (href: string) => {
     const active = isActive(href);
     return `flex-1 min-w-0 flex flex-col items-center gap-1 px-0.5 py-2 rounded-lg transition-colors ${
-      active ? "text-paper" : "text-paper/70"
+      active ? "text-primary-foreground" : "text-paper/70"
     }`;
   };
 
@@ -86,7 +86,7 @@ export function Header() {
                 />
                 <span className="text-sm font-medium text-paper">Decor</span>
               </Link>
-              <span className="text-[10px] text-paper/50 tracking-wide">Sostene Group</span>
+              <span className="text-[10px] text-primary-foreground tracking-wide">Sostene Group</span>
             </div>
 
             {/* Desktop Nav */}
