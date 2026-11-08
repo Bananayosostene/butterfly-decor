@@ -32,8 +32,19 @@ export function VendorGallery({ photos, vendorName }: { photos: Photo[]; vendorN
   return (
     <>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-        {/* The big photo takes its height from the two rows beside it; on phones it is a square. */}
-        <div ref={views.seenRef(first.id)} className="relative col-span-2 row-span-2 aspect-square md:aspect-auto overflow-hidden" style={tileStyle}>
+        {/* The big photo takes its height from the two rows beside it; on phones it is a square.
+            Without photos in both rows it would collapse, so it keeps its own shape then. */}
+        <div
+          ref={views.seenRef(first.id)}
+          className={`relative overflow-hidden ${
+            side.length === 0
+              ? "col-span-2 md:col-span-4 aspect-[4/3] md:aspect-[16/9]"
+              : side.length < 3
+                ? "col-span-2 row-span-2 aspect-square"
+                : "col-span-2 row-span-2 aspect-square md:aspect-auto"
+          }`}
+          style={tileStyle}
+        >
           <img src={cldImage(first.imageUrl, 1100)} alt={first.description ?? vendorName} className="absolute inset-0 w-full h-full object-cover" />
           {viewBadge(first.id)}
         </div>
