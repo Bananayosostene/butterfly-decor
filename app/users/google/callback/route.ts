@@ -69,11 +69,18 @@ export async function GET(req: NextRequest) {
 
     let user = await prisma.user.findUnique({ where: { email }, select: { id: true, name: true, googleId: true, role: true } })
     if (!user) {
-      user = await prisma.user.create({
-        data: { email, name: profile.name || email.split("@")[0], googleId: profile.sub, avatarUrl },
-        select: { id: true, name: true, googleId: true, role: true },
+      // New Google user: collect phone number before creating the account.
+      const pending = JSON.stringify({ email, name: profile.name || email.split("@")[0], sub: profile.sub, avatarUrl })
+      const res = NextResponse.redirect(new URL("/login/google-complete", req.url))
+      res.cookies.delete(GOOGLE_STATE_COOKIE)
+      res.cookies.set("google_pending", pending, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 600,
+        path: "/",
       })
-      await welcomeNewAccount({ id: user.id, name: user.name, email, method: "Google" })
+      return res
     } else if (!user.googleId) {
       // The address was registered with a password but never proven. Google has now proven who owns
       // it, so drop the old password and sessions in case someone else created that account first.

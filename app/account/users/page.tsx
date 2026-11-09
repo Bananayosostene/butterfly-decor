@@ -29,7 +29,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * PER_PAGE,
       take: PER_PAGE,
-      select: { id: true, name: true, email: true, phone: true, avatarUrl: true, googleId: true, createdAt: true },
+      select: { id: true, name: true, email: true, phone: true, birthday: true, avatarUrl: true, googleId: true, createdAt: true },
     }),
     prisma.user.count({ where }),
     prisma.user.count({ where: clients }),

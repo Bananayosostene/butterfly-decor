@@ -18,8 +18,9 @@ export async function PATCH(req: NextRequest) {
     if (user.role) return fail("Your account type is already set.", 409)
 
     const body = await req.json().catch(() => ({}))
-    // Optional; a date that is not real is simply not saved.
-    const birthday = cleanBirthday(body.birthday) ?? undefined
+    // Required; a date that is not real is rejected.
+    const birthday = cleanBirthday(body.birthday)
+    if (!birthday) return fail("Please enter your birthday.")
     if (!body.vendor) {
       await prisma.user.update({ where: { id: user.id }, data: { role: "CLIENT", birthday } })
       await setAccountHint({ name: user.name, email: user.email, kind: "CLIENT", avatarUrl: user.avatarUrl })

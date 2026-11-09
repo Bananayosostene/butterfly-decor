@@ -10,6 +10,7 @@ type User = {
   name: string;
   email: string;
   phone: string | null;
+  birthday: string | null;
   avatarUrl: string | null;
   /** Signed up with Google. */
   google: boolean;
@@ -17,7 +18,7 @@ type User = {
 };
 
 const INPUT = "w-full px-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground";
-const EMPTY = { name: "", email: "", phone: "", password: "" };
+const EMPTY = { name: "", email: "", phone: "", birthday: "", password: "" };
 
 /** Address of the users page for a search (page 1 and an empty search are left out). */
 const hrefFor = (q: string, page = 1) => {
@@ -95,7 +96,7 @@ export default function UsersClient({
           <table className="w-full text-sm">
             <thead className="bg-muted">
               <tr>
-                {["Client", "Phone", "Signs in with", "Joined"].map((h) => (
+                {["Client", "Phone", "Date of Birth", "Signs in with", "Joined"].map((h) => (
                   <th key={h} className="text-left px-4 py-3 text-muted-foreground font-medium whitespace-nowrap">{h}</th>
                 ))}
               </tr>
@@ -117,12 +118,13 @@ export default function UsersClient({
                     </div>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{u.phone || "-"}</td>
+                  <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{u.birthday || "-"}</td>
                   <td className="px-4 py-3 text-muted-foreground">{u.google ? "Google" : "Password"}</td>
                   <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{new Date(u.joined).toLocaleDateString("en-GB")}</td>
                 </tr>
               ))}
               {users.length === 0 && (
-                <tr><td colSpan={4} className="px-4 py-12 text-center text-muted-foreground">No clients match.</td></tr>
+                <tr><td colSpan={5} className="px-4 py-12 text-center text-muted-foreground">No clients match.</td></tr>
               )}
             </tbody>
           </table>
@@ -150,6 +152,7 @@ export default function UsersClient({
             <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Full name *" className={INPUT} />
             <input type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} placeholder="Email *" className={INPUT} />
             <input type="tel" value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} placeholder="Phone" className={INPUT} />
+            <input type="date" value={form.birthday} onChange={(e) => setForm((f) => ({ ...f, birthday: e.target.value }))} placeholder="Date of birth" className={INPUT} />
             <input type="password" value={form.password} onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))} placeholder="Password * (at least 8 characters)" autoComplete="new-password" className={INPUT} />
             <div className="flex gap-2 justify-end">
               <button onClick={() => setAdding(false)} className="px-4 py-2 text-sm rounded-lg border border-border text-foreground">Cancel</button>

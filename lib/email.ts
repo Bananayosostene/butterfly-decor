@@ -58,6 +58,7 @@ ${email.note ? p(escapeHtml(email.note), "font-size:12px;color:#7a6654") : ""}
 
   try {
     await transport().sendMail({ from: `"${BUSINESS.name}" <${process.env.NODEMAILER_USER}>`, to, subject: email.subject, text, html })
+    console.log("Email sent:", email.subject, "->", Array.isArray(to) ? to.join(", ") : to)
   } catch (error) {
     console.error("Email not sent:", email.subject, error)
   }

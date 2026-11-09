@@ -89,9 +89,9 @@ export default function WelcomeClient({ name, categories }: { name: string; cate
               {radio(false, "No")}
             </div>
             <label className="mt-6 block">
-              <span className="text-sm font-semibold" style={{ color: INK }}>Your birthday (optional)</span>
+              <span className="text-sm font-semibold" style={{ color: INK }}>Your birthday</span>
               <span className="block text-xs mb-1.5" style={{ color: "var(--muted-foreground)" }}>So we can wish you a happy birthday.</span>
-              <input type="date" value={birthday} onChange={(e) => setBirthday(e.target.value)} max={new Date().toISOString().slice(0, 10)} className={inputClass} />
+              <input type="date" value={birthday} onChange={(e) => setBirthday(e.target.value)} required max={new Date().toISOString().slice(0, 10)} className={inputClass} />
             </label>
           </fieldset>
         )}

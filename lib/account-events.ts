@@ -1,5 +1,5 @@
-import { siteUrl } from "@/lib/email"
-import { emailLater, notifyAdmin, notifyUser } from "@/lib/notify"
+import { siteUrl, sendEmail } from "@/lib/email"
+import { notifyAdmin, notifyUser } from "@/lib/notify"
 
 /** Someone created an account: the admin is told, and the person gets a welcome email. */
 export async function welcomeNewAccount(user: { id: string; name: string; email: string; method: string }) {
@@ -9,17 +9,33 @@ export async function welcomeNewAccount(user: { id: string; name: string; email:
     body: `${user.email} signed up with ${user.method}.`,
     href: "/account/users",
   })
-  emailLater({
+  // Welcome email to the new user — sent directly, not deferred
+  await sendEmail({
     to: user.email,
     subject: "Welcome to Butterfly Decor",
     greeting: `Hello ${user.name},`,
     paragraphs: [
       "Thank you for joining Butterfly Decor. You can now save the looks you like, plan your Gusaba and reception list, and book the outfits and decor you choose.",
-      "Add your birthday on your profile page and we will remember to celebrate it with you.",
       "If you have any question, simply reply to this email or call us.",
     ],
     action: { label: "Open your profile", href: siteUrl("/profile") },
   })
+  // Notify the owner about the new registration — sent directly
+  const ownerEmail = process.env.ADMIN_NOTIFY_EMAIL || process.env.ADMIN_EMAIL
+  if (ownerEmail) {
+    await sendEmail({
+      to: ownerEmail,
+      subject: `New registration: ${user.name}`,
+      greeting: "Hello,",
+      paragraphs: [
+        `A new account was just created on Butterfly Decor.`,
+        `Name: ${user.name}`,
+        `Email: ${user.email}`,
+        `Signed up with: ${user.method}`,
+      ],
+      action: { label: "View all clients", href: siteUrl("/account/users") },
+    })
+  }
 }
 
 /** A vendor finished signing up: the admin reviews the profile before it is shown to couples. */
