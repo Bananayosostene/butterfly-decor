@@ -5,7 +5,7 @@ import { getUserByToken, USER_COOKIE } from "@/lib/user-auth";
 import { isBot, parseUserAgent } from "@/lib/user-agent";
 import { VISITOR_COOKIE } from "@/lib/visitor";
 import { OWNER_COOKIE, OWNER_COOKIE_OPTIONS } from "@/lib/visits";
-import { after, type NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { adminEmails, sendEmail, siteUrl } from "@/lib/email";
 import { notifyAdmin } from "@/lib/notify";
 
@@ -153,18 +153,15 @@ export async function POST(req: NextRequest) {
       body: `From ${place}, on ${device} (${info.browser}). Opened ${text(body?.path, 120) ?? "/"}.`,
       href: "/account/visitors",
     });
-    // A short plain email to the owner's address that has always received visitor emails.
-    after(async () =>
-      sendEmail({
-        to: [VISITOR_EMAIL, ...(await adminEmails())],
-        subject: `${who} on Butterfly Decor`,
-        paragraphs: [
-          `${who} just opened the site from ${place}, on ${device} with ${info.browser} on ${[info.os, osVersion].filter(Boolean).join(" ")}.`,
-          `First page: ${text(body?.path, 120) ?? "/"}. Came from: ${text(body?.referrer, 120) ?? "a direct visit"}.`,
-        ],
-        action: { label: "See all visitors", href: siteUrl("/account/visitors") },
-      }),
-    );
+    await sendEmail({
+      to: [VISITOR_EMAIL, ...(await adminEmails())],
+      subject: `${who} on Butterfly Decor`,
+      paragraphs: [
+        `${who} just opened the site from ${place}, on ${device} with ${info.browser} on ${[info.os, osVersion].filter(Boolean).join(" ")}.`,
+        `First page: ${text(body?.path, 120) ?? "/"}. Came from: ${text(body?.referrer, 120) ?? "a direct visit"}.`,
+      ],
+      action: { label: "See all visitors", href: siteUrl("/account/visitors") },
+    });
 
     const res = respond({ ok: true, id: visit.id }, admin);
     if (!returning) res.cookies.set(SEEN_COOKIE, "1", { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", maxAge: 365 * 24 * 60 * 60, path: "/" });
