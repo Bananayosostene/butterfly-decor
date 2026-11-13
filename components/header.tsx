@@ -86,7 +86,6 @@ export function Header() {
                 />
                 <span className="text-sm font-medium text-paper">Decor</span>
               </Link>
-              <span className="text-[10px] text-primary-foreground tracking-wide">Sostene Group</span>
             </div>
 
             {/* Desktop Nav */}

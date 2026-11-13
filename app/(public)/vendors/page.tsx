@@ -10,7 +10,7 @@ import { getVendorCategories, getVendors, VENDORS_PAGE_SIZE } from "@/lib/vendor
 
 export const metadata: Metadata = {
   title: "Wedding Vendors",
-  description: "Find wedding vendors in Rwanda: photographers, venues, caterers, florists and more.",
+  description: "Find wedding vendors: photographers, venues, caterers, florists and more.",
 };
 
 const INK = "#2b1807";

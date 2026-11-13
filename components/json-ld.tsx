@@ -6,13 +6,13 @@ export function JsonLd() {
       "@type": ["LocalBusiness", "EventVenue"],
       name: "Butterfly Decor",
       // Other names people search for: Google links them all to this business.
-      alternateName: ["Butterfly Decor Rwanda", "Butterfly Decor ,Butterfly Decor Kigali", "Sostene Decor", "Sostene Group", "Butterfly Events "],
+      alternateName: ["Butterfly Decor", "Butterfly Decor ,Butterfly Decor Kigali", "Sostene Decor", "Butterfly Events "],
       url: BASE_URL,
       // Google reads the square logo for the business, and the picture for search results.
       logo: `${BASE_URL}/icon-512.png`,
       image: `${BASE_URL}/og-image.jpg`,
       description:
-        "Butterfly Decor in Kigali, Rwanda: wedding decoration and outfit rental, with bridal gowns, groom suits, imikenyero, backdrops and flowers for Gusaba and reception. | Serivisi zo gutaka ubukwe mu Rwanda no gukodesha imyenda y'ubukwe n'imikenyero.",
+        "Butterfly Decor: wedding decoration and outfit rental, with bridal gowns, groom suits, imikenyero, backdrops and flowers for Gusaba and reception. | Serivisi zo gutaka ubukwe no gukodesha imyenda y'ubukwe n'imikenyero.",
       telephone: "+250788724867",
       address: {
         "@type": "PostalAddress",
@@ -135,14 +135,14 @@ export function JsonLd() {
             "@type": "Offer",
             itemOffered: {
               "@type": "Service",
-              name: "Catering Services Rwanda",
+              name: "Catering Services",
             },
           },
           {
             "@type": "Offer",
             itemOffered: {
               "@type": "Service",
-              name: "Event Photography Rwanda",
+              name: "Event Photography",
             },
           },
         ],
@@ -151,7 +151,7 @@ export function JsonLd() {
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      name: "Butterfly Decor Rwanda",
+      name: "Butterfly Decor",
       url: BASE_URL,
       potentialAction: {
         "@type": "SearchAction",

@@ -12,8 +12,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   // Every page name in Google ends with the brand, so people searching for it find the site.
   title: {
-    default: "Butterfly Decor Rwanda - Sostene Group",
-    template: "%s | Butterfly Decor Rwanda",
+    default: "Butterfly Decor",
+    template: "%s | Butterfly Decor",
   },
   description:
     "Butterfly Decor is Where beauty meets celebration throught decoration, bridal gowns, groom suits and imikenyero... location Kn 2 st Kigali",
@@ -34,7 +34,6 @@ export const metadata: Metadata = {
   "Butterfly Decor by Sostene",
   "Butterflydec",
   "butterflydec.com",
-  "Sostene Group",
   "Sostene",
   "Sostene Decor",
   "Sostene Decoration",
@@ -519,8 +518,8 @@ export const metadata: Metadata = {
     locale: "en_RW",
     alternateLocale: "rw_RW",
     url: BASE_URL,
-    siteName: "Butterfly Decor Rwanda",
-    title: "Butterfly Decor Rwanda -Sostene Group",
+    siteName: "Butterfly Decor",
+    title: "Butterfly Decor",
     description: "Wedding decoration and outfit rental in Kigali, Rwanda",
     images: [
       {

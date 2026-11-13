@@ -27,7 +27,7 @@ export default async function VendorPage({ params }: Props) {
   const vendor = isObjectId(id) ? await getVendor(id) : null;
   if (!vendor) notFound();
 
-  // WhatsApp needs the country code: a local Rwandan number (07…) gets 250 in front.
+  // WhatsApp needs the country code: a local number gets 250 in front.
   const digits = vendor.phone?.replace(/[^\d]/g, "") ?? "";
   const whatsappNumber = digits ? (digits.startsWith("0") ? `250${digits.slice(1)}` : digits) : SITE_WHATSAPP;
 

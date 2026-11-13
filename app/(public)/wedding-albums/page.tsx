@@ -5,7 +5,7 @@ import { getWeddingAlbums } from "@/lib/wedding-albums";
 
 export const metadata: Metadata = {
   title: "Real Wedding Albums",
-  description: "Photos from real weddings decorated and dressed by Butterfly Decor in Rwanda.",
+  description: "Photos from real weddings decorated and dressed by Butterfly Decor.",
 };
 
 const INK = "#2b1807";

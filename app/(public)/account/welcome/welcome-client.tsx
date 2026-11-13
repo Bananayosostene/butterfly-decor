@@ -113,7 +113,7 @@ export default function WelcomeClient({ name, categories }: { name: string; cate
             </label>
             <label className="block">
               <span className="text-xs mb-1 block" style={{ color: "var(--muted-foreground)" }}>Location</span>
-              <input value={location} onChange={(e) => setLocation(e.target.value)} maxLength={80} placeholder="e.g. Kigali, Rwanda" className={inputClass} />
+              <input value={location} onChange={(e) => setLocation(e.target.value)} maxLength={80} placeholder="my location" className={inputClass} />
             </label>
             <label className="block">
               <span className="text-xs mb-1 block" style={{ color: "var(--muted-foreground)" }}>

@@ -97,7 +97,7 @@ export default function MyProfileClient({
         </label>
         <label className="block">
           <span className="text-xs text-muted-foreground mb-1 block">Location</span>
-          <input value={form.location} onChange={set("location")} maxLength={80} placeholder="e.g. Kigali, Rwanda" className={inputClass} />
+          <input value={form.location} onChange={set("location")} maxLength={80} placeholder="my location" className={inputClass} />
         </label>
         <label className="block">
           <span className="text-xs text-muted-foreground mb-1 block">Phone / WhatsApp</span>
