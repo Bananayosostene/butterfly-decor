@@ -73,20 +73,18 @@ export function Header() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
 
-            {/* Brand */}
-            <div className="flex flex-col">
-              <Link href="/" className="flex items-center">
-                <span className="text-[16px] font-medium text-paper">Butterfly</span>
-                <Image
-                  src="/butterfly_logo.png"
-                  alt=""
-                  width={25}
-                  height={25}
-                  className="object-contain"
-                />
-                <span className="text-sm font-medium text-paper">Decor</span>
-              </Link>
-            </div>
+            {/* Brand: logo_butterfly.png, trimmed with a see-through background and cream lettering
+                so it reads on the dark header (logo_butterfly_header.png). */}
+            <Link href="/" aria-label="Butterfly Decor home" className="flex items-center">
+              <Image
+                src="/logo_butterfly_header.png"
+                alt="Butterfly Decor"
+                width={539}
+                height={256}
+                priority
+                className="h-10 w-auto"
+              />
+            </Link>
 
             {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-2">

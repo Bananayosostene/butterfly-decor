@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     template: "%s | Butterfly Decor",
   },
   description:
-    "Butterfly Decor is Where beauty meets celebration throught decoration, bridal gowns, groom suits and imikenyero... location Kn 2 st Kigali",
+    "Butterfly Decor is Where Dreams Come True throught decoration, bridal gowns, groom suits and imikenyero... location Kn 2 st Kigali",
   // The code from Google Search Console (Settings → Ownership verification → HTML tag), set as
   // GOOGLE_SITE_VERIFICATION in the hosting settings. Nothing is added while it is empty.
   verification: process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : undefined,
@@ -544,12 +544,13 @@ export const metadata: Metadata = {
       rw: `${BASE_URL}/rw`,
     },
   },
-  // The gold butterfly with a chocolate inside, on a transparent background (app/favicon.ico holds
-  // the small sizes). Google needs a square icon of at least 48 pixels.
+  // The chocolate heart on a transparent background (app/favicon.ico holds the same for old
+  // browsers). Google needs a square icon of at least 48 pixels.
   icons: {
     icon: [
+      { url: "/icon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icon.png", sizes: "32x32", type: "image/png" },
       { url: "/icon-48.png", sizes: "48x48", type: "image/png" },
-      { url: "/icon-96.png", sizes: "96x96", type: "image/png" },
       { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
       { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
     ],

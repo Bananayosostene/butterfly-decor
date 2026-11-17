@@ -79,22 +79,23 @@ export function WeddingShopHero({ videoSrc }: { videoSrc: string }) {
 
       <div className="relative w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-20 py-14 md:py-0" style={{ zIndex: 3 }}>
         <div className="flex flex-col items-start gap-5 w-full max-w-xl">
+          {/* The slogan is the big line; the h1 below stays the page's real heading for Google. */}
           <p
-            className="text-xs md:text-sm font-semibold uppercase tracking-[0.22em]"
-            style={{ color: heading, opacity: 0.9 }}
-          >
-            Where beauty meets beauty
-          </p>
-        
-          <h1
-            className={`${displaySerif.className} -mt-2 text-3xl md:text-4xl leading-[1.05] max-w-xl`}
+            className={`${displaySerif.className} text-4xl md:text-6xl leading-[1.05] max-w-xl`}
             style={{
               color: heading,
               fontWeight: 500,
               textShadow: videoAvailable ? "0 1px 12px rgba(0,0,0,0.25)" : "none",
             }}
           >
-            The Free Online Wedding Planner Website
+            Where Dreams Come True
+          </p>
+
+          <h1
+            className="-mt-1 text-xs md:text-sm font-semibold uppercase tracking-[0.22em]"
+            style={{ color: heading, opacity: 0.9 }}
+          >
+            Your Online Wedding &amp; Events Decoration
           </h1>
 
           {/* Plain GET form: works before JavaScript loads and lands on /wedding-planning?date=… */}
