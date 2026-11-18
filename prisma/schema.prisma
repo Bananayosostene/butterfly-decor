@@ -77,6 +77,8 @@ model SiteSettings {
   heroVideoUrl String?
   /// Background photo of the homepage decor section.
   decorImageUrl String?
+  /// False while recording visitors is paused (to save database space). Empty means recording.
+  trackVisitors Boolean?
   updatedAt    DateTime @updatedAt
 }
 

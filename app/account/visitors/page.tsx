@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { Clock, Eye, Globe, Heart, MessageCircle, Users } from "lucide-react";
@@ -6,7 +7,9 @@ import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { parsePage } from "@/lib/data";
 import { StatCard } from "@/components/account/stat-card";
-import { OWNER_VISITS, realVisits } from "@/lib/visits";
+import { getSessionAdminId } from "@/lib/auth";
+import { isTrackingVisitors, OWNER_VISITS, realVisits } from "@/lib/visits";
+import { VisitorControls } from "./visitor-controls";
 import { VisitorInsights } from "./visitor-insights";
 
 const PER_PAGE = 50;
@@ -21,6 +24,32 @@ function duration(seconds: number | null) {
 
 const kigali = (date: Date) =>
   date.toLocaleString("en-GB", { timeZone: "Africa/Kigali", day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+
+/** Only a signed-in admin may change visitor recording. */
+async function assertAdmin() {
+  const cookieStore = await cookies();
+  if (!(await getSessionAdminId(cookieStore.get("admin_session")?.value))) redirect("/login");
+}
+
+/** Pauses or continues recording new visits (saved in the site settings). */
+async function toggleTracking() {
+  "use server";
+  await assertAdmin();
+  const tracking = await isTrackingVisitors();
+  const existing = await prisma.siteSettings.findFirst({ select: { id: true } });
+  if (existing) await prisma.siteSettings.update({ where: { id: existing.id }, data: { trackVisitors: !tracking } });
+  else await prisma.siteSettings.create({ data: { trackVisitors: !tracking } });
+  revalidatePath("/account/visitors");
+}
+
+/** Deletes every recorded visit, the owner's too, and the "visitor is on the site" notifications. */
+async function deleteAllVisits() {
+  "use server";
+  await assertAdmin();
+  await prisma.deviceVisit.deleteMany({});
+  await prisma.notification.deleteMany({ where: { type: "VISIT" } });
+  redirect("/account/visitors");
+}
 
 const join = (...parts: (string | null | undefined)[]) => parts.filter(Boolean).join(" ");
 
@@ -43,7 +72,7 @@ export default async function VisitorsPage({ searchParams }: { searchParams: Pro
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
 
-  const [visits, total, today, timed, countries, mineCount, realCount] = await Promise.all([
+  const [visits, total, today, timed, countries, mineCount, realCount, tracking] = await Promise.all([
     prisma.deviceVisit.findMany({ where: scope(), orderBy: { createdAt: "desc" }, skip: (page - 1) * PER_PAGE, take: PER_PAGE }),
     prisma.deviceVisit.count({ where: scope() }),
     prisma.deviceVisit.count({ where: scope({ createdAt: { gte: startOfDay } }) }),
@@ -51,6 +80,7 @@ export default async function VisitorsPage({ searchParams }: { searchParams: Pro
     prisma.deviceVisit.findMany({ where: scope({ country: { not: null } }), distinct: ["country"], select: { country: true } }),
     prisma.deviceVisit.count({ where: OWNER_VISITS }),
     prisma.deviceVisit.count({ where: realVisits() }),
+    isTrackingVisitors(),
   ]);
 
   // Likes and comments made from the browsers on this page.
@@ -86,7 +116,16 @@ export default async function VisitorsPage({ searchParams }: { searchParams: Pro
         <p className="text-xs text-muted-foreground">
           {mine ? "Your own visits: recorded, but not counted in any visitor number." : "Your own visits are not counted here."}
         </p>
+        <div className="sm:ml-auto">
+          <VisitorControls tracking={tracking} total={mineCount + realCount} toggleTracking={toggleTracking} deleteAll={deleteAllVisits} />
+        </div>
       </div>
+
+      {!tracking && (
+        <p className="rounded-lg border border-border bg-muted px-4 py-3 text-sm text-foreground">
+          Recording is paused: new visits are not saved, so they use no database space. The visits below are kept until you delete them.
+        </p>
+      )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label={mine ? "My visits" : "All visits"} value={total} icon={Users} />

@@ -1,4 +1,5 @@
 import type { Prisma } from "@prisma/client"
+import { prisma } from "@/lib/db"
 
 /**
  * Marks a browser as the site owner's. It is set when the admin signs in and stays for a year,
@@ -23,3 +24,9 @@ const NOT_OWNER: Prisma.DeviceVisitWhereInput = { OR: [{ isOwner: false }, { isO
 
 /** Visits by real visitors (everyone but the owner), optionally narrowed further. */
 export const realVisits = (extra: Prisma.DeviceVisitWhereInput = {}): Prisma.DeviceVisitWhereInput => ({ AND: [NOT_OWNER, extra] })
+
+/** Whether new visits are being recorded. The admin can pause it from the visitors page to save space. */
+export async function isTrackingVisitors() {
+  const settings = await prisma.siteSettings.findFirst({ select: { trackVisitors: true } })
+  return settings?.trackVisitors !== false
+}
