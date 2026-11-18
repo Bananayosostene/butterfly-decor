@@ -527,7 +527,7 @@ export const metadata: Metadata = {
         url: "/og-image.jpg",
         width: 1200,
         height: 577,
-        alt: "Butterfly Decor Rwanda: the free online wedding planner",
+        alt: "Butterfly Decor: the free online wedding planner",
       },
     ],
   },

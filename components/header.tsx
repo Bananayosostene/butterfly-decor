@@ -73,16 +73,16 @@ export function Header() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
 
-            {/* Brand: logo_butterfly.png, trimmed with a see-through background and cream lettering
-                so it reads on the dark header (logo_butterfly_header.png). */}
+            {/* Brand: the whole wordmark is one picture, "Butterfl" in Gloock with the heart-Y as its
+                last letter (butterfly-wordmark-brown.png is the same for light backgrounds). */}
             <Link href="/" aria-label="Butterfly Decor home" className="flex items-center">
               <Image
-                src="/logo_butterfly_header.png"
+                src="/butterfly-wordmark-white.png"
                 alt="Butterfly Decor"
-                width={539}
-                height={256}
+                width={930}
+                height={176}
                 priority
-                className="h-10 w-auto"
+                className="h-4 md:h-5 w-auto"
               />
             </Link>
 
